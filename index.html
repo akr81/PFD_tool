@@ -22,6 +22,9 @@
       --process: #f0fffb;
       --process-border: #188773;
       --process-glow: rgba(24, 135, 115, .18);
+      --stt: #f8fbff;
+      --stt-border: #496b9e;
+      --stt-glow: rgba(73, 107, 158, .18);
       --danger: #b4232f;
       --shadow: 0 14px 34px rgba(22, 31, 40, .16);
       --toolbar-h: 58px;
@@ -31,6 +34,10 @@
 
     * {
       box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
     }
 
     html,
@@ -89,6 +96,19 @@
       height: 40px;
       padding-inline: 8px;
       border-left: 1px solid #d9dee3;
+    }
+
+    .diagram-select {
+      height: 34px;
+      min-width: 112px;
+      border: 1px solid #b9c4cc;
+      border-radius: 8px;
+      padding: 0 30px 0 10px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     .mode-group {
@@ -181,6 +201,11 @@
     .text-size-control input {
       width: 86px;
       accent-color: var(--accent);
+    }
+
+    .text-size-toolbar {
+      border-left: 0;
+      padding-inline: 0 8px;
     }
 
     .text-size-value {
@@ -276,6 +301,14 @@
     .shape-icon.process {
       border-radius: 999px;
       color: var(--process-border);
+    }
+
+    .shape-icon.stt {
+      width: 24px;
+      height: 17px;
+      border-radius: 3px;
+      color: var(--stt-border);
+      box-shadow: inset 0 -5px 0 rgba(73, 107, 158, .12);
     }
 
     .status {
@@ -473,6 +506,16 @@
       border-radius: 999px;
     }
 
+    .node.stt {
+      width: 262px;
+      min-height: 152px;
+      padding: 11px 12px;
+      place-items: stretch;
+      background: var(--stt);
+      border-color: var(--stt-border);
+      border-radius: 7px;
+    }
+
     .node.selected {
       box-shadow: 0 0 0 5px rgba(23, 123, 132, .16), 0 14px 34px rgba(22, 31, 40, .18);
     }
@@ -483,6 +526,10 @@
 
     .node.process.selected {
       box-shadow: 0 0 0 5px var(--process-glow), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
+    .node.stt.selected {
+      box-shadow: 0 0 0 5px var(--stt-glow), 0 14px 34px rgba(22, 31, 40, .18);
     }
 
     .node.pending-connect {
@@ -510,6 +557,12 @@
     .node.process.detail-mode {
       min-height: 100px;
       padding-block: 27px 24px;
+    }
+
+    .node.stt.detail-mode {
+      width: 380px;
+      min-height: 260px;
+      padding: 12px;
     }
 
     .node.detail-mode .node-label {
@@ -711,6 +764,12 @@
       width: min(128px, 100%);
     }
 
+    .node.stt .title-editor {
+      align-self: center;
+      justify-self: center;
+      width: min(180px, 100%);
+    }
+
     .title-input {
       width: 100%;
       min-height: 44px;
@@ -839,6 +898,10 @@
       color: var(--process-border);
     }
 
+    .mini-button[data-action="stt"] {
+      color: var(--stt-border);
+    }
+
     .mini-button[data-action="connect"] {
       color: var(--accent);
     }
@@ -940,6 +1003,84 @@
       background: #edfffa;
     }
 
+    .type-badge.stt {
+      border-color: rgba(73, 107, 158, .5);
+      color: var(--stt-border);
+      background: #eef5ff;
+    }
+
+    .stt-card {
+      display: grid;
+      gap: 6px;
+      align-content: start;
+      min-width: 0;
+      height: 100%;
+    }
+
+    .stt-card-id {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      justify-self: start;
+      min-width: 34px;
+      max-width: 100%;
+      min-height: 20px;
+      padding: 2px 7px;
+      border: 1px solid rgba(73, 107, 158, .38);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--stt-border);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.15;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .stt-card-row {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+      padding: 5px 6px;
+      border: 1px solid rgba(73, 107, 158, .16);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .stt-card-row.primary {
+      border-color: rgba(23, 123, 132, .28);
+      background: #f3fbfb;
+    }
+
+    .stt-card-row.action {
+      border-color: rgba(185, 95, 33, .25);
+      background: #fff8f1;
+    }
+
+    .stt-card-label {
+      color: var(--muted);
+      font-size: var(--node-stt-label-size, 9.5px);
+      font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .stt-card-value {
+      color: var(--ink);
+      font-size: var(--node-title-size, 13px);
+      font-weight: 650;
+      line-height: 1.28;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .stt-card-value.empty {
+      color: #8b96a1;
+      font-weight: 550;
+    }
+
     .detail-title {
       margin-top: 7px;
       color: var(--ink);
@@ -1029,6 +1170,10 @@
       margin-top: 12px;
     }
 
+    .detail-panel.stt-detail .detail-edit {
+      display: none;
+    }
+
     .detail-title[contenteditable="true"],
     .detail-inline-edit[contenteditable="true"] {
       outline: none;
@@ -1116,6 +1261,58 @@
 
     .detail-input:focus,
     .detail-textarea:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .stt-detail-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stt-detail-field {
+      display: grid;
+      gap: 5px;
+      padding: 10px;
+      border: 1px solid #dbe2e7;
+      border-radius: 8px;
+      background: #f7fafb;
+    }
+
+    .stt-detail-field strong {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .stt-detail-value {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .stt-detail-value.empty {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .stt-detail-textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 8px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .stt-detail-textarea:focus {
       outline: 3px solid rgba(23, 123, 132, .18);
       border-color: var(--accent);
     }
@@ -1397,6 +1594,11 @@
         justify-content: space-between;
       }
 
+      .text-size-toolbar {
+        order: 8;
+        width: auto;
+      }
+
       .metric-strip {
         flex-wrap: wrap;
       }
@@ -1428,15 +1630,21 @@
 <body>
   <header class="toolbar">
     <div class="brand" aria-label="PFD Sketch">
-      <strong>PFD Sketch</strong>
-      <span>Process Flow Diagram</span>
+      <strong id="brandTitle">PFD Sketch</strong>
+      <span id="brandSubtitle">Process Flow Diagram</span>
     </div>
-    <div class="toolbar-group" aria-label="追加">
-      <button class="shape-button" data-add-root="artifact" title="成果物を追加">
+    <div class="toolbar-group" aria-label="図の種類">
+      <select class="diagram-select" id="diagramTypeSelect" title="図の種類">
+        <option value="pfd">PFD</option>
+        <option value="stt">S&amp;T</option>
+      </select>
+    </div>
+    <div class="toolbar-group" id="addToolbarGroup" aria-label="追加">
+      <button class="shape-button" data-add-root="artifact" data-diagram-tool="pfd" title="成果物を追加">
         <span class="shape-icon artifact" aria-hidden="true"></span>
         <span>成果物</span>
       </button>
-      <button class="shape-button" data-add-root="process" title="プロセスを追加">
+      <button class="shape-button" data-add-root="process" data-diagram-tool="pfd" title="プロセスを追加">
         <span class="shape-icon process" aria-hidden="true"></span>
         <span>プロセス</span>
       </button>
@@ -1502,13 +1710,15 @@
           <span class="metric-value" id="criticalProgressValue">0%</span>
         </div>
       </div>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <div class="toolbar-group text-size-toolbar" aria-label="文字サイズ">
       <label class="text-size-control">
         文字
         <input id="nodeTextSizeSlider" type="range" min="10" max="18" step="1" value="13" aria-label="エンティティ内文字サイズ">
         <span class="text-size-value" id="nodeTextSizeValue">13px</span>
       </label>
     </div>
-    <div class="toolbar-spacer"></div>
     <div class="status" id="status" aria-live="polite"></div>
     <div class="toolbar-group" aria-label="ファイル">
       <input id="jsonFileInput" type="file" accept="application/json,.json" hidden>
@@ -1676,6 +1886,29 @@
       const STORAGE_KEY = "pfd-sketch-state-v1";
       const DEFAULT_NODE_TEXT_SIZE = 13;
       const WORK_HOURS_PER_DAY = 8;
+      const DIAGRAM_TYPES = {
+        pfd: {
+          title: "PFD Sketch",
+          subtitle: "Process Flow Diagram",
+          rootType: "artifact",
+          rootText: "成果物",
+          filePrefix: "pfd-sketch"
+        },
+        stt: {
+          title: "S&T Sketch",
+          subtitle: "Strategy and Tactics Tree",
+          rootType: "stt",
+          rootText: "1",
+          filePrefix: "stt-sketch"
+        }
+      };
+      const STT_FIELDS = [
+        { key: "necessaryAssumption", label: "必要条件仮定", shortLabel: "必要", legacy: "necessary_assumption" },
+        { key: "strategy", label: "戦略", shortLabel: "戦略", legacy: "strategy" },
+        { key: "parallelAssumption", label: "並行仮定", shortLabel: "並行", legacy: "parallel_assumption" },
+        { key: "tactics", label: "戦術", shortLabel: "戦術", legacy: "tactics" },
+        { key: "sufficientAssumption", label: "充分条件仮定", shortLabel: "充分", legacy: "sufficient_assumption" }
+      ];
       const STATUS_OPTIONS = [
         { id: "progress", label: "進行中" },
         { id: "done", label: "完了" },
@@ -1703,6 +1936,10 @@
       const editorDialog = document.getElementById("editorDialog");
       const editorText = document.getElementById("editorText");
       const jsonFileInput = document.getElementById("jsonFileInput");
+      const brandTitle = document.getElementById("brandTitle");
+      const brandSubtitle = document.getElementById("brandSubtitle");
+      const diagramTypeSelect = document.getElementById("diagramTypeSelect");
+      const addToolbarGroup = document.getElementById("addToolbarGroup");
       const detailTools = document.getElementById("detailTools");
       const totalEstimateValue = document.getElementById("totalEstimateValue");
       const doneEstimateValue = document.getElementById("doneEstimateValue");
@@ -1739,6 +1976,7 @@
         detailVisible: false,
         detailEditing: false,
         detailEditingNodeId: null,
+        diagramType: "pfd",
         viewMode: "simple",
         nodeTextSize: DEFAULT_NODE_TEXT_SIZE,
         pan: { x: 0, y: 0 },
@@ -1755,15 +1993,18 @@
         return id;
       }
 
-      function makeInitialState() {
+      function makeInitialState(diagramType = state.diagramType || "pfd") {
+        state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
+        const config = DIAGRAM_TYPES[state.diagramType];
         const root = {
           id: freshId("node"),
-          type: "artifact",
-          text: "成果物",
+          type: config.rootType,
+          text: config.rootText,
           detail: "",
           estimate: "",
           owner: "",
           statuses: [],
+          stt: normalizeSttFields({ id: config.rootText }),
           x: 0,
           y: 0,
           gridX: 0,
@@ -1782,22 +2023,33 @@
 
       function normalizeGraphData(parsed) {
         if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges) || !parsed.nodes.length) {
-          throw new Error("PFD JSONとして読み込めませんでした。");
+          throw new Error("JSONとして読み込めませんでした。");
         }
 
+        const hasSttFields = parsed.nodes.some(node =>
+          STT_FIELDS.some(field => field.key in node || field.legacy in node || field.key in (node.stt || {}))
+        );
+        const diagramType = parsed.diagramType === "stt" || hasSttFields ? "stt" : "pfd";
         const usedNodeIds = new Set();
         const nodes = parsed.nodes.map((node, index) => {
-          let id = String(node.id || `node-import-${index + 1}`);
+          let id = String(node.unique_id || node.uid || node.id || `node-import-${index + 1}`);
           while (usedNodeIds.has(id)) id = `${id}-${index + 1}`;
           usedNodeIds.add(id);
+          const type = normalizeNodeType(node.type, diagramType);
+          const stt = normalizeSttFields(node.stt || node);
+          const text = type === "stt"
+            ? String(node.text || node.title || node.id || stt.id || "")
+            : (typeof node.text === "string" ? node.text : (typeof node.title === "string" ? node.title : ""));
+          if (type === "stt" && !stt.id) stt.id = text;
           return {
             id,
-            type: node.type === "process" ? "process" : "artifact",
-            text: typeof node.text === "string" ? node.text : "",
+            type,
+            text,
             detail: typeof node.detail === "string" ? node.detail : "",
             estimate: typeof node.estimate === "string" ? node.estimate : "",
             owner: typeof node.owner === "string" ? node.owner : "",
             statuses: normalizeStatuses(node.statuses),
+            stt,
             x: Number.isFinite(node.x) ? node.x : index * GRID_X,
             y: Number.isFinite(node.y) ? node.y : 0,
             gridX: Number.isFinite(node.gridX) ? node.gridX : index,
@@ -1809,9 +2061,12 @@
         const seenPairs = new Set();
         const edges = parsed.edges
           .filter(edge => {
-            const source = nodeById.get(edge.from);
-            const target = nodeById.get(edge.to);
-            if (!source || !target || source.id === target.id || source.type === target.type) return false;
+            const from = edge.from || edge.source;
+            const to = edge.to || edge.destination;
+            const source = nodeById.get(from);
+            const target = nodeById.get(to);
+            if (!source || !target || source.id === target.id) return false;
+            if (diagramType === "pfd" && source.type === target.type) return false;
             const key = `${source.id}->${target.id}`;
             if (seenPairs.has(key)) return false;
             seenPairs.add(key);
@@ -1823,8 +2078,8 @@
             usedEdgeIds.add(id);
             return {
               id,
-              from: edge.from,
-              to: edge.to,
+              from: edge.from || edge.source,
+              to: edge.to || edge.destination,
               fromSide: "right",
               toSide: "left"
             };
@@ -1833,22 +2088,56 @@
         return {
           nodes,
           edges,
+          diagramType,
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize)
         };
       }
 
+      function normalizeNodeType(type, diagramType = state.diagramType) {
+        if (diagramType === "stt") return "stt";
+        return type === "process" ? "process" : "artifact";
+      }
+
+      function normalizeSttFields(value = {}) {
+        const source = value || {};
+        const normalized = {
+          id: typeof source.id === "string" ? source.id : "",
+        };
+        STT_FIELDS.forEach(field => {
+          const raw = source[field.key] ?? source[field.legacy] ?? "";
+          normalized[field.key] = typeof raw === "string" ? raw : String(raw || "");
+        });
+        return normalized;
+      }
+
+      function isPfdDiagram() {
+        return state.diagramType !== "stt";
+      }
+
+      function isSttDiagram() {
+        return state.diagramType === "stt";
+      }
+
+      function isSttNode(node) {
+        return node?.type === "stt";
+      }
+
       function cloneNodeData(node) {
-        return {
+        const clone = {
           ...node,
           estimate: typeof node.estimate === "string" ? node.estimate : "",
           owner: typeof node.owner === "string" ? node.owner : "",
           statuses: normalizeStatuses(node.statuses)
         };
+        if (node.type === "stt") clone.stt = normalizeSttFields(node.stt || node);
+        else delete clone.stt;
+        return clone;
       }
 
       function graphPayload() {
         return {
+          diagramType: state.diagramType,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           viewMode: state.viewMode,
@@ -1864,6 +2153,7 @@
       }
 
       function applyGraphData(graph) {
+        state.diagramType = graph.diagramType === "stt" ? "stt" : "pfd";
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
         if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -1893,6 +2183,7 @@
         try {
           const parsed = JSON.parse(saved);
           const graph = normalizeGraphData(parsed);
+          state.diagramType = graph.diagramType === "stt" ? "stt" : "pfd";
           state.nodes = graph.nodes.map(cloneNodeData);
           state.edges = graph.edges;
           if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -1911,6 +2202,7 @@
 
       function cloneSnapshot() {
         return {
+          diagramType: state.diagramType,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           selected: state.selected ? { ...state.selected } : null,
@@ -1944,6 +2236,7 @@
       }
 
       function restoreSnapshot(snapshot) {
+        state.diagramType = snapshot.diagramType === "stt" ? "stt" : "pfd";
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
         state.pendingPort = null;
@@ -2003,18 +2296,53 @@
         if (state.viewMode === nextMode) return;
         state.viewMode = nextMode;
         state.editingNodeField = null;
+        autoLayout();
         render();
         saveState();
         setStatus(nextMode === "detail" ? "詳細モードに切り替えました" : "シンプルモードに切り替えました");
       }
 
+      function setDiagramType(diagramType) {
+        const nextType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
+        if (state.diagramType === nextType) return;
+        const hasWork = state.nodes.length > 1 || state.edges.length > 0 || (state.nodes[0] && state.nodes[0].text !== DIAGRAM_TYPES[state.diagramType].rootText);
+        if (hasWork && !confirm("図の種類を切り替えると、新しい図として開始します。切り替えますか？")) {
+          updateDiagramControls();
+          return;
+        }
+        recordHistory();
+        nextId = 1;
+        makeInitialState(nextType);
+        state.pan = { x: 0, y: 0 };
+        state.zoom = 1;
+        autoLayout();
+        render();
+        saveState();
+        centerOnGraph();
+        setStatus(nextType === "stt" ? "S&Tを開始しました" : "PFDを開始しました");
+      }
+
+      function updateDiagramControls() {
+        const config = DIAGRAM_TYPES[state.diagramType] || DIAGRAM_TYPES.pfd;
+        brandTitle.textContent = config.title;
+        brandSubtitle.textContent = config.subtitle;
+        diagramTypeSelect.value = state.diagramType;
+        addToolbarGroup.hidden = isSttDiagram();
+        document.querySelectorAll("[data-diagram-tool]").forEach(button => {
+          button.hidden = button.dataset.diagramTool !== state.diagramType;
+        });
+      }
+
       function updateViewModeControls() {
+        updateDiagramControls();
         document.querySelectorAll("[data-mode]").forEach(button => {
           const active = button.dataset.mode === state.viewMode;
           button.classList.toggle("active", active);
           button.setAttribute("aria-pressed", active ? "true" : "false");
         });
-        detailTools.classList.toggle("visible", state.viewMode === "detail");
+        detailTools.classList.toggle("visible", state.viewMode === "detail" && isPfdDiagram());
+        const metricStrip = detailTools.querySelector(".metric-strip");
+        if (metricStrip) metricStrip.hidden = !isPfdDiagram();
         updateDetailMetrics();
         updateTextSizeControls();
       }
@@ -2052,6 +2380,7 @@
         const iconSvgSize = Math.max(10, Math.round(titleSize * .92));
         el.style.setProperty("--node-title-size", `${titleSize}px`);
         el.style.setProperty("--node-meta-size", `${metaSize}px`);
+        el.style.setProperty("--node-stt-label-size", `${Math.max(8.5, Math.round(titleSize * .68 * 10) / 10)}px`);
         el.style.setProperty("--node-status-icon-size", `${iconSize}px`);
         el.style.setProperty("--node-status-svg-size", `${iconSvgSize}px`);
         el.style.setProperty("--node-status-choice-height", `${iconSize + 4}px`);
@@ -2083,6 +2412,8 @@
 
       function nodeDetailFieldFromClick(nodeEl, event) {
         if (state.viewMode !== "detail") return null;
+        const node = findNode(nodeEl.dataset.nodeId);
+        if (isSttNode(node)) return null;
         const hotspot = event.target.closest("[data-node-field-hotspot]");
         if (hotspot) return hotspot.dataset.nodeFieldHotspot;
         const rect = nodeEl.getBoundingClientRect();
@@ -2116,18 +2447,22 @@
 
       function displayText(node) {
         if (node.text.trim()) return node.text;
+        if (isSttNode(node)) return "S&T項目";
         return node.type === "process" ? "プロセス" : "成果物";
       }
 
       function nodeTypeLabel(type) {
+        if (type === "stt") return "S&T項目";
         return type === "process" ? "プロセス" : "成果物";
       }
 
       function defaultText(type) {
+        if (type === "stt") return "1";
         return type === "process" ? "プロセス" : "成果物";
       }
 
       function oppositeType(type) {
+        if (isSttDiagram()) return "stt";
         return type === "process" ? "artifact" : "process";
       }
 
@@ -2353,6 +2688,7 @@
       }
 
       function renderDetailMeta(node, editing = false) {
+        if (isSttNode(node)) return renderSttDetailFields(node, editing);
         const estimate = (node.estimate || "").trim();
         const owner = (node.owner || "").trim();
         const statuses = normalizeStatuses(node.statuses);
@@ -2375,6 +2711,47 @@
             <div><dt>状況</dt><dd data-meta-field="status">${statusHtml}</dd></div>
           </dl>
         `;
+      }
+
+      function renderSttDetailFields(node, editing = false) {
+        const stt = normalizeSttFields(node.stt || node);
+        return `
+          <div class="stt-detail-grid">
+            ${STT_FIELDS.map(field => {
+              const value = (stt[field.key] || "").trim();
+              if (editing) {
+                return `
+                  <label class="stt-detail-field">
+                    <strong>${escapeHtml(field.label)}</strong>
+                    <textarea class="stt-detail-textarea" data-stt-field="${escapeAttribute(field.key)}" rows="3" spellcheck="false">${escapeHtml(value)}</textarea>
+                  </label>
+                `;
+              }
+              return `
+                <div class="stt-detail-field" data-meta-field="${escapeAttribute(field.key)}">
+                  <strong>${escapeHtml(field.label)}</strong>
+                  <div class="stt-detail-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      function readSttDetailValues() {
+        const values = normalizeSttFields({});
+        values.id = (detailTitle.textContent || "").trim();
+        STT_FIELDS.forEach(field => {
+          values[field.key] = (detailMetaView.querySelector(`[data-stt-field="${field.key}"]`)?.value || "").trim();
+        });
+        return values;
+      }
+
+      function sameSttFields(left, right) {
+        const normalizedLeft = normalizeSttFields(left);
+        const normalizedRight = normalizeSttFields(right);
+        return normalizedLeft.id === normalizedRight.id &&
+          STT_FIELDS.every(field => normalizedLeft[field.key] === normalizedRight[field.key]);
       }
 
       function renderEditableText(value, field, placeholder) {
@@ -2570,10 +2947,10 @@
         if (!state.nodes.length) {
           return { minX: -100, maxX: 100, minY: -80, maxY: 80, width: 200, height: 160, cx: 0, cy: 0 };
         }
-        const minX = Math.min(...state.nodes.map(node => node.x - 120));
-        const maxX = Math.max(...state.nodes.map(node => node.x + 120));
-        const minY = Math.min(...state.nodes.map(node => node.y - 90));
-        const maxY = Math.max(...state.nodes.map(node => node.y + 90));
+        const minX = Math.min(...state.nodes.map(node => node.x - nodeSize(node).width / 2 - 20));
+        const maxX = Math.max(...state.nodes.map(node => node.x + nodeSize(node).width / 2 + 20));
+        const minY = Math.min(...state.nodes.map(node => node.y - nodeSize(node).height / 2 - 20));
+        const maxY = Math.max(...state.nodes.map(node => node.y + nodeSize(node).height / 2 + 20));
         return {
           minX,
           maxX,
@@ -2603,16 +2980,19 @@
       }
 
       function createNode(type, gridX, gridY, text = "") {
+        const normalizedType = normalizeNodeType(type);
+        const label = text || defaultText(normalizedType);
         const node = {
           id: freshId("node"),
-          type,
-          text: text || defaultText(type),
+          type: normalizedType,
+          text: label,
           detail: "",
           estimate: "",
           owner: "",
           statuses: [],
-          x: gridX * GRID_X,
-          y: gridY * GRID_Y,
+          stt: normalizeSttFields({ id: label }),
+          x: gridX * gridSpacingX(),
+          y: gridY * gridSpacingY(),
           gridX,
           gridY
         };
@@ -2623,7 +3003,8 @@
       function isValidConnection(from, to) {
         const source = findNode(from);
         const target = findNode(to);
-        return Boolean(source && target && source.id !== target.id && source.type !== target.type);
+        if (!source || !target || source.id === target.id) return false;
+        return isSttDiagram() ? source.type === "stt" && target.type === "stt" : source.type !== target.type;
       }
 
       function primaryOutgoingEdge(nodeId) {
@@ -2634,6 +3015,46 @@
       function portPlan(node, side) {
         if (!node) {
           return { enabled: false, validType: null, mode: "none", connectable: false, title: "" };
+        }
+        if (isSttDiagram()) {
+          if (side === "top") {
+            return {
+              enabled: true,
+              validType: "stt",
+              mode: "downstream",
+              connectable: true,
+              title: "上に参照先のS&T項目を追加"
+            };
+          }
+          if (side === "bottom") {
+            return {
+              enabled: true,
+              validType: "stt",
+              mode: "upstream",
+              connectable: true,
+              title: "下に参照元のS&T項目を追加"
+            };
+          }
+          const edge = primaryOutgoingEdge(node.id);
+          const target = edge ? findNode(edge.to) : null;
+          if (!target) {
+            return {
+              enabled: false,
+              validType: null,
+              mode: "parallel",
+              connectable: false,
+              target: null,
+              title: "参照先があるときだけ同階層のS&T項目を追加できます"
+            };
+          }
+          return {
+            enabled: true,
+            validType: "stt",
+            mode: "parallel",
+            connectable: false,
+            target,
+            title: `${displayText(target)}を参照する同階層のS&T項目を追加`
+          };
         }
         if (side === "right") {
           return {
@@ -2680,6 +3101,12 @@
         if (!pending || !node) return false;
         const anchor = findNode(pending.nodeId);
         if (!anchor || anchor.id === node.id) return false;
+        if (isSttDiagram()) {
+          if (pending.mode === "source") {
+            return side === "bottom" && isValidConnection(anchor.id, node.id);
+          }
+          return side === "top" && isValidConnection(node.id, anchor.id);
+        }
         if (pending.mode === "source") {
           return side === "left" && isValidConnection(anchor.id, node.id);
         }
@@ -2694,8 +3121,13 @@
       function createEdge(from, to, fromSide = "right", toSide = "left") {
         if (from === to) return null;
         if (!isValidConnection(from, to)) return null;
-        fromSide = "right";
-        toSide = "left";
+        if (isSttDiagram()) {
+          fromSide = "top";
+          toSide = "bottom";
+        } else {
+          fromSide = "right";
+          toSide = "left";
+        }
         const exists = state.edges.some(edge =>
           edge.from === from &&
           edge.to === to
@@ -2743,7 +3175,7 @@
           return;
         }
         if (type !== plan.validType) {
-          setStatus("成果物どうし、プロセスどうしは接続できません");
+          setStatus(isSttDiagram() ? "S&T項目を選んでください" : "成果物どうし、プロセスどうしは接続できません");
           return;
         }
 
@@ -2752,12 +3184,12 @@
         recordHistory();
         if (plan.mode === "downstream") {
           const siblingIndex = state.edges.filter(existing => existing.from === anchorId).length;
-          const spot = nextFreeGridNear(anchor, "right", siblingIndex);
+          const spot = nextFreeGridNear(anchor, isSttDiagram() ? "top" : "right", siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(anchor.id, node.id);
         } else if (plan.mode === "upstream") {
           const siblingIndex = state.edges.filter(existing => existing.to === anchorId).length;
-          const spot = nextFreeGridNear(anchor, "left", siblingIndex);
+          const spot = nextFreeGridNear(anchor, isSttDiagram() ? "bottom" : "left", siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(node.id, anchor.id);
         } else {
@@ -2781,11 +3213,17 @@
         saveState();
         startTitleEdit(node.id);
         if (plan.mode === "downstream") {
-          setStatus(`${displayText(anchor)} の接続先として ${displayText(node)} を追加`);
+          setStatus(isSttDiagram()
+            ? `${displayText(anchor)} の参照先として ${displayText(node)} を追加`
+            : `${displayText(anchor)} の接続先として ${displayText(node)} を追加`);
         } else if (plan.mode === "upstream") {
-          setStatus(`${displayText(anchor)} の接続元として ${displayText(node)} を追加`);
+          setStatus(isSttDiagram()
+            ? `${displayText(anchor)} の参照元として ${displayText(node)} を追加`
+            : `${displayText(anchor)} の接続元として ${displayText(node)} を追加`);
         } else {
-          setStatus(`${displayText(plan.target)} への並列入力として ${displayText(node)} を追加`);
+          setStatus(isSttDiagram()
+            ? `${displayText(plan.target)} を参照する同階層項目として ${displayText(node)} を追加`
+            : `${displayText(plan.target)} への並列入力として ${displayText(node)} を追加`);
         }
       }
 
@@ -2811,20 +3249,29 @@
         const node = findNode(anchorId);
         const plan = portPlan(node, side);
         if (!node || !plan.connectable) {
-          setStatus("上下のポートは並列入力の追加に使います");
+          setStatus(isSttDiagram() ? "左右のポートは同階層項目の追加に使います" : "上下のポートは並列入力の追加に使います");
           return;
         }
         state.pendingPort = {
           nodeId: anchorId,
           side,
-          mode: side === "right" ? "source" : "target"
+          mode: isSttDiagram()
+            ? (side === "top" ? "source" : "target")
+            : (side === "right" ? "source" : "target")
         };
         closePalette();
         render();
-        setStatus(side === "right"
-          ? `${displayText(node)} の接続先を選択中`
-          : `${displayText(node)} の接続元を選択中`
-        );
+        if (isSttDiagram()) {
+          setStatus(side === "top"
+            ? `${displayText(node)} の参照先を選択中`
+            : `${displayText(node)} の参照元を選択中`
+          );
+        } else {
+          setStatus(side === "right"
+            ? `${displayText(node)} の接続先を選択中`
+            : `${displayText(node)} の接続元を選択中`
+          );
+        }
       }
 
       function completeConnection(nodeId, side) {
@@ -2899,24 +3346,28 @@
         recordHistory();
         localStorage.removeItem(STORAGE_KEY);
         nextId = 1;
-        makeInitialState();
+        makeInitialState(state.diagramType);
         state.pan = { x: 0, y: 0 };
         state.zoom = 1;
         autoLayout();
         render();
         saveState();
         centerOnGraph();
-        setStatus("新しいPFDを開始");
+        setStatus(isSttDiagram() ? "新しいS&Tを開始" : "新しいPFDを開始");
       }
 
       function autoLayout() {
         if (!state.nodes.length) return;
+        if (isSttDiagram()) {
+          autoLayoutStt();
+          return;
+        }
 
         const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
         state.edges = state.edges.filter(edge => {
           const source = nodeMap.get(edge.from);
           const target = nodeMap.get(edge.to);
-          if (!source || !target || source.id === target.id || source.type === target.type) return false;
+          if (!source || !target || source.id === target.id || !isValidConnection(source.id, target.id)) return false;
           edge.fromSide = "right";
           edge.toSide = "left";
           return true;
@@ -2996,9 +3447,130 @@
         });
 
         state.nodes.forEach(node => {
-          node.x = node.gridX * GRID_X;
-          node.y = node.gridY * GRID_Y;
+          node.x = node.gridX * gridSpacingX();
+          node.y = node.gridY * gridSpacingY();
         });
+      }
+
+      function autoLayoutStt() {
+        const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        state.edges = state.edges.filter(edge => {
+          const source = nodeMap.get(edge.from);
+          const target = nodeMap.get(edge.to);
+          if (!source || !target || source.id === target.id || !isValidConnection(source.id, target.id)) return false;
+          edge.fromSide = "top";
+          edge.toSide = "bottom";
+          return true;
+        });
+
+        const outgoing = new Map();
+        const incoming = new Map();
+        state.nodes.forEach(node => {
+          outgoing.set(node.id, []);
+          incoming.set(node.id, []);
+        });
+        state.edges.forEach(edge => {
+          outgoing.get(edge.from)?.push(edge);
+          incoming.get(edge.to)?.push(edge);
+        });
+
+        const layer = new Map(state.nodes.map(node => [node.id, 0]));
+        const roots = state.nodes
+          .filter(node => !(outgoing.get(node.id) || []).length)
+          .sort((a, b) => a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
+        const queue = (roots.length ? roots : state.nodes.slice(0, 1)).map(node => node.id);
+        const queued = new Set(queue);
+        for (let index = 0; index < queue.length; index += 1) {
+          const id = queue[index];
+          (incoming.get(id) || []).forEach(edge => {
+            const childLayer = Math.max(layer.get(edge.from) || 0, (layer.get(id) || 0) + 1);
+            if (childLayer !== layer.get(edge.from)) layer.set(edge.from, childLayer);
+            if (!queued.has(edge.from)) {
+              queued.add(edge.from);
+              queue.push(edge.from);
+            }
+          });
+        }
+
+        state.nodes.forEach((node, index) => {
+          if (!queued.has(node.id)) {
+            layer.set(node.id, Math.max(0, Number.isFinite(node.gridY) ? node.gridY : index));
+          }
+        });
+
+        const minLayer = Math.min(...Array.from(layer.values()));
+        const groups = new Map();
+        state.nodes.forEach(node => {
+          const nodeLayerIndex = (layer.get(node.id) || 0) - minLayer;
+          if (!groups.has(nodeLayerIndex)) groups.set(nodeLayerIndex, []);
+          groups.get(nodeLayerIndex).push(node);
+        });
+
+        const layerKeys = [...groups.keys()].sort((a, b) => a - b);
+        const xPosition = new Map();
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex)
+            .sort((a, b) => a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id));
+          const offsets = centeredOffsets(group.length);
+          group.forEach((node, index) => xPosition.set(node.id, offsets[index]));
+        });
+
+        for (let pass = 0; pass < 7; pass += 1) {
+          layerKeys.forEach(nodeLayerIndex => {
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), outgoing, edge => edge.to, xPosition);
+          });
+          [...layerKeys].reverse().forEach(nodeLayerIndex => {
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), incoming, edge => edge.from, xPosition);
+          });
+        }
+
+        const averageX = Array.from(xPosition.values()).reduce((sum, value) => sum + value, 0) / Math.max(1, xPosition.size);
+        layerKeys.forEach(nodeLayerIndex => {
+          groups.get(nodeLayerIndex).forEach(node => {
+            node.gridX = Math.round((xPosition.get(node.id) - averageX) * 4) / 4;
+            node.gridY = nodeLayerIndex;
+          });
+        });
+
+        const layerY = sttLayerYPositions(layerKeys, groups);
+        state.nodes.forEach(node => {
+          node.x = node.gridX * gridSpacingX();
+          node.y = layerY.get(node.gridY) || 0;
+        });
+      }
+
+      function gridSpacingX() {
+        return isSttDiagram()
+          ? (state.viewMode === "detail" ? 460 : 320)
+          : GRID_X;
+      }
+
+      function gridSpacingY() {
+        return isSttDiagram()
+          ? (state.viewMode === "detail" ? 360 : 220)
+          : GRID_Y;
+      }
+
+      function sttLayerYPositions(layerKeys, groups) {
+        const result = new Map();
+        let cursor = 0;
+        let previousHeight = 0;
+        layerKeys.forEach((nodeLayerIndex, index) => {
+          const group = groups.get(nodeLayerIndex) || [];
+          const height = Math.max(...group.map(node => nodeSize(node).height), 1);
+          if (index === 0) {
+            cursor = 0;
+          } else {
+            cursor += previousHeight / 2 + sttLayerGap() + height / 2;
+          }
+          result.set(nodeLayerIndex, cursor);
+          previousHeight = height;
+        });
+        return result;
+      }
+
+      function sttLayerGap() {
+        return state.viewMode === "detail" ? 92 : 70;
       }
 
       function alignSingleTargetLayers(layer, incoming, outgoing) {
@@ -3181,10 +3753,14 @@
             input.addEventListener("blur", () => saveTitleEdit(node.id));
             el.append(editor);
           } else {
-            const label = document.createElement("div");
-            label.className = "node-label";
-            label.textContent = displayText(node);
-            el.append(label);
+            if (isSttNode(node)) {
+              el.append(renderSttNodeContent(node));
+            } else {
+              const label = document.createElement("div");
+              label.className = "node-label";
+              label.textContent = displayText(node);
+              el.append(label);
+            }
             if (state.viewMode === "detail") {
               renderNodeDetailBadges(el, node);
             }
@@ -3212,7 +3788,29 @@
         });
       }
 
+      function renderSttNodeContent(node) {
+        const stt = normalizeSttFields(node.stt || node);
+        const wrapper = document.createElement("div");
+        wrapper.className = "stt-card";
+        const fields = sttVisibleFields();
+        wrapper.innerHTML = `
+          <div class="stt-card-id" title="${escapeAttribute(stt.id || node.text || "")}">${escapeHtml(stt.id || node.text || "S&T")}</div>
+          ${fields.map(field => {
+            const value = (stt[field.key] || "").trim();
+            const rowClass = field.key === "strategy" ? " primary" : (field.key === "tactics" ? " action" : "");
+            return `
+              <div class="stt-card-row${rowClass}">
+                <div class="stt-card-label">${escapeHtml(field.shortLabel)}</div>
+                <div class="stt-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+              </div>
+            `;
+          }).join("")}
+        `;
+        return wrapper;
+      }
+
       function renderNodeDetailBadges(el, node) {
+        if (isSttNode(node)) return;
         const statuses = normalizeStatuses(node.statuses);
         const editingField = state.editingNodeField?.nodeId === node.id ? state.editingNodeField.field : null;
 
@@ -3374,12 +3972,53 @@
 
       function nodeSize(node) {
         const detailMode = state.viewMode === "detail";
+        if (node.type === "stt") {
+          return estimateSttNodeSize(node);
+        }
         return {
           width: node.type === "process" ? 164 : 150,
           height: node.type === "process"
             ? (detailMode ? 100 : 86)
             : (detailMode ? 90 : 72)
         };
+      }
+
+      function estimateSttNodeSize(node) {
+        const detailMode = state.viewMode === "detail";
+        const width = detailMode ? 380 : 262;
+        const minHeight = detailMode ? 260 : 152;
+        const textSize = normalizeNodeTextSize(state.nodeTextSize);
+        const charsPerLine = Math.max(8, Math.floor((width - 38) / (textSize * (detailMode ? 1.03 : .92))));
+        const fields = sttVisibleFields();
+        const stt = normalizeSttFields(node.stt || node);
+        const rowGap = 6;
+        const idHeight = 22;
+        const padding = detailMode ? 24 : 22;
+        const rowHeights = fields.map(field => {
+          const value = (stt[field.key] || "未設定").trim();
+          const lines = estimateWrappedLines(value, charsPerLine);
+          return Math.max(36, 19 + lines * Math.max(16, textSize * 1.35));
+        });
+        const rowsHeight = rowHeights.reduce((sum, value) => sum + value, 0);
+        const gapHeight = Math.max(0, fields.length - 1) * rowGap;
+        return {
+          width,
+          height: Math.ceil(Math.max(minHeight, padding + idHeight + rowGap + rowsHeight + gapHeight))
+        };
+      }
+
+      function sttVisibleFields() {
+        return state.viewMode === "detail"
+          ? STT_FIELDS
+          : STT_FIELDS.filter(field => field.key === "strategy" || field.key === "tactics");
+      }
+
+      function estimateWrappedLines(value, charsPerLine) {
+        const text = String(value || "");
+        return text.split(/\r?\n/).reduce((sum, line) => {
+          const length = Math.max(1, [...line].length);
+          return sum + Math.max(1, Math.ceil(length / charsPerLine));
+        }, 0);
       }
 
       function edgePath(from, to, fromSide, toSide) {
@@ -3448,29 +4087,52 @@
         palette.dataset.side = side;
         palette.style.left = `${Math.min(Math.max(client.x - viewportRect.left, 58), viewportRect.width - 58)}px`;
         palette.style.top = `${Math.min(Math.max(client.y - viewportRect.top, 50), viewportRect.height - 50)}px`;
-        palette.innerHTML = `
-          <button class="mini-button" data-action="artifact" title="成果物を作成" aria-label="成果物を作成">
-            <span class="shape-icon artifact" aria-hidden="true"></span>
-          </button>
-          <button class="mini-button" data-action="process" title="プロセスを作成" aria-label="プロセスを作成">
-            <span class="shape-icon process" aria-hidden="true"></span>
-          </button>
-          <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
-              <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
-            </svg>
-          </button>
-        `;
+        palette.innerHTML = isSttDiagram()
+          ? `
+            <button class="mini-button" data-action="stt" title="S&T項目を作成" aria-label="S&T項目を作成">
+              <span class="shape-icon stt" aria-hidden="true"></span>
+            </button>
+            <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+              </svg>
+            </button>
+          `
+          : `
+            <button class="mini-button" data-action="artifact" title="成果物を作成" aria-label="成果物を作成">
+              <span class="shape-icon artifact" aria-hidden="true"></span>
+            </button>
+            <button class="mini-button" data-action="process" title="プロセスを作成" aria-label="プロセスを作成">
+              <span class="shape-icon process" aria-hidden="true"></span>
+            </button>
+            <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+                <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+              </svg>
+            </button>
+          `;
         const artifactButton = palette.querySelector('[data-action="artifact"]');
         const processButton = palette.querySelector('[data-action="process"]');
+        const sttButton = palette.querySelector('[data-action="stt"]');
         const connectButton = palette.querySelector('[data-action="connect"]');
-        artifactButton.disabled = plan.validType !== "artifact";
-        processButton.disabled = plan.validType !== "process";
-        artifactButton.title = artifactButton.disabled ? "この接続では成果物を選べません" : "成果物を作成";
-        processButton.title = processButton.disabled ? "この接続ではプロセスを選べません" : "プロセスを作成";
+        if (artifactButton) {
+          artifactButton.disabled = plan.validType !== "artifact";
+          artifactButton.title = artifactButton.disabled ? "この接続では成果物を選べません" : "成果物を作成";
+        }
+        if (processButton) {
+          processButton.disabled = plan.validType !== "process";
+          processButton.title = processButton.disabled ? "この接続ではプロセスを選べません" : "プロセスを作成";
+        }
+        if (sttButton) {
+          sttButton.disabled = plan.validType !== "stt";
+          sttButton.title = sttButton.disabled ? "この接続ではS&T項目を選べません" : "S&T項目を作成";
+        }
         connectButton.disabled = !plan.connectable;
-        connectButton.title = plan.connectable ? "既存のオブジェクトへ接続" : "上下は並列入力の追加専用です";
+        connectButton.title = plan.connectable
+          ? "既存のオブジェクトへ接続"
+          : (isSttDiagram() ? "左右は同階層項目の追加専用です" : "上下は並列入力の追加専用です");
         viewport.append(palette);
         state.palette = palette;
       }
@@ -3524,6 +4186,9 @@
         }
         recordHistory();
         node.text = nextText;
+        if (isSttNode(node)) {
+          node.stt = normalizeSttFields({ ...(node.stt || {}), id: nextText });
+        }
         state.selected = { type: "node", id: node.id };
         state.editingNodeId = null;
         render();
@@ -3650,6 +4315,21 @@
       }
 
       function linkedCandidatesInDirection(current, direction) {
+        if (isSttDiagram()) {
+          if (direction === "up") {
+            return state.edges
+              .filter(edge => edge.from === current.id)
+              .map(edge => findNode(edge.to))
+              .filter(Boolean);
+          }
+          if (direction === "down") {
+            return state.edges
+              .filter(edge => edge.to === current.id)
+              .map(edge => findNode(edge.from))
+              .filter(Boolean);
+          }
+          return [];
+        }
         if (direction === "right") {
           return state.edges
             .filter(edge => edge.from === current.id)
@@ -3688,13 +4368,14 @@
       function renderDetailPanel() {
         const node = selectedNode();
         if (!node || !state.detailVisible) {
-          detailPanel.classList.remove("open", "editing");
+          detailPanel.classList.remove("open", "editing", "stt-detail");
           return;
         }
 
         detailPanel.classList.add("open");
         const editing = state.detailEditing && state.detailEditingNodeId === node.id;
         detailPanel.classList.toggle("editing", editing);
+        detailPanel.classList.toggle("stt-detail", isSttNode(node));
         detailTypeBadge.className = `type-badge ${node.type}`;
         detailTypeBadge.textContent = nodeTypeLabel(node.type);
         detailTitle.textContent = displayText(node);
@@ -3706,7 +4387,7 @@
           detailTitle.removeAttribute("spellcheck");
         }
         detailMetaView.innerHTML = renderDetailMeta(node, editing);
-        detailMarkdownView.innerHTML = renderMarkdown(node.detail || "");
+        detailMarkdownView.innerHTML = isSttNode(node) ? "" : renderMarkdown(node.detail || "");
 
         if (editing) {
           detailMarkdownEditor.value = node.detail || "";
@@ -3763,6 +4444,11 @@
           if (focusTarget === "title") {
             detailTitle.focus();
             selectElementContents(detailTitle);
+          } else if (isSttNode(node)) {
+            const target = detailMetaView.querySelector(`[data-stt-field="${focusTarget}"]`) ||
+              detailMetaView.querySelector("[data-stt-field]");
+            target?.focus();
+            target?.select();
           } else if (focusTarget === "estimate" || focusTarget === "owner") {
             const target = focusTarget === "owner"
               ? detailMetaView.querySelector("[data-detail-owner-input]")
@@ -3789,6 +4475,28 @@
         const node = findNode(state.detailEditingNodeId) || selectedNode();
         if (!node) return;
         const nextText = (detailTitle.textContent || "").trim();
+        if (isSttNode(node)) {
+          const nextStt = readSttDetailValues();
+          nextStt.id = nextText;
+          if ((node.text || "") === nextText && sameSttFields(node.stt || node, nextStt)) {
+            state.detailEditing = false;
+            state.detailEditingNodeId = null;
+            renderDetailPanel();
+            setStatus("詳細は変更されていません");
+            return;
+          }
+          recordHistory();
+          node.text = nextText;
+          node.stt = nextStt;
+          state.selected = { type: "node", id: node.id };
+          state.detailVisible = true;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          render();
+          saveState();
+          setStatus("S&T項目を保存しました");
+          return;
+        }
         const nextEstimate = detailInlineValue("estimate");
         const nextOwner = detailInlineValue("owner");
         const nextStatuses = readStatusEditorValues();
@@ -3861,13 +4569,22 @@
       function updateHint() {
         if (state.pendingPort) {
           const node = findNode(state.pendingPort.nodeId);
+          if (isSttDiagram()) {
+            setHint(state.pendingPort.mode === "source"
+              ? `${displayText(node)} の参照先を選択中。候補は下ポートだけです。`
+              : `${displayText(node)} の参照元を選択中。候補は上ポートだけです。`
+            );
+            return;
+          }
           setHint(state.pendingPort.mode === "source"
             ? `${displayText(node)} の接続先を選択中。候補は左ポートだけです。`
             : `${displayText(node)} の接続元を選択中。候補は右ポートだけです。`
           );
           return;
         }
-        setHint("中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。");
+        setHint(isSttDiagram()
+          ? "中央クリックでID編集、ダブルクリックでS&T項目の詳細を編集できます。上に参照先、下に参照元を追加します。"
+          : "中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。");
       }
 
       function downloadJson() {
@@ -3875,7 +4592,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `pfd-sketch-${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `${DIAGRAM_TYPES[state.diagramType].filePrefix}-${new Date().toISOString().slice(0, 10)}.json`;
         document.body.append(a);
         a.click();
         a.remove();
@@ -3991,7 +4708,7 @@
           const action = paletteButton.dataset.action;
           const { nodeId, side } = state.palette.dataset;
           if (action === "connect") startConnection(nodeId, side);
-          if (action === "artifact" || action === "process") addFromPort(nodeId, side, action);
+          if (action === "artifact" || action === "process" || action === "stt") addFromPort(nodeId, side, action);
           return;
         }
 
@@ -4073,6 +4790,10 @@
 
       jsonFileInput.addEventListener("change", event => {
         importJsonFile(event.target.files?.[0]);
+      });
+
+      diagramTypeSelect.addEventListener("change", event => {
+        setDiagramType(event.target.value);
       });
 
       nodeTextSizeSlider.addEventListener("input", event => {

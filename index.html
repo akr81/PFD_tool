@@ -311,6 +311,14 @@
       box-shadow: inset 0 -5px 0 rgba(73, 107, 158, .12);
     }
 
+    .shape-icon.crt {
+      width: 24px;
+      height: 17px;
+      border-radius: 3px;
+      color: #435b73;
+      box-shadow: inset 0 -5px 0 rgba(67, 91, 115, .14);
+    }
+
     .status {
       display: inline-flex;
       align-items: center;
@@ -479,6 +487,67 @@
       pointer-events: none;
     }
 
+    .crt-and-node {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 34px;
+      border: 2px solid #435b73;
+      border-radius: 999px;
+      background: #fff;
+      color: #435b73;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 18px rgba(22, 31, 40, .16);
+      pointer-events: none;
+    }
+
+    .crt-and-editor {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px;
+      border: 1px solid #cbd5dc;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: 0 8px 20px rgba(22, 31, 40, .16);
+      transform: translate(-50%, calc(-100% - 17px));
+      pointer-events: auto;
+    }
+
+    .crt-and-select {
+      width: 108px;
+      border: 1px solid #bac4cc;
+      border-radius: 6px;
+      padding: 4px 6px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .crt-edge-delete {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border: 1px solid #d5b5aa;
+      border-radius: 6px;
+      background: #fff7f3;
+      color: #a84d2e;
+      cursor: pointer;
+    }
+
+    .crt-edge-delete svg {
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+
     .node {
       position: absolute;
       display: grid;
@@ -510,6 +579,21 @@
       background: var(--process);
       border-color: var(--process-border);
       border-radius: 999px;
+    }
+
+    .node.crt {
+      width: 238px;
+      min-height: 108px;
+      padding: 15px 17px;
+      place-items: stretch;
+      border-color: var(--crt-border, #71808d);
+      background: var(--crt-bg, #f8fafb);
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(24, 35, 47, .13);
+    }
+
+    .node.crt.selected {
+      box-shadow: 0 0 0 5px rgba(53, 92, 134, .15), 0 14px 34px rgba(22, 31, 40, .18);
     }
 
     .node.ec {
@@ -642,6 +726,47 @@
     }
 
     .ec-card-value.empty {
+      color: #7c8792;
+      font-weight: 600;
+    }
+
+    .crt-card {
+      display: grid;
+      align-content: center;
+      gap: 9px;
+      min-height: 100%;
+      pointer-events: none;
+    }
+
+    .crt-card-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #566370;
+      font-size: calc(var(--node-text-size, 16px) * .72);
+      font-weight: 760;
+      line-height: 1.15;
+    }
+
+    .crt-card-swatch {
+      width: calc(var(--node-text-size, 16px) * .92);
+      height: calc(var(--node-text-size, 16px) * .92);
+      border: 1px solid var(--crt-border, #71808d);
+      border-radius: 999px;
+      background: var(--crt-accent, #fff);
+      flex: 0 0 auto;
+    }
+
+    .crt-card-value {
+      color: #253145;
+      font-size: var(--node-text-size, 16px);
+      font-weight: 740;
+      line-height: 1.3;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .crt-card-value.empty {
       color: #7c8792;
       font-weight: 600;
     }
@@ -873,6 +998,12 @@
       width: min(200px, 100%);
     }
 
+    .node.crt .title-editor {
+      align-self: center;
+      justify-self: center;
+      width: min(200px, 100%);
+    }
+
     .title-input {
       width: 100%;
       min-height: 44px;
@@ -1005,6 +1136,10 @@
       color: var(--stt-border);
     }
 
+    .mini-button[data-action="crt"] {
+      color: #435b73;
+    }
+
     .mini-button[data-action="connect"] {
       color: var(--accent);
     }
@@ -1110,6 +1245,12 @@
       border-color: rgba(73, 107, 158, .5);
       color: var(--stt-border);
       background: #eef5ff;
+    }
+
+    .type-badge.crt {
+      border-color: rgba(91, 112, 132, .5);
+      color: #435b73;
+      background: #f2f6f9;
     }
 
     .type-badge.ec {
@@ -1280,6 +1421,7 @@
     }
 
     .detail-panel.stt-detail .detail-edit,
+    .detail-panel.crt-detail .detail-edit,
     .detail-panel.ec-detail .detail-edit {
       display: none;
     }
@@ -1477,6 +1619,84 @@
     }
 
     .ec-detail-textarea:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .crt-detail-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .crt-detail-field {
+      display: grid;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid #dbe2e7;
+      border-radius: 8px;
+      background: #f7fafb;
+    }
+
+    .crt-detail-field strong {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .crt-detail-value {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .crt-detail-value.empty {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .crt-detail-textarea {
+      width: 100%;
+      min-height: 132px;
+      resize: vertical;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 8px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .crt-color-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .crt-color-swatch {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--crt-border, #71808d);
+      border-radius: 999px;
+      background: var(--crt-accent, #fff);
+    }
+
+    .crt-color-select {
+      min-width: 150px;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 7px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .crt-detail-textarea:focus,
+    .crt-color-select:focus {
       outline: 3px solid rgba(23, 123, 132, .18);
       border-color: var(--accent);
     }
@@ -1801,6 +2021,7 @@
       <select class="diagram-select" id="diagramTypeSelect" title="図の種類">
         <option value="pfd">PFD</option>
         <option value="stt">S&amp;T</option>
+        <option value="crt">CRT</option>
         <option value="ec">EC</option>
       </select>
     </div>
@@ -2066,6 +2287,13 @@
           rootText: "1",
           filePrefix: "stt-sketch"
         },
+        crt: {
+          title: "CRT Sketch",
+          subtitle: "Current Reality Tree",
+          rootType: "crt",
+          rootText: "症状・結果",
+          filePrefix: "crt-sketch"
+        },
         ec: {
           title: "EC Sketch",
           subtitle: "Evaporating Cloud",
@@ -2093,6 +2321,17 @@
         { id: "edge-right-shoulder-head", from: "right_shoulder", to: "head", fromSide: "top", toSide: "right" },
         { id: "edge-conflict", from: "left_hand", to: "right_hand", fromSide: "right", toSide: "left", kind: "conflict" }
       ];
+      const CRT_COLORS = [
+        { id: "None", label: "なし", bg: "#f8fafb", border: "#71808d", accent: "#ffffff" },
+        { id: "Blue", label: "青", bg: "#edf6ff", border: "#477fb5", accent: "#8cc7ff" },
+        { id: "Yellow", label: "黄", bg: "#fff8dc", border: "#b59222", accent: "#f5ce51" },
+        { id: "Red", label: "赤", bg: "#fff0f0", border: "#b85b5b", accent: "#f29c9c" },
+        { id: "Green", label: "緑", bg: "#effaf0", border: "#5c8f62", accent: "#93d29a" },
+        { id: "Orange", label: "橙", bg: "#fff3e6", border: "#bc7331", accent: "#f3ae62" },
+        { id: "Purple", label: "紫", bg: "#f6f0ff", border: "#8664b2", accent: "#c0a2ed" },
+        { id: "Gray", label: "灰", bg: "#f2f4f6", border: "#7a858f", accent: "#c4cbd1" }
+      ];
+      const CRT_COLOR_BY_ID = new Map(CRT_COLORS.map(color => [color.id, color]));
       const STT_FIELDS = [
         { key: "necessaryAssumption", label: "必要条件仮定", shortLabel: "必要", legacy: "necessary_assumption" },
         { key: "strategy", label: "戦略", shortLabel: "戦略", legacy: "strategy" },
@@ -2207,6 +2446,7 @@
           estimate: "",
           owner: "",
           statuses: [],
+          color: "None",
           stt: normalizeSttFields({ id: config.rootText }),
           x: 0,
           y: 0,
@@ -2254,11 +2494,15 @@
         const hasSttFields = parsed.nodes.some(node =>
           STT_FIELDS.some(field => field.key in node || field.legacy in node || field.key in (node.stt || {}))
         );
+        const hasCrtShape = parsed.nodes.some(node => node.type === "entity" || node.type === "note") &&
+          parsed.edges.some(edge => "and" in edge || edge.type === "arrow");
         const ecIds = new Set(parsed.nodes.map(node => String(node.unique_id || node.uid || node.id || "")));
         const hasEcShape = ["head", "left_shoulder", "right_shoulder", "left_hand", "right_hand"].every(id => ecIds.has(id));
         const diagramType = parsed.diagramType === "ec" || hasEcShape
           ? "ec"
-          : (parsed.diagramType === "stt" || hasSttFields ? "stt" : "pfd");
+          : (parsed.diagramType === "crt" || hasCrtShape
+            ? "crt"
+            : (parsed.diagramType === "stt" || hasSttFields ? "stt" : "pfd"));
         if (diagramType === "ec") return normalizeEcGraphData(parsed);
         const usedNodeIds = new Set();
         const nodes = parsed.nodes.map((node, index) => {
@@ -2269,7 +2513,9 @@
           const stt = normalizeSttFields(node.stt || node);
           const text = type === "stt"
             ? String(node.text || node.title || node.id || stt.id || "")
-            : (typeof node.text === "string" ? node.text : (typeof node.title === "string" ? node.title : ""));
+            : (type === "crt"
+              ? String(node.text || node.title || node.id || "")
+              : (typeof node.text === "string" ? node.text : (typeof node.title === "string" ? node.title : "")));
           if (type === "stt" && !stt.id) stt.id = text;
           return {
             id,
@@ -2279,6 +2525,7 @@
             estimate: typeof node.estimate === "string" ? node.estimate : "",
             owner: typeof node.owner === "string" ? node.owner : "",
             statuses: normalizeStatuses(node.statuses),
+            color: normalizeCrtColor(node.color),
             stt,
             x: Number.isFinite(node.x) ? node.x : index * GRID_X,
             y: Number.isFinite(node.y) ? node.y : 0,
@@ -2311,7 +2558,8 @@
               from: edge.from || edge.source,
               to: edge.to || edge.destination,
               fromSide: "right",
-              toSide: "left"
+              toSide: "left",
+              and: diagramType === "crt" ? normalizeCrtAnd(edge.and) : undefined
             };
           });
 
@@ -2354,6 +2602,7 @@
 
       function normalizeNodeType(type, diagramType = state.diagramType) {
         if (diagramType === "ec") return "ec";
+        if (diagramType === "crt") return "crt";
         if (diagramType === "stt") return "stt";
         return type === "process" ? "process" : "artifact";
       }
@@ -2378,12 +2627,24 @@
         return state.diagramType === "stt";
       }
 
+      function isCrtDiagram() {
+        return state.diagramType === "crt";
+      }
+
+      function isUpwardDiagram() {
+        return isSttDiagram() || isCrtDiagram();
+      }
+
       function isEcDiagram() {
         return state.diagramType === "ec";
       }
 
       function isSttNode(node) {
         return node?.type === "stt";
+      }
+
+      function isCrtNode(node) {
+        return node?.type === "crt";
       }
 
       function isEcNode(node) {
@@ -2426,7 +2687,8 @@
           ...node,
           estimate: typeof node.estimate === "string" ? node.estimate : "",
           owner: typeof node.owner === "string" ? node.owner : "",
-          statuses: normalizeStatuses(node.statuses)
+          statuses: normalizeStatuses(node.statuses),
+          color: normalizeCrtColor(node.color)
         };
         if (node.type === "stt") clone.stt = normalizeSttFields(node.stt || node);
         else delete clone.stt;
@@ -2619,7 +2881,7 @@
         render();
         saveState();
         centerOnGraph();
-        setStatus(nextType === "stt" ? "S&Tを開始しました" : (nextType === "ec" ? "ECを開始しました" : "PFDを開始しました"));
+        setStatus(nextType === "stt" ? "S&Tを開始しました" : (nextType === "crt" ? "CRTを開始しました" : (nextType === "ec" ? "ECを開始しました" : "PFDを開始しました")));
       }
 
       function updateDiagramControls() {
@@ -2714,6 +2976,7 @@
       function nodeDetailFieldFromClick(nodeEl, event) {
         if (state.viewMode !== "detail") return null;
         const node = findNode(nodeEl.dataset.nodeId);
+        if (isCrtNode(node)) return null;
         if (isEcNode(node)) return null;
         if (isSttNode(node)) return null;
         const hotspot = event.target.closest("[data-node-field-hotspot]");
@@ -2750,18 +3013,21 @@
       function displayText(node) {
         if (node.text.trim()) return node.text;
         if (isEcNode(node)) return ecNodeTitle(node);
+        if (isCrtNode(node)) return "CRTエンティティ";
         if (isSttNode(node)) return "S&T項目";
         return node.type === "process" ? "プロセス" : "成果物";
       }
 
       function nodeTypeLabel(type) {
         if (type === "ec") return "EC";
+        if (type === "crt") return "CRT";
         if (type === "stt") return "S&T項目";
         return type === "process" ? "プロセス" : "成果物";
       }
 
       function defaultText(type) {
         if (type === "ec") return "EC";
+        if (type === "crt") return "症状・結果";
         if (type === "stt") return "1";
         return type === "process" ? "プロセス" : "成果物";
       }
@@ -2778,6 +3044,7 @@
 
       function oppositeType(type) {
         if (isEcDiagram()) return "ec";
+        if (isCrtDiagram()) return "crt";
         if (isSttDiagram()) return "stt";
         return type === "process" ? "artifact" : "process";
       }
@@ -2806,6 +3073,24 @@
             return true;
           })
           .slice(0, 3);
+      }
+
+      function normalizeCrtColor(value) {
+        const id = String(value || "None");
+        return CRT_COLOR_BY_ID.has(id) ? id : "None";
+      }
+
+      function normalizeCrtAnd(value) {
+        const text = String(value || "None").trim();
+        return text && text !== "None" ? text : "None";
+      }
+
+      function hasCrtAnd(edge) {
+        return isCrtDiagram() && normalizeCrtAnd(edge?.and) !== "None";
+      }
+
+      function crtColorDefinition(value) {
+        return CRT_COLOR_BY_ID.get(normalizeCrtColor(value)) || CRT_COLORS[0];
       }
 
       function statusLabel(id) {
@@ -3005,6 +3290,7 @@
 
       function renderDetailMeta(node, editing = false) {
         if (isEcNode(node)) return renderEcDetailFields(node, editing);
+        if (isCrtNode(node)) return renderCrtDetailFields(node, editing);
         if (isSttNode(node)) return renderSttDetailFields(node, editing);
         const estimate = (node.estimate || "").trim();
         const owner = (node.owner || "").trim();
@@ -3078,6 +3364,52 @@
 
       function readEcDetailValue() {
         return (detailMetaView.querySelector("[data-ec-field='text']")?.value || "").replace(/\r\n/g, "\n").trim();
+      }
+
+      function renderCrtDetailFields(node, editing = false) {
+        const value = (node.text || "").trim();
+        const color = crtColorDefinition(node.color);
+        if (editing) {
+          return `
+            <div class="crt-detail-grid">
+              <label class="crt-detail-field">
+                <strong>課題・状況</strong>
+                <textarea class="crt-detail-textarea" data-crt-field="text" rows="6" spellcheck="false">${escapeHtml(value)}</textarea>
+              </label>
+              <label class="crt-detail-field">
+                <strong>色</strong>
+                <span class="crt-color-row">
+                  <span class="crt-color-swatch" style="--crt-accent:${escapeAttribute(color.accent)};--crt-border:${escapeAttribute(color.border)}"></span>
+                  <select class="crt-color-select" data-crt-field="color">
+                    ${CRT_COLORS.map(option => `<option value="${escapeAttribute(option.id)}"${option.id === color.id ? " selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
+                  </select>
+                </span>
+              </label>
+            </div>
+          `;
+        }
+        return `
+          <div class="crt-detail-grid">
+            <div class="crt-detail-field" data-meta-field="crt-text">
+              <strong>課題・状況</strong>
+              <div class="crt-detail-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+            </div>
+            <div class="crt-detail-field" data-meta-field="crt-color">
+              <strong>色</strong>
+              <span class="crt-color-row">
+                <span class="crt-color-swatch" style="--crt-accent:${escapeAttribute(color.accent)};--crt-border:${escapeAttribute(color.border)}"></span>
+                <span class="crt-detail-value">${escapeHtml(color.label)}</span>
+              </span>
+            </div>
+          </div>
+        `;
+      }
+
+      function readCrtDetailValues() {
+        return {
+          text: (detailMetaView.querySelector("[data-crt-field='text']")?.value || "").replace(/\r\n/g, "\n").trim(),
+          color: normalizeCrtColor(detailMetaView.querySelector("[data-crt-field='color']")?.value)
+        };
       }
 
       function readSttDetailValues() {
@@ -3333,6 +3665,7 @@
           estimate: "",
           owner: "",
           statuses: [],
+          color: "None",
           stt: normalizeSttFields({ id: label }),
           x: gridX * gridSpacingX(),
           y: gridY * gridSpacingY(),
@@ -3350,6 +3683,7 @@
         if (isEcDiagram()) {
           return isEcNode(source) && isEcNode(target) && source.ecKind !== "assumption" && target.ecKind !== "assumption";
         }
+        if (isCrtDiagram()) return isCrtNode(source) && isCrtNode(target);
         return isSttDiagram() ? source.type === "stt" && target.type === "stt" : source.type !== target.type;
       }
 
@@ -3364,6 +3698,46 @@
         }
         if (isEcDiagram()) {
           return { enabled: false, validType: null, mode: "fixed", connectable: false, title: "ECの構造は固定です" };
+        }
+        if (isCrtDiagram()) {
+          if (side === "top") {
+            return {
+              enabled: true,
+              validType: "crt",
+              mode: "downstream",
+              connectable: true,
+              title: "上に症状・結果を追加"
+            };
+          }
+          if (side === "bottom") {
+            return {
+              enabled: true,
+              validType: "crt",
+              mode: "upstream",
+              connectable: true,
+              title: "下に原因を追加"
+            };
+          }
+          const edge = primaryOutgoingEdge(node.id);
+          const target = edge ? findNode(edge.to) : null;
+          if (!target) {
+            return {
+              enabled: false,
+              validType: null,
+              mode: "parallel",
+              connectable: false,
+              target: null,
+              title: "結果があるときだけ同じ結果への原因を追加できます"
+            };
+          }
+          return {
+            enabled: true,
+            validType: "crt",
+            mode: "parallel",
+            connectable: false,
+            target,
+            title: `${displayText(target)}への原因を追加`
+          };
         }
         if (isSttDiagram()) {
           if (side === "top") {
@@ -3450,7 +3824,7 @@
         if (!pending || !node) return false;
         const anchor = findNode(pending.nodeId);
         if (!anchor || anchor.id === node.id) return false;
-        if (isSttDiagram()) {
+        if (isUpwardDiagram()) {
           if (pending.mode === "source") {
             return side === "bottom" && isValidConnection(anchor.id, node.id);
           }
@@ -3470,7 +3844,7 @@
       function createEdge(from, to, fromSide = "right", toSide = "left") {
         if (from === to) return null;
         if (!isValidConnection(from, to)) return null;
-        if (isSttDiagram()) {
+        if (isUpwardDiagram()) {
           fromSide = "top";
           toSide = "bottom";
         } else {
@@ -3487,7 +3861,8 @@
           from,
           to,
           fromSide,
-          toSide
+          toSide,
+          and: isCrtDiagram() ? "None" : undefined
         };
         state.edges.push(edge);
         return edge;
@@ -3524,7 +3899,7 @@
           return;
         }
         if (type !== plan.validType) {
-          setStatus(isSttDiagram() ? "S&T項目を選んでください" : "成果物どうし、プロセスどうしは接続できません");
+          setStatus(isCrtDiagram() ? "CRTエンティティを選んでください" : (isSttDiagram() ? "S&T項目を選んでください" : "成果物どうし、プロセスどうしは接続できません"));
           return;
         }
 
@@ -3533,12 +3908,12 @@
         recordHistory();
         if (plan.mode === "downstream") {
           const siblingIndex = state.edges.filter(existing => existing.from === anchorId).length;
-          const spot = nextFreeGridNear(anchor, isSttDiagram() ? "top" : "right", siblingIndex);
+          const spot = nextFreeGridNear(anchor, isUpwardDiagram() ? "top" : "right", siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(anchor.id, node.id);
         } else if (plan.mode === "upstream") {
           const siblingIndex = state.edges.filter(existing => existing.to === anchorId).length;
-          const spot = nextFreeGridNear(anchor, isSttDiagram() ? "bottom" : "left", siblingIndex);
+          const spot = nextFreeGridNear(anchor, isUpwardDiagram() ? "bottom" : "left", siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(node.id, anchor.id);
         } else {
@@ -3562,17 +3937,23 @@
         saveState();
         startTitleEdit(node.id);
         if (plan.mode === "downstream") {
-          setStatus(isSttDiagram()
-            ? `${displayText(anchor)} の参照先として ${displayText(node)} を追加`
-            : `${displayText(anchor)} の接続先として ${displayText(node)} を追加`);
+          setStatus(isCrtDiagram()
+            ? `${displayText(anchor)} の結果として ${displayText(node)} を追加`
+            : (isSttDiagram()
+              ? `${displayText(anchor)} の参照先として ${displayText(node)} を追加`
+              : `${displayText(anchor)} の接続先として ${displayText(node)} を追加`));
         } else if (plan.mode === "upstream") {
-          setStatus(isSttDiagram()
-            ? `${displayText(anchor)} の参照元として ${displayText(node)} を追加`
-            : `${displayText(anchor)} の接続元として ${displayText(node)} を追加`);
+          setStatus(isCrtDiagram()
+            ? `${displayText(anchor)} の原因として ${displayText(node)} を追加`
+            : (isSttDiagram()
+              ? `${displayText(anchor)} の参照元として ${displayText(node)} を追加`
+              : `${displayText(anchor)} の接続元として ${displayText(node)} を追加`));
         } else {
-          setStatus(isSttDiagram()
-            ? `${displayText(plan.target)} を参照する同階層項目として ${displayText(node)} を追加`
-            : `${displayText(plan.target)} への並列入力として ${displayText(node)} を追加`);
+          setStatus(isCrtDiagram()
+            ? `${displayText(plan.target)} の原因として ${displayText(node)} を追加`
+            : (isSttDiagram()
+              ? `${displayText(plan.target)} を参照する同階層項目として ${displayText(node)} を追加`
+              : `${displayText(plan.target)} への並列入力として ${displayText(node)} を追加`));
         }
       }
 
@@ -3602,19 +3983,26 @@
         const node = findNode(anchorId);
         const plan = portPlan(node, side);
         if (!node || !plan.connectable) {
-          setStatus(isSttDiagram() ? "左右のポートは同階層項目の追加に使います" : "上下のポートは並列入力の追加に使います");
+          setStatus(isCrtDiagram()
+            ? "左右のポートは同じ結果への原因追加に使います"
+            : (isSttDiagram() ? "左右のポートは同階層項目の追加に使います" : "上下のポートは並列入力の追加に使います"));
           return;
         }
         state.pendingPort = {
           nodeId: anchorId,
           side,
-          mode: isSttDiagram()
+          mode: isUpwardDiagram()
             ? (side === "top" ? "source" : "target")
             : (side === "right" ? "source" : "target")
         };
         closePalette();
         render();
-        if (isSttDiagram()) {
+        if (isCrtDiagram()) {
+          setStatus(side === "top"
+            ? `${displayText(node)} の結果を選択中`
+            : `${displayText(node)} の原因を選択中`
+          );
+        } else if (isSttDiagram()) {
           setStatus(side === "top"
             ? `${displayText(node)} の参照先を選択中`
             : `${displayText(node)} の参照元を選択中`
@@ -3710,7 +4098,7 @@
         render();
         saveState();
         centerOnGraph();
-        setStatus(isSttDiagram() ? "新しいS&Tを開始" : (isEcDiagram() ? "新しいECを開始" : "新しいPFDを開始"));
+        setStatus(isSttDiagram() ? "新しいS&Tを開始" : (isCrtDiagram() ? "新しいCRTを開始" : (isEcDiagram() ? "新しいECを開始" : "新しいPFDを開始")));
       }
 
       function autoLayout() {
@@ -3719,7 +4107,7 @@
           autoLayoutEc();
           return;
         }
-        if (isSttDiagram()) {
+        if (isUpwardDiagram()) {
           autoLayoutStt();
           return;
         }
@@ -3869,6 +4257,7 @@
           if (!source || !target || source.id === target.id || !isValidConnection(source.id, target.id)) return false;
           edge.fromSide = "top";
           edge.toSide = "bottom";
+          if (isCrtDiagram()) edge.and = normalizeCrtAnd(edge.and);
           return true;
         });
 
@@ -3949,15 +4338,15 @@
       }
 
       function gridSpacingX() {
-        return isSttDiagram()
-          ? (state.viewMode === "detail" ? 460 : 320)
-          : GRID_X;
+        if (isSttDiagram()) return state.viewMode === "detail" ? 460 : 320;
+        if (isCrtDiagram()) return state.viewMode === "detail" ? 360 : 300;
+        return GRID_X;
       }
 
       function gridSpacingY() {
-        return isSttDiagram()
-          ? (state.viewMode === "detail" ? 360 : 220)
-          : GRID_Y;
+        if (isSttDiagram()) return state.viewMode === "detail" ? 360 : 220;
+        if (isCrtDiagram()) return state.viewMode === "detail" ? 250 : 210;
+        return GRID_Y;
       }
 
       function sttLayerYPositions(layerKeys, groups) {
@@ -3979,6 +4368,7 @@
       }
 
       function sttLayerGap() {
+        if (isCrtDiagram()) return state.viewMode === "detail" ? 92 : 74;
         return state.viewMode === "detail" ? 92 : 70;
       }
 
@@ -4139,6 +4529,7 @@
           const el = document.createElement("div");
           el.className = `node ${node.type}`;
           if (isEcNode(node) && node.ecKind) el.classList.add(node.ecKind);
+          if (isCrtNode(node)) applyCrtNodeColor(el, node.color);
           if (state.viewMode === "detail") {
             el.classList.add("detail-mode");
           }
@@ -4166,6 +4557,8 @@
           } else {
             if (isSttNode(node)) {
               el.append(renderSttNodeContent(node));
+            } else if (isCrtNode(node)) {
+              el.append(renderCrtNodeContent(node));
             } else if (isEcNode(node)) {
               el.append(renderEcNodeContent(node));
             } else {
@@ -4222,6 +4615,27 @@
         return wrapper;
       }
 
+      function applyCrtNodeColor(el, colorId) {
+        const color = crtColorDefinition(colorId);
+        el.style.setProperty("--crt-bg", color.bg);
+        el.style.setProperty("--crt-border", color.border);
+        el.style.setProperty("--crt-accent", color.accent);
+      }
+
+      function renderCrtNodeContent(node) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "crt-card";
+        const value = (node.text || "").trim();
+        wrapper.innerHTML = `
+          <div class="crt-card-label">
+            <span class="crt-card-swatch"></span>
+            <span>CRT</span>
+          </div>
+          <div class="crt-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+        `;
+        return wrapper;
+      }
+
       function renderEcNodeContent(node) {
         const def = ecDefinition(node);
         const wrapper = document.createElement("div");
@@ -4238,6 +4652,7 @@
       }
 
       function renderNodeDetailBadges(el, node) {
+        if (isCrtNode(node)) return;
         if (isEcNode(node)) return;
         if (isSttNode(node)) return;
         const statuses = normalizeStatuses(node.statuses);
@@ -4314,6 +4729,9 @@
         [...edgesSvg.querySelectorAll(".edge-dynamic, .edge-hit")].forEach(el => el.remove());
         edgeControlLayer.innerHTML = "";
         const criticalEdges = state.viewMode === "detail" ? criticalPathEdgeIds() : new Set();
+        const crtAnd = isCrtDiagram() ? crtAndGroups() : { groups: [], edgeToGroup: new Map() };
+        const renderedAndOutputs = new Set();
+        renderCrtAndNodes(crtAnd.groups);
         state.edges.forEach(edge => {
           const from = findNode(edge.from);
           const to = findNode(edge.to);
@@ -4321,7 +4739,10 @@
           const selected = state.selected?.type === "edge" && state.selected.id === edge.id;
           const critical = criticalEdges.has(edge.id);
           const conflict = edge.kind === "conflict";
-          const d = conflict ? conflictPath(from, to, edge.fromSide, edge.toSide) : edgePath(from, to, edge.fromSide, edge.toSide);
+          const andGroup = crtAnd.edgeToGroup.get(edge.id);
+          const targetNode = andGroup || to;
+          const targetSide = andGroup ? "bottom" : edge.toSide;
+          const d = conflict ? conflictPath(from, to, edge.fromSide, edge.toSide) : edgePath(from, targetNode, edge.fromSide, targetSide);
 
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${conflict ? " conflict" : ""}${selected ? " selected" : ""}`);
@@ -4330,6 +4751,19 @@
             path.setAttribute("marker-end", critical ? "url(#arrow-critical)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"));
           }
           edgesSvg.append(path);
+
+          if (andGroup) {
+            const outputKey = `${andGroup.key}->${to.id}`;
+            if (!renderedAndOutputs.has(outputKey)) {
+              renderedAndOutputs.add(outputKey);
+              const groupSelected = andGroup.edges.some(groupEdge => state.selected?.type === "edge" && state.selected.id === groupEdge.id);
+              const outputPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              outputPath.setAttribute("class", `edge edge-dynamic crt-and-output${groupSelected ? " selected" : ""}`);
+              outputPath.setAttribute("d", edgePath(andGroup, to, "top", "bottom"));
+              outputPath.setAttribute("marker-end", groupSelected ? "url(#arrow-selected)" : "url(#arrow)");
+              edgesSvg.append(outputPath);
+            }
+          }
 
           if (isEcDiagram()) return;
 
@@ -4343,28 +4777,165 @@
           });
           edgesSvg.append(hit);
 
-          const midpoint = edgeMidpoint(from, to, edge.fromSide, edge.toSide);
+          const midpoint = edgeMidpoint(from, targetNode, edge.fromSide, targetSide);
           const handle = document.createElement("button");
           handle.className = `edge-handle${selected ? " selected" : ""}`;
           handle.type = "button";
           handle.dataset.edgeId = edge.id;
           handle.style.left = `${midpoint.x}px`;
           handle.style.top = `${midpoint.y}px`;
-          handle.title = selected ? "接続を削除" : "接続を選択";
-          handle.setAttribute("aria-label", selected ? "接続を削除" : "接続を選択");
+          handle.title = selected ? (isCrtDiagram() ? "AND条件を設定" : "接続を削除") : "接続を選択";
+          handle.setAttribute("aria-label", selected ? (isCrtDiagram() ? "AND条件を設定" : "接続を削除") : "接続を選択");
           handle.innerHTML = selected
-            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path></svg>`
+            ? (isCrtDiagram()
+              ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h16"></path><path d="M4 16h16"></path><circle cx="9" cy="8" r="2"></circle><circle cx="15" cy="16" r="2"></circle></svg>`
+              : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path></svg>`)
             : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`;
           handle.addEventListener("click", event => {
             event.stopPropagation();
             if (state.selected?.type === "edge" && state.selected.id === edge.id) {
-              deleteSelection();
+              if (isCrtDiagram()) {
+                selectEdge(edge.id);
+              } else {
+                deleteSelection();
+              }
             } else {
               selectEdge(edge.id);
             }
           });
           edgeControlLayer.append(handle);
+          if (selected && isCrtDiagram()) {
+            renderCrtAndEditor(edge, midpoint);
+          }
         });
+      }
+
+      function renderCrtAndNodes(groups) {
+        groups.forEach(group => {
+          const el = document.createElement("div");
+          el.className = "crt-and-node";
+          el.style.left = `${group.x}px`;
+          el.style.top = `${group.y}px`;
+          el.textContent = `AND${group.andId}`;
+          edgeControlLayer.append(el);
+        });
+      }
+
+      function renderCrtAndEditor(edge, midpoint) {
+        const editor = document.createElement("div");
+        editor.className = "crt-and-editor";
+        editor.style.left = `${midpoint.x}px`;
+        editor.style.top = `${midpoint.y}px`;
+        editor.innerHTML = `
+          <select class="crt-and-select" data-crt-and-edge="${escapeAttribute(edge.id)}" aria-label="AND条件">
+            ${crtAndOptions(edge.and).map(option => `<option value="${escapeAttribute(option.value)}"${option.selected ? " selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
+          </select>
+          <button class="crt-edge-delete" type="button" data-crt-edge-delete="${escapeAttribute(edge.id)}" title="接続を削除" aria-label="接続を削除">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path></svg>
+          </button>
+        `;
+        editor.querySelector("[data-crt-and-edge]")?.addEventListener("change", event => {
+          event.stopPropagation();
+          setCrtEdgeAnd(edge.id, event.target.value);
+        });
+        editor.querySelector("[data-crt-edge-delete]")?.addEventListener("click", event => {
+          event.stopPropagation();
+          deleteSelection();
+        });
+        edgeControlLayer.append(editor);
+      }
+
+      function crtAndGroups() {
+        const groups = new Map();
+        const edgeToGroup = new Map();
+        state.edges.forEach(edge => {
+          const andId = normalizeCrtAnd(edge.and);
+          if (andId === "None") return;
+          const source = findNode(edge.from);
+          const target = findNode(edge.to);
+          if (!source || !target || !isCrtNode(source) || !isCrtNode(target)) return;
+          const key = andId;
+          if (!groups.has(key)) {
+            groups.set(key, {
+              id: `crt-and-${andId}`,
+              type: "crtAnd",
+              key,
+              andId,
+              targets: new Map(),
+              edges: [],
+              x: 0,
+              y: 0
+            });
+          }
+          const group = groups.get(key);
+          group.edges.push(edge);
+          group.targets.set(target.id, target);
+          edgeToGroup.set(edge.id, group);
+        });
+
+        groups.forEach(group => {
+          const sources = group.edges
+            .map(edge => findNode(edge.from))
+            .filter(Boolean);
+          const targets = [...group.targets.values()];
+          const sourceAverageX = sources.reduce((sum, node) => sum + node.x, 0) / Math.max(1, sources.length);
+          const sourceAverageY = sources.reduce((sum, node) => sum + node.y, 0) / Math.max(1, sources.length);
+          const targetAverageX = targets.reduce((sum, node) => sum + node.x, 0) / Math.max(1, targets.length);
+          const targetAverageY = targets.reduce((sum, node) => sum + node.y, 0) / Math.max(1, targets.length);
+          group.x = Math.round((sourceAverageX * 0.62 + targetAverageX * 0.38) * 10) / 10;
+          group.y = Math.round(((sourceAverageY + targetAverageY) / 2) * 10) / 10;
+        });
+
+        return {
+          groups: [...groups.values()],
+          edgeToGroup
+        };
+      }
+
+      function crtAndIds() {
+        return [...new Set(state.edges
+          .map(edge => normalizeCrtAnd(edge.and))
+          .filter(id => id !== "None"))]
+          .sort((left, right) => {
+            const leftNumber = Number(left);
+            const rightNumber = Number(right);
+            if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber)) return leftNumber - rightNumber;
+            return left.localeCompare(right, "ja");
+          });
+      }
+
+      function nextCrtAndId() {
+        const existing = new Set(crtAndIds());
+        for (let index = 1; index < 100; index += 1) {
+          const id = String(index);
+          if (!existing.has(id)) return id;
+        }
+        return String(existing.size + 1);
+      }
+
+      function crtAndOptions(currentValue) {
+        const current = normalizeCrtAnd(currentValue);
+        const ids = crtAndIds();
+        if (current !== "None" && !ids.includes(current)) ids.push(current);
+        return [
+          { value: "None", label: "ANDなし", selected: current === "None" },
+          ...ids.map(id => ({ value: id, label: `AND${id}`, selected: current === id })),
+          { value: "__new__", label: "新しいAND", selected: false }
+        ];
+      }
+
+      function setCrtEdgeAnd(edgeId, value) {
+        const edge = findEdge(edgeId);
+        if (!edge || !isCrtDiagram()) return;
+        const nextValue = value === "__new__" ? nextCrtAndId() : normalizeCrtAnd(value);
+        if (normalizeCrtAnd(edge.and) === nextValue) return;
+        recordHistory();
+        edge.and = nextValue;
+        state.selected = { type: "edge", id: edge.id };
+        autoLayout();
+        render();
+        saveState();
+        setStatus(nextValue === "None" ? "AND条件を解除しました" : `AND${nextValue}を設定しました`);
       }
 
       function selectEdge(edgeId) {
@@ -4377,7 +4948,7 @@
         state.detailEditingNodeId = null;
         closePalette();
         render();
-        setStatus("接続を選択しました。削除ボタンまたはDeleteキーで消せます");
+        setStatus(isCrtDiagram() ? "接続を選択しました。AND条件を設定できます" : "接続を選択しました。削除ボタンまたはDeleteキーで消せます");
       }
 
       function renderGhostEdge() {
@@ -4409,6 +4980,12 @@
         if (node.type === "stt") {
           return estimateSttNodeSize(node);
         }
+        if (node.type === "crt") {
+          return estimateCrtNodeSize(node);
+        }
+        if (node.type === "crtAnd") {
+          return { width: 58, height: 34 };
+        }
         if (node.type === "ec") {
           return estimateEcNodeSize(node);
         }
@@ -4431,6 +5008,19 @@
         return {
           width,
           height: Math.ceil(Math.max(minHeight, 46 + contentHeight))
+        };
+      }
+
+      function estimateCrtNodeSize(node) {
+        const width = 238;
+        const minHeight = 108;
+        const textSize = normalizeNodeTextSize(state.nodeTextSize);
+        const charsPerLine = Math.max(8, Math.floor((width - 38) / (textSize * .86)));
+        const lines = estimateWrappedLines(node.text || "CRTエンティティ", charsPerLine);
+        const contentHeight = lines * Math.max(17, textSize * 1.3);
+        return {
+          width,
+          height: Math.ceil(Math.max(minHeight, 48 + contentHeight))
         };
       }
 
@@ -4473,6 +5063,8 @@
       }
 
       function edgePath(from, to, fromSide, toSide) {
+        const escaped = escapedRoutePoints(from, to, fromSide, toSide);
+        if (escaped) return roundedPolylinePath(escaped, 24);
         return cubicPath(portPoint(from, fromSide), portPoint(to, toSide), fromSide, toSide);
       }
 
@@ -4495,22 +5087,322 @@
       }
 
       function edgeMidpoint(from, to, fromSide, toSide) {
+        const escaped = escapedRoutePoints(from, to, fromSide, toSide);
+        if (escaped) return polylineMidpoint(escaped);
         const start = portPoint(from, fromSide);
         const end = portPoint(to, toSide);
-        const sourceDir = DIRS[fromSide];
-        const targetDir = DIRS[toSide];
-        const dx = Math.abs(end.x - start.x);
-        const dy = Math.abs(end.y - start.y);
-        const distance = Math.max(70, Math.min(170, Math.max(dx, dy) * .52));
-        const c1 = {
-          x: start.x + sourceDir.x * distance,
-          y: start.y + sourceDir.y * distance
-        };
-        const c2 = {
-          x: end.x + targetDir.x * distance,
-          y: end.y + targetDir.y * distance
-        };
+        const { c1, c2 } = cubicControlPoints(start, end, fromSide, toSide);
         return cubicPoint(start, c1, c2, end, .5);
+      }
+
+      function escapedRoutePoints(from, to, fromSide, toSide) {
+        const start = portPoint(from, fromSide);
+        const end = portPoint(to, toSide);
+        if (!shouldEscapeRoute(from, to, fromSide, toSide, start, end)) return null;
+        return orthogonalRoutePoints(from, to, fromSide, toSide);
+      }
+
+      function shouldEscapeRoute(from, to, fromSide, toSide, start, end) {
+        const verticalBacktrack = fromSide === "top" && toSide === "bottom" && start.y <= end.y;
+        const horizontalBacktrack = fromSide === "right" && toSide === "left" && start.x >= end.x;
+        if (verticalBacktrack || horizontalBacktrack) return true;
+        return routeObstacles(from, to)
+          .filter(rect => rect.role === "obstacle")
+          .some(rect => segmentIntersectsRect(start, end, rect));
+      }
+
+      function orthogonalRoutePoints(from, to, fromSide, toSide) {
+        const start = portPoint(from, fromSide);
+        const end = portPoint(to, toSide);
+        const sourceDir = DIRS[fromSide] || { x: 0, y: 0 };
+        const targetDir = DIRS[toSide] || { x: 0, y: 0 };
+        const stub = 34;
+        const startExit = {
+          x: start.x + sourceDir.x * stub,
+          y: start.y + sourceDir.y * stub
+        };
+        const endExit = {
+          x: end.x + targetDir.x * stub,
+          y: end.y + targetDir.y * stub
+        };
+        const obstacles = routeObstacles(from, to);
+        const candidates = orthogonalRouteCandidates(start, startExit, endExit, end, fromSide, toSide, obstacles)
+          .map(dedupeRoutePoints)
+          .map(points => ({
+            points,
+            score: routeScore(points, obstacles)
+          }))
+          .sort((left, right) => left.score - right.score);
+        return candidates[0]?.points || [start, end];
+      }
+
+      function orthogonalRouteCandidates(start, startExit, endExit, end, fromSide, toSide, obstacles) {
+        const routes = [];
+        const fromVertical = Math.abs((DIRS[fromSide] || {}).y || 0) > 0;
+        const toVertical = Math.abs((DIRS[toSide] || {}).y || 0) > 0;
+        const laneGap = 82;
+        const obstacleGap = 34;
+        const minX = Math.min(startExit.x, endExit.x);
+        const maxX = Math.max(startExit.x, endExit.x);
+        const minY = Math.min(startExit.y, endExit.y);
+        const maxY = Math.max(startExit.y, endExit.y);
+        const midX = (startExit.x + endExit.x) / 2;
+        const midY = (startExit.y + endExit.y) / 2;
+        const laneXs = [midX, minX - laneGap, maxX + laneGap];
+        const laneYs = [midY, minY - laneGap, maxY + laneGap];
+        const verticalBacktrack = fromSide === "top" && toSide === "bottom" && start.y <= end.y;
+        const horizontalBacktrack = fromSide === "right" && toSide === "left" && start.x >= end.x;
+
+        obstacles.forEach(rect => {
+          if (intervalsOverlap(minX, maxX, rect.left, rect.right)) {
+            laneYs.push(rect.top - obstacleGap, rect.bottom + obstacleGap);
+          }
+          if (intervalsOverlap(minY, maxY, rect.top, rect.bottom)) {
+            laneXs.push(rect.left - obstacleGap, rect.right + obstacleGap);
+          }
+        });
+
+        const xLanes = uniqueNumbers(laneXs).sort((left, right) => Math.abs(left - midX) - Math.abs(right - midX));
+        const yLanes = uniqueNumbers(laneYs).sort((left, right) => Math.abs(left - midY) - Math.abs(right - midY));
+
+        if (verticalBacktrack) {
+          return sideLoopRouteCandidates(start, startExit, endExit, end, obstacles, "vertical");
+        }
+
+        if (horizontalBacktrack) {
+          return sideLoopRouteCandidates(start, startExit, endExit, end, obstacles, "horizontal");
+        }
+
+        if (fromVertical && toVertical) {
+          yLanes.forEach(y => {
+            routes.push([start, startExit, { x: startExit.x, y }, { x: endExit.x, y }, endExit, end]);
+          });
+          xLanes.forEach(x => {
+            routes.push([start, startExit, { x, y: startExit.y }, { x, y: endExit.y }, endExit, end]);
+          });
+          return routes;
+        }
+
+        if (!fromVertical && !toVertical) {
+          xLanes.forEach(x => {
+            routes.push([start, startExit, { x, y: startExit.y }, { x, y: endExit.y }, endExit, end]);
+          });
+          yLanes.forEach(y => {
+            routes.push([start, startExit, { x: startExit.x, y }, { x: endExit.x, y }, endExit, end]);
+          });
+          return routes;
+        }
+
+        routes.push([start, startExit, { x: endExit.x, y: startExit.y }, endExit, end]);
+        routes.push([start, startExit, { x: startExit.x, y: endExit.y }, endExit, end]);
+        yLanes.forEach(y => {
+          routes.push([start, startExit, { x: startExit.x, y }, { x: endExit.x, y }, endExit, end]);
+        });
+        xLanes.forEach(x => {
+          routes.push([start, startExit, { x, y: startExit.y }, { x, y: endExit.y }, endExit, end]);
+        });
+        return routes;
+      }
+
+      function sideLoopRouteCandidates(start, startExit, endExit, end, obstacles, axis) {
+        const padding = 84;
+        const routes = [];
+        if (axis === "vertical") {
+          const spanTop = Math.min(start.y, startExit.y, endExit.y, end.y);
+          const spanBottom = Math.max(start.y, startExit.y, endExit.y, end.y);
+          const relevant = obstacles.filter(rect => intervalsOverlap(spanTop, spanBottom, rect.top, rect.bottom));
+          const left = Math.min(start.x, end.x, ...relevant.map(rect => rect.left)) - padding;
+          const right = Math.max(start.x, end.x, ...relevant.map(rect => rect.right)) + padding;
+          [right, left].forEach(x => {
+            routes.push([start, startExit, { x, y: startExit.y }, { x, y: endExit.y }, endExit, end]);
+          });
+          return routes;
+        }
+
+        const spanLeft = Math.min(start.x, startExit.x, endExit.x, end.x);
+        const spanRight = Math.max(start.x, startExit.x, endExit.x, end.x);
+        const relevant = obstacles.filter(rect => intervalsOverlap(spanLeft, spanRight, rect.left, rect.right));
+        const top = Math.min(start.y, end.y, ...relevant.map(rect => rect.top)) - padding;
+        const bottom = Math.max(start.y, end.y, ...relevant.map(rect => rect.bottom)) + padding;
+        [bottom, top].forEach(y => {
+          routes.push([start, startExit, { x: startExit.x, y }, { x: endExit.x, y }, endExit, end]);
+        });
+        return routes;
+      }
+
+      function routeObstacles(from, to) {
+        const endpoints = new Set([from?.id, to?.id].filter(Boolean));
+        const obstacles = visibleNodes()
+          .filter(node => !endpoints.has(node.id))
+          .map(node => ({ ...nodeRect(node, 22), role: "obstacle" }));
+        if (from) obstacles.push({ ...nodeRect(from, 12), role: "source" });
+        if (to) obstacles.push({ ...nodeRect(to, 12), role: "target" });
+        return obstacles;
+      }
+
+      function nodeRect(node, padding = 0) {
+        const { width, height } = nodeSize(node);
+        return {
+          left: node.x - width / 2 - padding,
+          right: node.x + width / 2 + padding,
+          top: node.y - height / 2 - padding,
+          bottom: node.y + height / 2 + padding
+        };
+      }
+
+      function routeScore(points, obstacles) {
+        let length = 0;
+        let bends = 0;
+        let collisions = 0;
+        for (let index = 1; index < points.length; index += 1) {
+          const previous = points[index - 1];
+          const current = points[index];
+          length += Math.abs(current.x - previous.x) + Math.abs(current.y - previous.y);
+          collisions += obstacles.filter(rect => {
+            if (rect.role === "source" && index === 1) return false;
+            if (rect.role === "target" && index === points.length - 1) return false;
+            return segmentIntersectsRect(previous, current, rect);
+          }).length;
+          if (index >= 2) {
+            const before = points[index - 2];
+            const firstHorizontal = Math.abs(previous.y - before.y) < .1;
+            const secondHorizontal = Math.abs(current.y - previous.y) < .1;
+            if (firstHorizontal !== secondHorizontal) bends += 1;
+          }
+        }
+        return length + bends * 18 + collisions * 100000;
+      }
+
+      function segmentIntersectsRect(start, end, rect) {
+        const horizontal = Math.abs(start.y - end.y) < .1;
+        const vertical = Math.abs(start.x - end.x) < .1;
+        if (horizontal) {
+          const minX = Math.min(start.x, end.x);
+          const maxX = Math.max(start.x, end.x);
+          return start.y >= rect.top && start.y <= rect.bottom && intervalsOverlap(minX, maxX, rect.left, rect.right);
+        }
+        if (vertical) {
+          const minY = Math.min(start.y, end.y);
+          const maxY = Math.max(start.y, end.y);
+          return start.x >= rect.left && start.x <= rect.right && intervalsOverlap(minY, maxY, rect.top, rect.bottom);
+        }
+        const minX = Math.min(start.x, end.x);
+        const maxX = Math.max(start.x, end.x);
+        const minY = Math.min(start.y, end.y);
+        const maxY = Math.max(start.y, end.y);
+        return intervalsOverlap(minX, maxX, rect.left, rect.right) && intervalsOverlap(minY, maxY, rect.top, rect.bottom);
+      }
+
+      function intervalsOverlap(firstStart, firstEnd, secondStart, secondEnd) {
+        return Math.max(firstStart, secondStart) <= Math.min(firstEnd, secondEnd);
+      }
+
+      function uniqueNumbers(values) {
+        const seen = new Set();
+        return values.filter(value => {
+          const key = Math.round(value * 10) / 10;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+
+      function dedupeRoutePoints(points) {
+        const filtered = [];
+        points.forEach(point => {
+          const next = {
+            x: Math.round(point.x * 10) / 10,
+            y: Math.round(point.y * 10) / 10
+          };
+          const last = filtered[filtered.length - 1];
+          if (!last || Math.abs(last.x - next.x) > .1 || Math.abs(last.y - next.y) > .1) {
+            filtered.push(next);
+          }
+        });
+
+        const compact = [];
+        filtered.forEach(point => {
+          compact.push(point);
+          while (compact.length >= 3) {
+            const start = compact[compact.length - 3];
+            const middle = compact[compact.length - 2];
+            const end = compact[compact.length - 1];
+            const sameX = Math.abs(start.x - middle.x) < .1 && Math.abs(middle.x - end.x) < .1;
+            const sameY = Math.abs(start.y - middle.y) < .1 && Math.abs(middle.y - end.y) < .1;
+            if (!sameX && !sameY) break;
+            compact.splice(compact.length - 2, 1);
+          }
+        });
+        return compact;
+      }
+
+      function polylinePath(points) {
+        return points.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
+      }
+
+      function roundedPolylinePath(points, radius = 20) {
+        const route = dedupeRoutePoints(points);
+        if (route.length <= 2) return polylinePath(route);
+        let d = `M ${route[0].x} ${route[0].y}`;
+        for (let index = 1; index < route.length - 1; index += 1) {
+          const previous = route[index - 1];
+          const current = route[index];
+          const next = route[index + 1];
+          const incoming = {
+            x: current.x - previous.x,
+            y: current.y - previous.y
+          };
+          const outgoing = {
+            x: next.x - current.x,
+            y: next.y - current.y
+          };
+          const incomingLength = Math.hypot(incoming.x, incoming.y);
+          const outgoingLength = Math.hypot(outgoing.x, outgoing.y);
+          const cornerRadius = Math.min(radius, incomingLength / 2, outgoingLength / 2);
+          if (cornerRadius < 1) {
+            d += ` L ${current.x} ${current.y}`;
+            continue;
+          }
+          const before = {
+            x: current.x - incoming.x / incomingLength * cornerRadius,
+            y: current.y - incoming.y / incomingLength * cornerRadius
+          };
+          const after = {
+            x: current.x + outgoing.x / outgoingLength * cornerRadius,
+            y: current.y + outgoing.y / outgoingLength * cornerRadius
+          };
+          d += ` L ${roundPoint(before.x)} ${roundPoint(before.y)} Q ${current.x} ${current.y} ${roundPoint(after.x)} ${roundPoint(after.y)}`;
+        }
+        const last = route[route.length - 1];
+        return `${d} L ${last.x} ${last.y}`;
+      }
+
+      function roundPoint(value) {
+        return Math.round(value * 10) / 10;
+      }
+
+      function polylineMidpoint(points) {
+        const total = points.slice(1).reduce((sum, point, index) => {
+          const previous = points[index];
+          return sum + Math.abs(point.x - previous.x) + Math.abs(point.y - previous.y);
+        }, 0);
+        if (!total) return points[0] || { x: 0, y: 0 };
+        const target = total / 2;
+        let distance = 0;
+        for (let index = 1; index < points.length; index += 1) {
+          const start = points[index - 1];
+          const end = points[index];
+          const segmentLength = Math.abs(end.x - start.x) + Math.abs(end.y - start.y);
+          if (distance + segmentLength >= target) {
+            const ratio = segmentLength ? (target - distance) / segmentLength : 0;
+            return {
+              x: start.x + (end.x - start.x) * ratio,
+              y: start.y + (end.y - start.y) * ratio
+            };
+          }
+          distance += segmentLength;
+        }
+        return points[points.length - 1] || { x: 0, y: 0 };
       }
 
       function cubicPoint(p0, p1, p2, p3, t) {
@@ -4522,11 +5414,16 @@
       }
 
       function cubicPath(start, end, fromSide, toSide) {
-        const sourceDir = DIRS[fromSide];
-        const targetDir = DIRS[toSide];
+        const { c1, c2 } = cubicControlPoints(start, end, fromSide, toSide);
+        return `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
+      }
+
+      function cubicControlPoints(start, end, fromSide, toSide) {
+        const sourceDir = DIRS[fromSide] || { x: 0, y: 0 };
+        const targetDir = DIRS[toSide] || { x: 0, y: 0 };
         const dx = Math.abs(end.x - start.x);
         const dy = Math.abs(end.y - start.y);
-        const distance = Math.max(70, Math.min(170, Math.max(dx, dy) * .52));
+        const distance = Math.max(26, Math.min(82, Math.max(dx, dy) * .22));
         const c1 = {
           x: start.x + sourceDir.x * distance,
           y: start.y + sourceDir.y * distance
@@ -4535,7 +5432,7 @@
           x: end.x + targetDir.x * distance,
           y: end.y + targetDir.y * distance
         };
-        return `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
+        return { c1, c2 };
       }
 
       function showPalette(nodeId, side) {
@@ -4556,10 +5453,10 @@
         palette.dataset.side = side;
         palette.style.left = `${Math.min(Math.max(client.x - viewportRect.left, 58), viewportRect.width - 58)}px`;
         palette.style.top = `${Math.min(Math.max(client.y - viewportRect.top, 50), viewportRect.height - 50)}px`;
-        palette.innerHTML = isSttDiagram()
+        palette.innerHTML = isUpwardDiagram()
           ? `
-            <button class="mini-button" data-action="stt" title="S&T項目を作成" aria-label="S&T項目を作成">
-              <span class="shape-icon stt" aria-hidden="true"></span>
+            <button class="mini-button" data-action="${isCrtDiagram() ? "crt" : "stt"}" title="${isCrtDiagram() ? "CRTエンティティを作成" : "S&T項目を作成"}" aria-label="${isCrtDiagram() ? "CRTエンティティを作成" : "S&T項目を作成"}">
+              <span class="shape-icon ${isCrtDiagram() ? "crt" : "stt"}" aria-hidden="true"></span>
             </button>
             <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -4585,6 +5482,7 @@
         const artifactButton = palette.querySelector('[data-action="artifact"]');
         const processButton = palette.querySelector('[data-action="process"]');
         const sttButton = palette.querySelector('[data-action="stt"]');
+        const crtButton = palette.querySelector('[data-action="crt"]');
         const connectButton = palette.querySelector('[data-action="connect"]');
         if (artifactButton) {
           artifactButton.disabled = plan.validType !== "artifact";
@@ -4598,10 +5496,14 @@
           sttButton.disabled = plan.validType !== "stt";
           sttButton.title = sttButton.disabled ? "この接続ではS&T項目を選べません" : "S&T項目を作成";
         }
+        if (crtButton) {
+          crtButton.disabled = plan.validType !== "crt";
+          crtButton.title = crtButton.disabled ? "この接続ではCRTエンティティを選べません" : "CRTエンティティを作成";
+        }
         connectButton.disabled = !plan.connectable;
         connectButton.title = plan.connectable
           ? "既存のオブジェクトへ接続"
-          : (isSttDiagram() ? "左右は同階層項目の追加専用です" : "上下は並列入力の追加専用です");
+          : (isCrtDiagram() ? "左右は同じ結果への原因追加専用です" : (isSttDiagram() ? "左右は同階層項目の追加専用です" : "上下は並列入力の追加専用です"));
         viewport.append(palette);
         state.palette = palette;
       }
@@ -4669,6 +5571,7 @@
       function startNodeFieldEdit(nodeId, field) {
         const node = findNode(nodeId);
         if (!node || state.viewMode !== "detail") return;
+        if (isCrtNode(node)) return;
         if (isEcNode(node)) return;
         state.selected = { type: "node", id: node.id };
         state.editingNodeId = null;
@@ -4787,7 +5690,7 @@
       }
 
       function linkedCandidatesInDirection(current, direction) {
-        if (isSttDiagram()) {
+        if (isUpwardDiagram()) {
           if (direction === "up") {
             return state.edges
               .filter(edge => edge.from === current.id)
@@ -4840,7 +5743,7 @@
       function renderDetailPanel() {
         const node = selectedNode();
         if (!node || !isNodeVisibleInCurrentMode(node) || !state.detailVisible) {
-          detailPanel.classList.remove("open", "editing", "stt-detail", "ec-detail");
+          detailPanel.classList.remove("open", "editing", "stt-detail", "crt-detail", "ec-detail");
           return;
         }
 
@@ -4848,11 +5751,12 @@
         const editing = state.detailEditing && state.detailEditingNodeId === node.id;
         detailPanel.classList.toggle("editing", editing);
         detailPanel.classList.toggle("stt-detail", isSttNode(node));
+        detailPanel.classList.toggle("crt-detail", isCrtNode(node));
         detailPanel.classList.toggle("ec-detail", isEcNode(node));
         detailTypeBadge.className = `type-badge ${node.type}`;
         detailTypeBadge.textContent = nodeTypeLabel(node.type);
         detailTitle.textContent = isEcNode(node) ? ecNodeTitle(node) : displayText(node);
-        if (editing && !isEcNode(node)) {
+        if (editing && !isEcNode(node) && !isCrtNode(node)) {
           detailTitle.setAttribute("contenteditable", "true");
           detailTitle.setAttribute("spellcheck", "false");
         } else {
@@ -4860,7 +5764,7 @@
           detailTitle.removeAttribute("spellcheck");
         }
         detailMetaView.innerHTML = renderDetailMeta(node, editing);
-        detailMarkdownView.innerHTML = (isSttNode(node) || isEcNode(node)) ? "" : renderMarkdown(node.detail || "");
+        detailMarkdownView.innerHTML = (isSttNode(node) || isCrtNode(node) || isEcNode(node)) ? "" : renderMarkdown(node.detail || "");
 
         if (editing) {
           detailMarkdownEditor.value = node.detail || "";
@@ -4914,7 +5818,13 @@
         syncDetailEditorFields(node);
         renderDetailPanel();
         requestAnimationFrame(() => {
-          if (isEcNode(node)) {
+          if (isCrtNode(node)) {
+            const target = focusTarget === "color"
+              ? detailMetaView.querySelector("[data-crt-field='color']")
+              : detailMetaView.querySelector("[data-crt-field='text']");
+            target?.focus();
+            if (target?.select) target.select();
+          } else if (isEcNode(node)) {
             const target = detailMetaView.querySelector("[data-ec-field='text']");
             target?.focus();
             target?.select();
@@ -4951,6 +5861,28 @@
       function saveDetailEdit() {
         const node = findNode(state.detailEditingNodeId) || selectedNode();
         if (!node) return;
+        if (isCrtNode(node)) {
+          const nextValues = readCrtDetailValues();
+          if ((node.text || "") === nextValues.text && normalizeCrtColor(node.color) === nextValues.color) {
+            state.detailEditing = false;
+            state.detailEditingNodeId = null;
+            renderDetailPanel();
+            setStatus("詳細は変更されていません");
+            return;
+          }
+          recordHistory();
+          node.text = nextValues.text;
+          node.color = nextValues.color;
+          state.selected = { type: "node", id: node.id };
+          state.detailVisible = true;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          autoLayout();
+          render();
+          saveState();
+          setStatus("CRTエンティティを保存しました");
+          return;
+        }
         if (isEcNode(node)) {
           const nextText = readEcDetailValue();
           if ((node.text || "") === nextText) {
@@ -5067,6 +5999,13 @@
       function updateHint() {
         if (state.pendingPort) {
           const node = findNode(state.pendingPort.nodeId);
+          if (isCrtDiagram()) {
+            setHint(state.pendingPort.mode === "source"
+              ? `${displayText(node)} の結果を選択中。候補は上のポートです。`
+              : `${displayText(node)} の原因を選択中。候補は下のポートです。`
+            );
+            return;
+          }
           if (isSttDiagram()) {
             setHint(state.pendingPort.mode === "source"
               ? `${displayText(node)} の参照先を選択中。候補は下ポートだけです。`
@@ -5082,9 +6021,11 @@
         }
         setHint(isEcDiagram()
           ? "中央クリックで内容を編集、ダブルクリックで詳細欄を開きます。ECの構造は固定です。"
-          : (isSttDiagram()
-            ? "中央クリックでID編集、ダブルクリックでS&T項目の詳細を編集できます。上に参照先、下に参照元を追加します。"
-            : "中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。"));
+          : (isCrtDiagram()
+            ? "中央クリックで課題・状況を編集、ダブルクリックで色や詳細を編集できます。上に結果、下に原因を追加します。"
+            : (isSttDiagram()
+              ? "中央クリックでID編集、ダブルクリックでS&T項目の詳細を編集できます。上に参照先、下に参照元を追加します。"
+              : "中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。")));
       }
 
       function downloadJson() {
@@ -5208,7 +6149,7 @@
           const action = paletteButton.dataset.action;
           const { nodeId, side } = state.palette.dataset;
           if (action === "connect") startConnection(nodeId, side);
-          if (action === "artifact" || action === "process" || action === "stt") addFromPort(nodeId, side, action);
+          if (action === "artifact" || action === "process" || action === "stt" || action === "crt") addFromPort(nodeId, side, action);
           return;
         }
 
@@ -5429,7 +6370,7 @@
 
       viewport.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
-        if (event.target.closest(".node, .port, .mini-palette, button")) return;
+        if (event.target.closest(".node, .port, .mini-palette, .crt-and-editor, button, select")) return;
         panGesture = {
           pointerId: event.pointerId,
           x: event.clientX,
@@ -5474,7 +6415,7 @@
       autoLayout();
       render();
       requestAnimationFrame(centerOnGraph);
-      setStatus(isEcDiagram() ? "ECを開きました" : (isSttDiagram() ? "S&Tを開きました" : "最初の成果物を配置しました"));
+      setStatus(isEcDiagram() ? "ECを開きました" : (isCrtDiagram() ? "CRTを開きました" : (isSttDiagram() ? "S&Tを開きました" : "最初の成果物を配置しました")));
     })();
   </script>
 </body>

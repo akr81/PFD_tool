@@ -405,6 +405,12 @@
       stroke-width: 3.7;
     }
 
+    .edge.conflict {
+      stroke: #c93434;
+      stroke-width: 3.1;
+      stroke-linejoin: miter;
+    }
+
     .edge.critical.selected {
       stroke: #d32832;
       stroke-width: 4.4;
@@ -506,6 +512,37 @@
       border-radius: 999px;
     }
 
+    .node.ec {
+      width: 238px;
+      min-height: 108px;
+      padding: 16px 18px;
+      place-items: stretch;
+      background: linear-gradient(180deg, #f9fbff 0%, #eef4fb 100%);
+      border-color: #5f7ea8;
+      border-radius: 8px;
+      box-shadow: 0 14px 34px rgba(43, 64, 92, .13);
+    }
+
+    .node.ec.assumption {
+      width: 228px;
+      min-height: 96px;
+      padding: 13px 15px;
+      border-color: #c8a340;
+      border-style: dashed;
+      background: linear-gradient(180deg, #fffdf5 0%, #fff7dc 100%);
+      box-shadow: 0 10px 24px rgba(119, 87, 20, .12);
+    }
+
+    .node.ec.action {
+      border-color: #9b625d;
+      background: linear-gradient(180deg, #fffafa 0%, #fbefee 100%);
+    }
+
+    .node.ec.need {
+      border-color: #60835e;
+      background: linear-gradient(180deg, #f9fff8 0%, #eff8ee 100%);
+    }
+
     .node.stt {
       width: 262px;
       min-height: 152px;
@@ -532,6 +569,10 @@
       box-shadow: 0 0 0 5px var(--stt-glow), 0 14px 34px rgba(22, 31, 40, .18);
     }
 
+    .node.ec.selected {
+      box-shadow: 0 0 0 5px rgba(47, 70, 100, .16), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
     .node.pending-connect {
       box-shadow: 0 0 0 6px rgba(23, 123, 132, .2), 0 14px 34px rgba(22, 31, 40, .2);
     }
@@ -547,6 +588,62 @@
       font-size: 14px;
       font-weight: 650;
       pointer-events: none;
+    }
+
+    .ec-card {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .ec-card-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #59667a;
+      font-size: calc(var(--node-text-size, 16px) * .72);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .ec-card-code {
+      display: inline-grid;
+      min-width: calc(var(--node-text-size, 16px) * 1.55);
+      height: calc(var(--node-text-size, 16px) * 1.55);
+      place-items: center;
+      border-radius: 999px;
+      background: #2f4664;
+      color: #fff;
+      font-size: calc(var(--node-text-size, 16px) * .75);
+      flex: 0 0 auto;
+    }
+
+    .node.ec.assumption .ec-card-code {
+      background: #946f12;
+    }
+
+    .ec-card-value {
+      color: #253145;
+      font-size: var(--node-text-size, 16px);
+      font-weight: 750;
+      line-height: 1.28;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .node.ec.assumption .ec-card-value {
+      font-size: calc(var(--node-text-size, 16px) * .9);
+      font-weight: 650;
+    }
+
+    .ec-card-value.empty {
+      color: #7c8792;
+      font-weight: 600;
     }
 
     .node.detail-mode {
@@ -768,6 +865,12 @@
       align-self: center;
       justify-self: center;
       width: min(180px, 100%);
+    }
+
+    .node.ec .title-editor {
+      align-self: center;
+      justify-self: center;
+      width: min(200px, 100%);
     }
 
     .title-input {
@@ -1009,6 +1112,12 @@
       background: #eef5ff;
     }
 
+    .type-badge.ec {
+      border-color: rgba(95, 126, 168, .5);
+      color: #3d5e88;
+      background: #eef4fb;
+    }
+
     .stt-card {
       display: grid;
       gap: 6px;
@@ -1170,7 +1279,8 @@
       margin-top: 12px;
     }
 
-    .detail-panel.stt-detail .detail-edit {
+    .detail-panel.stt-detail .detail-edit,
+    .detail-panel.ec-detail .detail-edit {
       display: none;
     }
 
@@ -1313,6 +1423,60 @@
     }
 
     .stt-detail-textarea:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .ec-detail-field {
+      display: grid;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid #dbe2e7;
+      border-radius: 8px;
+      background: #f7fafb;
+    }
+
+    .ec-detail-field strong {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .ec-detail-question {
+      color: #52606a;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .ec-detail-value {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .ec-detail-value.empty {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .ec-detail-textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 8px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .ec-detail-textarea:focus {
       outline: 3px solid rgba(23, 123, 132, .18);
       border-color: var(--accent);
     }
@@ -1637,6 +1801,7 @@
       <select class="diagram-select" id="diagramTypeSelect" title="図の種類">
         <option value="pfd">PFD</option>
         <option value="stt">S&amp;T</option>
+        <option value="ec">EC</option>
       </select>
     </div>
     <div class="toolbar-group" id="addToolbarGroup" aria-label="追加">
@@ -1900,8 +2065,34 @@
           rootType: "stt",
           rootText: "1",
           filePrefix: "stt-sketch"
+        },
+        ec: {
+          title: "EC Sketch",
+          subtitle: "Evaporating Cloud",
+          rootType: "ec",
+          rootText: "共通目的",
+          filePrefix: "ec-sketch"
         }
       };
+      const EC_NODE_DEFS = [
+        { id: "head", code: "A", kind: "objective", title: "共通目的", question: "共通の目的は何か？", text: "共通目的" },
+        { id: "left_shoulder", code: "B", kind: "need", title: "左側の要望", question: "Aを達成するための目的は何か？", text: "要望" },
+        { id: "right_shoulder", code: "C", kind: "need", title: "右側の要望", question: "Aを達成するためのもう一方の目的は何か？", text: "要望" },
+        { id: "left_hand", code: "D", kind: "action", title: "左側の行動", question: "Bを満たすための行動は何か？", text: "行動" },
+        { id: "right_hand", code: "D'", kind: "action", title: "右側の行動", question: "Cを満たすための対立する行動は何か？", text: "行動" },
+        { id: "left_shoulder_to_head", code: "B→A", kind: "assumption", title: "仮定", question: "BがAに必要だと言える仮定・前提条件は何か？", text: "仮定" },
+        { id: "right_shoulder_to_head", code: "C→A", kind: "assumption", title: "仮定", question: "CがAに必要だと言える仮定・前提条件は何か？", text: "仮定" },
+        { id: "left_hand_to_shoulder", code: "D→B", kind: "assumption", title: "仮定", question: "DがBに必要だと言える仮定・前提条件は何か？", text: "仮定" },
+        { id: "right_hand_to_shoulder", code: "D'→C", kind: "assumption", title: "仮定", question: "D'がCに必要だと言える仮定・前提条件は何か？", text: "仮定" }
+      ];
+      const EC_NODE_DEF_BY_ID = new Map(EC_NODE_DEFS.map(def => [def.id, def]));
+      const EC_EDGE_DEFS = [
+        { id: "edge-left-hand-shoulder", from: "left_hand", to: "left_shoulder", fromSide: "top", toSide: "bottom" },
+        { id: "edge-left-shoulder-head", from: "left_shoulder", to: "head", fromSide: "top", toSide: "left" },
+        { id: "edge-right-hand-shoulder", from: "right_hand", to: "right_shoulder", fromSide: "top", toSide: "bottom" },
+        { id: "edge-right-shoulder-head", from: "right_shoulder", to: "head", fromSide: "top", toSide: "right" },
+        { id: "edge-conflict", from: "left_hand", to: "right_hand", fromSide: "right", toSide: "left", kind: "conflict" }
+      ];
       const STT_FIELDS = [
         { key: "necessaryAssumption", label: "必要条件仮定", shortLabel: "必要", legacy: "necessary_assumption" },
         { key: "strategy", label: "戦略", shortLabel: "戦略", legacy: "strategy" },
@@ -1995,6 +2186,18 @@
 
       function makeInitialState(diagramType = state.diagramType || "pfd") {
         state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
+        if (state.diagramType === "ec") {
+          state.nodes = makeInitialEcNodes();
+          state.edges = makeEcEdges();
+          state.selected = { type: "node", id: "head" };
+          state.pendingPort = null;
+          state.editingNodeField = null;
+          state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
+          state.detailVisible = false;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          return;
+        }
         const config = DIAGRAM_TYPES[state.diagramType];
         const root = {
           id: freshId("node"),
@@ -2021,6 +2224,28 @@
         state.detailEditingNodeId = null;
       }
 
+      function makeInitialEcNodes() {
+        return EC_NODE_DEFS.map(def => ({
+          id: def.id,
+          type: "ec",
+          text: def.text,
+          detail: "",
+          estimate: "",
+          owner: "",
+          statuses: [],
+          ecRole: def.id,
+          ecKind: def.kind,
+          x: 0,
+          y: 0,
+          gridX: 0,
+          gridY: 0
+        }));
+      }
+
+      function makeEcEdges() {
+        return EC_EDGE_DEFS.map(edge => ({ ...edge }));
+      }
+
       function normalizeGraphData(parsed) {
         if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges) || !parsed.nodes.length) {
           throw new Error("JSONとして読み込めませんでした。");
@@ -2029,7 +2254,12 @@
         const hasSttFields = parsed.nodes.some(node =>
           STT_FIELDS.some(field => field.key in node || field.legacy in node || field.key in (node.stt || {}))
         );
-        const diagramType = parsed.diagramType === "stt" || hasSttFields ? "stt" : "pfd";
+        const ecIds = new Set(parsed.nodes.map(node => String(node.unique_id || node.uid || node.id || "")));
+        const hasEcShape = ["head", "left_shoulder", "right_shoulder", "left_hand", "right_hand"].every(id => ecIds.has(id));
+        const diagramType = parsed.diagramType === "ec" || hasEcShape
+          ? "ec"
+          : (parsed.diagramType === "stt" || hasSttFields ? "stt" : "pfd");
+        if (diagramType === "ec") return normalizeEcGraphData(parsed);
         const usedNodeIds = new Set();
         const nodes = parsed.nodes.map((node, index) => {
           let id = String(node.unique_id || node.uid || node.id || `node-import-${index + 1}`);
@@ -2094,7 +2324,36 @@
         };
       }
 
+      function normalizeEcGraphData(parsed) {
+        const importedById = new Map();
+        parsed.nodes.forEach((node, index) => {
+          const id = String(node.unique_id || node.uid || node.id || node.ecRole || `node-import-${index + 1}`);
+          importedById.set(id, node);
+        });
+        const nodes = makeInitialEcNodes().map(defaultNode => {
+          const source = importedById.get(defaultNode.id) || importedById.get(defaultNode.ecRole) || {};
+          const text = typeof source.text === "string"
+            ? source.text
+            : (typeof source.title === "string" ? source.title : defaultNode.text);
+          return {
+            ...defaultNode,
+            text,
+            detail: typeof source.detail === "string" ? source.detail : "",
+            x: Number.isFinite(source.x) ? source.x : defaultNode.x,
+            y: Number.isFinite(source.y) ? source.y : defaultNode.y
+          };
+        });
+        return {
+          nodes,
+          edges: makeEcEdges(),
+          diagramType: "ec",
+          viewMode: parsed.viewMode === "detail" ? "detail" : null,
+          nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize)
+        };
+      }
+
       function normalizeNodeType(type, diagramType = state.diagramType) {
+        if (diagramType === "ec") return "ec";
         if (diagramType === "stt") return "stt";
         return type === "process" ? "process" : "artifact";
       }
@@ -2112,15 +2371,54 @@
       }
 
       function isPfdDiagram() {
-        return state.diagramType !== "stt";
+        return state.diagramType === "pfd";
       }
 
       function isSttDiagram() {
         return state.diagramType === "stt";
       }
 
+      function isEcDiagram() {
+        return state.diagramType === "ec";
+      }
+
       function isSttNode(node) {
         return node?.type === "stt";
+      }
+
+      function isEcNode(node) {
+        return node?.type === "ec";
+      }
+
+      function isEcAssumptionNode(node) {
+        return isEcNode(node) && node.ecKind === "assumption";
+      }
+
+      function shouldShowEcAssumptions() {
+        return !isEcDiagram() || state.viewMode === "detail";
+      }
+
+      function isNodeVisibleInCurrentMode(node) {
+        return !(isEcDiagram() && !shouldShowEcAssumptions() && isEcAssumptionNode(node));
+      }
+
+      function visibleNodes() {
+        return state.nodes.filter(isNodeVisibleInCurrentMode);
+      }
+
+      function ensureVisibleSelection() {
+        if (state.selected?.type !== "node") return;
+        const node = findNode(state.selected.id);
+        if (node && isNodeVisibleInCurrentMode(node)) return;
+        const fallback = findNode("head") || visibleNodes()[0] || state.nodes[0];
+        state.selected = fallback ? { type: "node", id: fallback.id } : null;
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+      }
+
+      function supportsPorts() {
+        return !isEcDiagram();
       }
 
       function cloneNodeData(node) {
@@ -2153,7 +2451,7 @@
       }
 
       function applyGraphData(graph) {
-        state.diagramType = graph.diagramType === "stt" ? "stt" : "pfd";
+        state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
         if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -2183,7 +2481,7 @@
         try {
           const parsed = JSON.parse(saved);
           const graph = normalizeGraphData(parsed);
-          state.diagramType = graph.diagramType === "stt" ? "stt" : "pfd";
+          state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
           state.nodes = graph.nodes.map(cloneNodeData);
           state.edges = graph.edges;
           if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -2236,7 +2534,7 @@
       }
 
       function restoreSnapshot(snapshot) {
-        state.diagramType = snapshot.diagramType === "stt" ? "stt" : "pfd";
+        state.diagramType = DIAGRAM_TYPES[snapshot.diagramType] ? snapshot.diagramType : "pfd";
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
         state.pendingPort = null;
@@ -2251,6 +2549,7 @@
         } else {
           state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
         }
+        ensureVisibleSelection();
         nextId = Math.max(snapshot.nextId || 1, computeNextIdFromGraph());
         closePalette();
         state.detailEditing = false;
@@ -2296,6 +2595,7 @@
         if (state.viewMode === nextMode) return;
         state.viewMode = nextMode;
         state.editingNodeField = null;
+        ensureVisibleSelection();
         autoLayout();
         render();
         saveState();
@@ -2319,7 +2619,7 @@
         render();
         saveState();
         centerOnGraph();
-        setStatus(nextType === "stt" ? "S&Tを開始しました" : "PFDを開始しました");
+        setStatus(nextType === "stt" ? "S&Tを開始しました" : (nextType === "ec" ? "ECを開始しました" : "PFDを開始しました"));
       }
 
       function updateDiagramControls() {
@@ -2327,7 +2627,7 @@
         brandTitle.textContent = config.title;
         brandSubtitle.textContent = config.subtitle;
         diagramTypeSelect.value = state.diagramType;
-        addToolbarGroup.hidden = isSttDiagram();
+        addToolbarGroup.hidden = !isPfdDiagram();
         document.querySelectorAll("[data-diagram-tool]").forEach(button => {
           button.hidden = button.dataset.diagramTool !== state.diagramType;
         });
@@ -2368,8 +2668,8 @@
         const nextSize = normalizeNodeTextSize(value);
         if (state.nodeTextSize === nextSize && !persist) return;
         state.nodeTextSize = nextSize;
-        renderNodes();
-        updateTextSizeControls();
+        autoLayout();
+        render();
         if (persist) saveState();
       }
 
@@ -2378,6 +2678,7 @@
         const metaSize = Math.max(9, Math.round(titleSize * .82 * 10) / 10);
         const iconSize = Math.max(15, Math.round(titleSize * 1.38));
         const iconSvgSize = Math.max(10, Math.round(titleSize * .92));
+        el.style.setProperty("--node-text-size", `${titleSize}px`);
         el.style.setProperty("--node-title-size", `${titleSize}px`);
         el.style.setProperty("--node-meta-size", `${metaSize}px`);
         el.style.setProperty("--node-stt-label-size", `${Math.max(8.5, Math.round(titleSize * .68 * 10) / 10)}px`);
@@ -2413,6 +2714,7 @@
       function nodeDetailFieldFromClick(nodeEl, event) {
         if (state.viewMode !== "detail") return null;
         const node = findNode(nodeEl.dataset.nodeId);
+        if (isEcNode(node)) return null;
         if (isSttNode(node)) return null;
         const hotspot = event.target.closest("[data-node-field-hotspot]");
         if (hotspot) return hotspot.dataset.nodeFieldHotspot;
@@ -2447,21 +2749,35 @@
 
       function displayText(node) {
         if (node.text.trim()) return node.text;
+        if (isEcNode(node)) return ecNodeTitle(node);
         if (isSttNode(node)) return "S&T項目";
         return node.type === "process" ? "プロセス" : "成果物";
       }
 
       function nodeTypeLabel(type) {
+        if (type === "ec") return "EC";
         if (type === "stt") return "S&T項目";
         return type === "process" ? "プロセス" : "成果物";
       }
 
       function defaultText(type) {
+        if (type === "ec") return "EC";
         if (type === "stt") return "1";
         return type === "process" ? "プロセス" : "成果物";
       }
 
+      function ecDefinition(nodeOrId) {
+        const id = typeof nodeOrId === "string" ? nodeOrId : nodeOrId?.ecRole || nodeOrId?.id;
+        return EC_NODE_DEF_BY_ID.get(id) || EC_NODE_DEFS[0];
+      }
+
+      function ecNodeTitle(node) {
+        const def = ecDefinition(node);
+        return `${def.code} ${def.title}`;
+      }
+
       function oppositeType(type) {
+        if (isEcDiagram()) return "ec";
         if (isSttDiagram()) return "stt";
         return type === "process" ? "artifact" : "process";
       }
@@ -2688,6 +3004,7 @@
       }
 
       function renderDetailMeta(node, editing = false) {
+        if (isEcNode(node)) return renderEcDetailFields(node, editing);
         if (isSttNode(node)) return renderSttDetailFields(node, editing);
         const estimate = (node.estimate || "").trim();
         const owner = (node.owner || "").trim();
@@ -2736,6 +3053,31 @@
             }).join("")}
           </div>
         `;
+      }
+
+      function renderEcDetailFields(node, editing = false) {
+        const def = ecDefinition(node);
+        const value = (node.text || "").trim();
+        if (editing) {
+          return `
+            <label class="ec-detail-field">
+              <strong>${escapeHtml(def.title)}</strong>
+              <div class="ec-detail-question">${escapeHtml(def.question)}</div>
+              <textarea class="ec-detail-textarea" data-ec-field="text" rows="7" spellcheck="false">${escapeHtml(value)}</textarea>
+            </label>
+          `;
+        }
+        return `
+          <div class="ec-detail-field" data-meta-field="ec-text">
+            <strong>${escapeHtml(def.title)}</strong>
+            <div class="ec-detail-question">${escapeHtml(def.question)}</div>
+            <div class="ec-detail-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+          </div>
+        `;
+      }
+
+      function readEcDetailValue() {
+        return (detailMetaView.querySelector("[data-ec-field='text']")?.value || "").replace(/\r\n/g, "\n").trim();
       }
 
       function readSttDetailValues() {
@@ -2944,13 +3286,14 @@
       }
 
       function graphBounds() {
-        if (!state.nodes.length) {
+        const nodes = visibleNodes();
+        if (!nodes.length) {
           return { minX: -100, maxX: 100, minY: -80, maxY: 80, width: 200, height: 160, cx: 0, cy: 0 };
         }
-        const minX = Math.min(...state.nodes.map(node => node.x - nodeSize(node).width / 2 - 20));
-        const maxX = Math.max(...state.nodes.map(node => node.x + nodeSize(node).width / 2 + 20));
-        const minY = Math.min(...state.nodes.map(node => node.y - nodeSize(node).height / 2 - 20));
-        const maxY = Math.max(...state.nodes.map(node => node.y + nodeSize(node).height / 2 + 20));
+        const minX = Math.min(...nodes.map(node => node.x - nodeSize(node).width / 2 - 20));
+        const maxX = Math.max(...nodes.map(node => node.x + nodeSize(node).width / 2 + 20));
+        const minY = Math.min(...nodes.map(node => node.y - nodeSize(node).height / 2 - 20));
+        const maxY = Math.max(...nodes.map(node => node.y + nodeSize(node).height / 2 + 20));
         return {
           minX,
           maxX,
@@ -3004,6 +3347,9 @@
         const source = findNode(from);
         const target = findNode(to);
         if (!source || !target || source.id === target.id) return false;
+        if (isEcDiagram()) {
+          return isEcNode(source) && isEcNode(target) && source.ecKind !== "assumption" && target.ecKind !== "assumption";
+        }
         return isSttDiagram() ? source.type === "stt" && target.type === "stt" : source.type !== target.type;
       }
 
@@ -3015,6 +3361,9 @@
       function portPlan(node, side) {
         if (!node) {
           return { enabled: false, validType: null, mode: "none", connectable: false, title: "" };
+        }
+        if (isEcDiagram()) {
+          return { enabled: false, validType: null, mode: "fixed", connectable: false, title: "ECの構造は固定です" };
         }
         if (isSttDiagram()) {
           if (side === "top") {
@@ -3228,6 +3577,10 @@
       }
 
       function addRoot(type) {
+        if (isEcDiagram()) {
+          setStatus("ECの構造は固定です");
+          return;
+        }
         const selected = selectedNode();
         let spot;
         if (selected) {
@@ -3314,6 +3667,10 @@
 
       function deleteSelection() {
         if (!state.selected) return;
+        if (isEcDiagram()) {
+          setStatus("ECの構造は固定です");
+          return;
+        }
         let message = "削除しました";
         if (state.selected.type === "node") {
           const id = state.selected.id;
@@ -3353,11 +3710,15 @@
         render();
         saveState();
         centerOnGraph();
-        setStatus(isSttDiagram() ? "新しいS&Tを開始" : "新しいPFDを開始");
+        setStatus(isSttDiagram() ? "新しいS&Tを開始" : (isEcDiagram() ? "新しいECを開始" : "新しいPFDを開始"));
       }
 
       function autoLayout() {
         if (!state.nodes.length) return;
+        if (isEcDiagram()) {
+          autoLayoutEc();
+          return;
+        }
         if (isSttDiagram()) {
           autoLayoutStt();
           return;
@@ -3449,6 +3810,54 @@
         state.nodes.forEach(node => {
           node.x = node.gridX * gridSpacingX();
           node.y = node.gridY * gridSpacingY();
+        });
+      }
+
+      function autoLayoutEc() {
+        const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        state.edges = makeEcEdges().filter(edge => nodeMap.has(edge.from) && nodeMap.has(edge.to));
+
+        const size = id => {
+          const node = nodeMap.get(id);
+          return node ? nodeSize(node) : { width: 0, height: 0 };
+        };
+        const headHeight = size("head").height;
+        const shoulderHeight = Math.max(size("left_shoulder").height, size("right_shoulder").height);
+        const handHeight = Math.max(size("left_hand").height, size("right_hand").height);
+        const verticalGap = state.viewMode === "detail" ? 112 : 92;
+        const shoulderY = headHeight / 2 + verticalGap + shoulderHeight / 2;
+        const handY = shoulderY + shoulderHeight / 2 + verticalGap + handHeight / 2;
+        const mainWidth = Math.max(
+          size("left_shoulder").width,
+          size("right_shoulder").width,
+          size("left_hand").width,
+          size("right_hand").width
+        );
+        const showAssumptions = shouldShowEcAssumptions();
+        const noteWidth = showAssumptions ? Math.max(size("left_hand_to_shoulder").width, size("right_hand_to_shoulder").width) : 0;
+        const xMain = showAssumptions
+          ? Math.max(310, mainWidth / 2 + noteWidth / 2 + 120)
+          : Math.max(270, mainWidth + 88);
+        const outsideX = xMain + noteWidth / 2 + mainWidth / 2 + 62;
+        const positions = new Map([
+          ["head", { x: 0, y: 0 }],
+          ["left_shoulder", { x: -xMain, y: shoulderY }],
+          ["right_shoulder", { x: xMain, y: shoulderY }],
+          ["left_hand", { x: -xMain, y: handY }],
+          ["right_hand", { x: xMain, y: handY }],
+          ["left_shoulder_to_head", { x: -xMain / 2, y: shoulderY / 2 }],
+          ["right_shoulder_to_head", { x: xMain / 2, y: shoulderY / 2 }],
+          ["left_hand_to_shoulder", { x: -outsideX, y: (shoulderY + handY) / 2 }],
+          ["right_hand_to_shoulder", { x: outsideX, y: (shoulderY + handY) / 2 }]
+        ]);
+
+        state.nodes.forEach(node => {
+          const position = positions.get(node.id);
+          if (!position) return;
+          node.x = position.x;
+          node.y = position.y;
+          node.gridX = Math.round((position.x / GRID_X) * 4) / 4;
+          node.gridY = Math.round((position.y / GRID_Y) * 4) / 4;
         });
       }
 
@@ -3726,12 +4135,14 @@
       function renderNodes() {
         nodeLayer.innerHTML = "";
         state.nodes.forEach(node => {
+          if (!isNodeVisibleInCurrentMode(node)) return;
           const el = document.createElement("div");
           el.className = `node ${node.type}`;
+          if (isEcNode(node) && node.ecKind) el.classList.add(node.ecKind);
           if (state.viewMode === "detail") {
             el.classList.add("detail-mode");
-            applyNodeDisplayScale(el);
           }
+          applyNodeDisplayScale(el);
           if (state.selected?.type === "node" && state.selected.id === node.id) el.classList.add("selected");
           if (state.pendingPort?.nodeId === node.id) el.classList.add("pending-connect");
           if (!node.text.trim()) el.classList.add("empty");
@@ -3755,6 +4166,8 @@
           } else {
             if (isSttNode(node)) {
               el.append(renderSttNodeContent(node));
+            } else if (isEcNode(node)) {
+              el.append(renderEcNodeContent(node));
             } else {
               const label = document.createElement("div");
               label.className = "node-label";
@@ -3766,7 +4179,7 @@
             }
           }
 
-          SIDES.forEach(side => {
+          if (supportsPorts()) SIDES.forEach(side => {
             const plan = portPlan(node, side);
             const enabled = isPortEnabled(node, side);
             const port = document.createElement("button");
@@ -3809,7 +4222,23 @@
         return wrapper;
       }
 
+      function renderEcNodeContent(node) {
+        const def = ecDefinition(node);
+        const wrapper = document.createElement("div");
+        wrapper.className = "ec-card";
+        const value = (node.text || "").trim();
+        wrapper.innerHTML = `
+          <div class="ec-card-kicker">
+            <span class="ec-card-code">${escapeHtml(def.code)}</span>
+            <span>${escapeHtml(def.title)}</span>
+          </div>
+          <div class="ec-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+        `;
+        return wrapper;
+      }
+
       function renderNodeDetailBadges(el, node) {
+        if (isEcNode(node)) return;
         if (isSttNode(node)) return;
         const statuses = normalizeStatuses(node.statuses);
         const editingField = state.editingNodeField?.nodeId === node.id ? state.editingNodeField.field : null;
@@ -3889,15 +4318,20 @@
           const from = findNode(edge.from);
           const to = findNode(edge.to);
           if (!from || !to) return;
-          const d = edgePath(from, to, edge.fromSide, edge.toSide);
           const selected = state.selected?.type === "edge" && state.selected.id === edge.id;
           const critical = criticalEdges.has(edge.id);
+          const conflict = edge.kind === "conflict";
+          const d = conflict ? conflictPath(from, to, edge.fromSide, edge.toSide) : edgePath(from, to, edge.fromSide, edge.toSide);
 
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${selected ? " selected" : ""}`);
+          path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${conflict ? " conflict" : ""}${selected ? " selected" : ""}`);
           path.setAttribute("d", d);
-          path.setAttribute("marker-end", critical ? "url(#arrow-critical)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"));
+          if (!conflict) {
+            path.setAttribute("marker-end", critical ? "url(#arrow-critical)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"));
+          }
           edgesSvg.append(path);
+
+          if (isEcDiagram()) return;
 
           const hit = document.createElementNS("http://www.w3.org/2000/svg", "path");
           hit.setAttribute("class", "edge-hit edge-dynamic");
@@ -3975,11 +4409,28 @@
         if (node.type === "stt") {
           return estimateSttNodeSize(node);
         }
+        if (node.type === "ec") {
+          return estimateEcNodeSize(node);
+        }
         return {
           width: node.type === "process" ? 164 : 150,
           height: node.type === "process"
             ? (detailMode ? 100 : 86)
             : (detailMode ? 90 : 72)
+        };
+      }
+
+      function estimateEcNodeSize(node) {
+        const assumption = node.ecKind === "assumption";
+        const width = assumption ? 228 : 238;
+        const minHeight = assumption ? 96 : 108;
+        const textSize = normalizeNodeTextSize(state.nodeTextSize);
+        const charsPerLine = Math.max(8, Math.floor((width - 38) / (textSize * (assumption ? .78 : .86))));
+        const lines = estimateWrappedLines(node.text || ecNodeTitle(node), charsPerLine);
+        const contentHeight = lines * Math.max(17, textSize * (assumption ? 1.2 : 1.32));
+        return {
+          width,
+          height: Math.ceil(Math.max(minHeight, 46 + contentHeight))
         };
       }
 
@@ -4023,6 +4474,24 @@
 
       function edgePath(from, to, fromSide, toSide) {
         return cubicPath(portPoint(from, fromSide), portPoint(to, toSide), fromSide, toSide);
+      }
+
+      function conflictPath(from, to, fromSide, toSide) {
+        const start = portPoint(from, fromSide);
+        const end = portPoint(to, toSide);
+        const midX = (start.x + end.x) / 2;
+        const yAt = t => start.y + (end.y - start.y) * t;
+        const amplitude = Math.max(13, Math.min(24, Math.abs(end.x - start.x) * .06));
+        const points = [
+          start,
+          { x: midX - 42, y: yAt(.36) },
+          { x: midX - 22, y: yAt(.44) - amplitude },
+          { x: midX - 6, y: yAt(.5) + amplitude },
+          { x: midX + 10, y: yAt(.56) - amplitude },
+          { x: midX + 30, y: yAt(.64) + amplitude * .45 },
+          end
+        ];
+        return points.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
       }
 
       function edgeMidpoint(from, to, fromSide, toSide) {
@@ -4191,6 +4660,7 @@
         }
         state.selected = { type: "node", id: node.id };
         state.editingNodeId = null;
+        autoLayout();
         render();
         saveState();
         setStatus("タイトルを更新しました");
@@ -4199,6 +4669,7 @@
       function startNodeFieldEdit(nodeId, field) {
         const node = findNode(nodeId);
         if (!node || state.viewMode !== "detail") return;
+        if (isEcNode(node)) return;
         state.selected = { type: "node", id: node.id };
         state.editingNodeId = null;
         state.editingNodeField = { nodeId: node.id, field };
@@ -4286,9 +4757,10 @@
 
       function selectNodeInDirection(direction) {
         const current = selectedNode();
-        if (!current) {
-          if (state.nodes[0]) {
-            state.selected = { type: "node", id: state.nodes[0].id };
+        if (!current || !isNodeVisibleInCurrentMode(current)) {
+          const firstVisible = visibleNodes()[0];
+          if (firstVisible) {
+            state.selected = { type: "node", id: firstVisible.id };
             render();
             setStatus("ノードを選択しました");
           }
@@ -4320,13 +4792,13 @@
             return state.edges
               .filter(edge => edge.from === current.id)
               .map(edge => findNode(edge.to))
-              .filter(Boolean);
+              .filter(node => node && isNodeVisibleInCurrentMode(node));
           }
           if (direction === "down") {
             return state.edges
               .filter(edge => edge.to === current.id)
               .map(edge => findNode(edge.from))
-              .filter(Boolean);
+              .filter(node => node && isNodeVisibleInCurrentMode(node));
           }
           return [];
         }
@@ -4334,19 +4806,19 @@
           return state.edges
             .filter(edge => edge.from === current.id)
             .map(edge => findNode(edge.to))
-            .filter(Boolean);
+            .filter(node => node && isNodeVisibleInCurrentMode(node));
         }
         if (direction === "left") {
           return state.edges
             .filter(edge => edge.to === current.id)
             .map(edge => findNode(edge.from))
-            .filter(Boolean);
+            .filter(node => node && isNodeVisibleInCurrentMode(node));
         }
         return [];
       }
 
       function spatialCandidatesInDirection(current, direction) {
-        return state.nodes.filter(node => {
+        return visibleNodes().filter(node => {
           if (node.id === current.id) return false;
           const dx = node.x - current.x;
           const dy = node.y - current.y;
@@ -4367,8 +4839,8 @@
 
       function renderDetailPanel() {
         const node = selectedNode();
-        if (!node || !state.detailVisible) {
-          detailPanel.classList.remove("open", "editing", "stt-detail");
+        if (!node || !isNodeVisibleInCurrentMode(node) || !state.detailVisible) {
+          detailPanel.classList.remove("open", "editing", "stt-detail", "ec-detail");
           return;
         }
 
@@ -4376,10 +4848,11 @@
         const editing = state.detailEditing && state.detailEditingNodeId === node.id;
         detailPanel.classList.toggle("editing", editing);
         detailPanel.classList.toggle("stt-detail", isSttNode(node));
+        detailPanel.classList.toggle("ec-detail", isEcNode(node));
         detailTypeBadge.className = `type-badge ${node.type}`;
         detailTypeBadge.textContent = nodeTypeLabel(node.type);
-        detailTitle.textContent = displayText(node);
-        if (editing) {
+        detailTitle.textContent = isEcNode(node) ? ecNodeTitle(node) : displayText(node);
+        if (editing && !isEcNode(node)) {
           detailTitle.setAttribute("contenteditable", "true");
           detailTitle.setAttribute("spellcheck", "false");
         } else {
@@ -4387,7 +4860,7 @@
           detailTitle.removeAttribute("spellcheck");
         }
         detailMetaView.innerHTML = renderDetailMeta(node, editing);
-        detailMarkdownView.innerHTML = isSttNode(node) ? "" : renderMarkdown(node.detail || "");
+        detailMarkdownView.innerHTML = (isSttNode(node) || isEcNode(node)) ? "" : renderMarkdown(node.detail || "");
 
         if (editing) {
           detailMarkdownEditor.value = node.detail || "";
@@ -4441,7 +4914,11 @@
         syncDetailEditorFields(node);
         renderDetailPanel();
         requestAnimationFrame(() => {
-          if (focusTarget === "title") {
+          if (isEcNode(node)) {
+            const target = detailMetaView.querySelector("[data-ec-field='text']");
+            target?.focus();
+            target?.select();
+          } else if (focusTarget === "title") {
             detailTitle.focus();
             selectElementContents(detailTitle);
           } else if (isSttNode(node)) {
@@ -4474,6 +4951,27 @@
       function saveDetailEdit() {
         const node = findNode(state.detailEditingNodeId) || selectedNode();
         if (!node) return;
+        if (isEcNode(node)) {
+          const nextText = readEcDetailValue();
+          if ((node.text || "") === nextText) {
+            state.detailEditing = false;
+            state.detailEditingNodeId = null;
+            renderDetailPanel();
+            setStatus("詳細は変更されていません");
+            return;
+          }
+          recordHistory();
+          node.text = nextText;
+          state.selected = { type: "node", id: node.id };
+          state.detailVisible = true;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          autoLayout();
+          render();
+          saveState();
+          setStatus("ECを保存しました");
+          return;
+        }
         const nextText = (detailTitle.textContent || "").trim();
         if (isSttNode(node)) {
           const nextStt = readSttDetailValues();
@@ -4582,9 +5080,11 @@
           );
           return;
         }
-        setHint(isSttDiagram()
-          ? "中央クリックでID編集、ダブルクリックでS&T項目の詳細を編集できます。上に参照先、下に参照元を追加します。"
-          : "中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。");
+        setHint(isEcDiagram()
+          ? "中央クリックで内容を編集、ダブルクリックで詳細欄を開きます。ECの構造は固定です。"
+          : (isSttDiagram()
+            ? "中央クリックでID編集、ダブルクリックでS&T項目の詳細を編集できます。上に参照先、下に参照元を追加します。"
+            : "中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。"));
       }
 
       function downloadJson() {
@@ -4974,7 +5474,7 @@
       autoLayout();
       render();
       requestAnimationFrame(centerOnGraph);
-      setStatus("最初の成果物を配置しました");
+      setStatus(isEcDiagram() ? "ECを開きました" : (isSttDiagram() ? "S&Tを開きました" : "最初の成果物を配置しました"));
     })();
   </script>
 </body>

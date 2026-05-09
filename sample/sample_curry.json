@@ -1,0 +1,408 @@
+{
+  "nodes": [
+    {
+      "id": "node-29",
+      "type": "artifact",
+      "text": "カレーライス",
+      "detail": "[リンク](https://google.com)",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 1500,
+      "y": 42.5,
+      "gridX": 6,
+      "gridY": 0.25
+    },
+    {
+      "id": "node-30",
+      "type": "process",
+      "text": "盛り付け",
+      "detail": "",
+      "estimate": "5",
+      "owner": "Cさん",
+      "statuses": [],
+      "x": 1250,
+      "y": 42.5,
+      "gridX": 5,
+      "gridY": 0.25
+    },
+    {
+      "id": "node-32",
+      "type": "artifact",
+      "text": "ご飯",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 1000,
+      "y": 297.5,
+      "gridX": 4,
+      "gridY": 1.75
+    },
+    {
+      "id": "node-34",
+      "type": "artifact",
+      "text": "カレー",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 1000,
+      "y": -212.5,
+      "gridX": 4,
+      "gridY": -1.25
+    },
+    {
+      "id": "node-36",
+      "type": "process",
+      "text": "ご飯を炊く",
+      "detail": "",
+      "estimate": "30",
+      "owner": "Bさん",
+      "statuses": [],
+      "x": 750,
+      "y": 297.5,
+      "gridX": 3,
+      "gridY": 1.75
+    },
+    {
+      "id": "node-38",
+      "type": "artifact",
+      "text": "お米",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": 510,
+      "gridX": 2,
+      "gridY": 3
+    },
+    {
+      "id": "node-40",
+      "type": "artifact",
+      "text": "水",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": 340,
+      "gridX": 2,
+      "gridY": 2
+    },
+    {
+      "id": "node-42",
+      "type": "artifact",
+      "text": "炊飯器",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": 170,
+      "gridX": 2,
+      "gridY": 1
+    },
+    {
+      "id": "node-44",
+      "type": "process",
+      "text": "煮込む",
+      "detail": "",
+      "estimate": "30",
+      "owner": "Aさん",
+      "statuses": [],
+      "x": 750,
+      "y": -212.5,
+      "gridX": 3,
+      "gridY": -1.25
+    },
+    {
+      "id": "node-46",
+      "type": "artifact",
+      "text": "鍋",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": -340,
+      "gridX": 2,
+      "gridY": -2
+    },
+    {
+      "id": "node-48",
+      "type": "artifact",
+      "text": "切った肉",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": 0,
+      "gridX": 2,
+      "gridY": 0
+    },
+    {
+      "id": "node-50",
+      "type": "artifact",
+      "text": "切った野菜",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": -170,
+      "gridX": 2,
+      "gridY": -1
+    },
+    {
+      "id": "node-54",
+      "type": "artifact",
+      "text": "お皿",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 1000,
+      "y": -42.5,
+      "gridX": 4,
+      "gridY": -0.25
+    },
+    {
+      "id": "node-56",
+      "type": "artifact",
+      "text": "スプーン",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 1000,
+      "y": 127.5,
+      "gridX": 4,
+      "gridY": 0.75
+    },
+    {
+      "id": "node-60",
+      "type": "process",
+      "text": "肉を切る",
+      "detail": "",
+      "estimate": "5",
+      "owner": "Bさん",
+      "statuses": [],
+      "x": 250,
+      "y": 0,
+      "gridX": 1,
+      "gridY": 0
+    },
+    {
+      "id": "node-62",
+      "type": "artifact",
+      "text": "生の肉",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 0,
+      "y": 85,
+      "gridX": 0,
+      "gridY": 0.5
+    },
+    {
+      "id": "node-64",
+      "type": "artifact",
+      "text": "包丁",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 0,
+      "y": -85,
+      "gridX": 0,
+      "gridY": -0.5
+    },
+    {
+      "id": "node-66",
+      "type": "process",
+      "text": "野菜を切る",
+      "detail": "",
+      "estimate": "3",
+      "owner": "Aさん",
+      "statuses": [],
+      "x": 250,
+      "y": -170,
+      "gridX": 1,
+      "gridY": -1
+    },
+    {
+      "id": "node-68",
+      "type": "artifact",
+      "text": "野菜",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 0,
+      "y": -255,
+      "gridX": 0,
+      "gridY": -1.5
+    },
+    {
+      "id": "node-71",
+      "type": "artifact",
+      "text": "カレールウ",
+      "detail": "",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "x": 500,
+      "y": -510,
+      "gridX": 2,
+      "gridY": -3
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-31",
+      "from": "node-30",
+      "to": "node-29",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-33",
+      "from": "node-32",
+      "to": "node-30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-35",
+      "from": "node-34",
+      "to": "node-30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-37",
+      "from": "node-36",
+      "to": "node-32",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-39",
+      "from": "node-38",
+      "to": "node-36",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-41",
+      "from": "node-40",
+      "to": "node-36",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-43",
+      "from": "node-42",
+      "to": "node-36",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-45",
+      "from": "node-44",
+      "to": "node-34",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-47",
+      "from": "node-46",
+      "to": "node-44",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-49",
+      "from": "node-48",
+      "to": "node-44",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-51",
+      "from": "node-50",
+      "to": "node-44",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-55",
+      "from": "node-54",
+      "to": "node-30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-57",
+      "from": "node-56",
+      "to": "node-30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-61",
+      "from": "node-60",
+      "to": "node-48",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-63",
+      "from": "node-62",
+      "to": "node-60",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-65",
+      "from": "node-64",
+      "to": "node-60",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-67",
+      "from": "node-66",
+      "to": "node-50",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-69",
+      "from": "node-68",
+      "to": "node-66",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-70",
+      "from": "node-64",
+      "to": "node-66",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-72",
+      "from": "node-71",
+      "to": "node-44",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "viewMode": "detail",
+  "nodeTextSize": 18
+}

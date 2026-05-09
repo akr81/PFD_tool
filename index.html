@@ -1,0 +1,4260 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PFD Sketch</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef1f4;
+      --panel: #fbfcfd;
+      --panel-2: #f4f7f8;
+      --ink: #172029;
+      --muted: #66717c;
+      --line: #56616c;
+      --line-soft: #c7ced5;
+      --accent: #177b84;
+      --accent-2: #b95f21;
+      --artifact: #fffdf8;
+      --artifact-border: #bf8c32;
+      --artifact-glow: rgba(191, 140, 50, .18);
+      --process: #f0fffb;
+      --process-border: #188773;
+      --process-glow: rgba(24, 135, 115, .18);
+      --danger: #b4232f;
+      --shadow: 0 14px 34px rgba(22, 31, 40, .16);
+      --toolbar-h: 58px;
+      --radius: 8px;
+      font-family: "Segoe UI", "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    body {
+      display: grid;
+      grid-template-rows: var(--toolbar-h) 1fr;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-bottom: 1px solid #d9dee3;
+      background: rgba(251, 252, 253, .94);
+      backdrop-filter: blur(12px);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 176px;
+      white-space: nowrap;
+    }
+
+    .brand strong {
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 40px;
+      padding-inline: 8px;
+      border-left: 1px solid #d9dee3;
+    }
+
+    .mode-group {
+      gap: 0;
+    }
+
+    .mode-button {
+      height: 34px;
+      min-width: 78px;
+      border: 1px solid #b9c4cc;
+      border-right-width: 0;
+      background: #fff;
+      color: #47515b;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mode-button:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .mode-button:last-child {
+      border-right-width: 1px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .mode-button.active {
+      border-color: var(--accent);
+      background: #e9f7f7;
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(23, 123, 132, .18);
+    }
+
+    .detail-tools {
+      display: none;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .detail-tools.visible {
+      display: flex;
+    }
+
+    .metric-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .metric-pill {
+      display: inline-grid;
+      gap: 1px;
+      min-width: 78px;
+      min-height: 34px;
+      padding: 4px 8px;
+      border: 1px solid #cbd5dc;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .metric-value {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .text-size-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 158px;
+      color: #46535d;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .text-size-control input {
+      width: 86px;
+      accent-color: var(--accent);
+    }
+
+    .text-size-value {
+      width: 34px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .toolbar-spacer {
+      flex: 1;
+    }
+
+    .icon-button,
+    .shape-button,
+    .mini-button,
+    .dialog-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #cfd6dc;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .14s ease, border-color .14s ease, background .14s ease, box-shadow .14s ease;
+    }
+
+    .icon-button:disabled,
+    .shape-button:disabled,
+    .dialog-button:disabled {
+      color: #a0a9b2;
+      background: #f1f3f5;
+      border-color: #d7dde2;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: .62;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+    }
+
+    .shape-button {
+      min-width: 86px;
+      height: 36px;
+      gap: 8px;
+      padding: 0 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .icon-button:not(:disabled):hover,
+    .shape-button:not(:disabled):hover,
+    .mini-button:not(:disabled):hover,
+    .dialog-button:not(:disabled):hover {
+      border-color: #9aa8b3;
+      background: #f8fbfc;
+      box-shadow: 0 5px 18px rgba(22, 31, 40, .12);
+    }
+
+    .icon-button:not(:disabled):active,
+    .shape-button:not(:disabled):active,
+    .mini-button:not(:disabled):active,
+    .dialog-button:not(:disabled):active {
+      transform: translateY(1px);
+    }
+
+    .icon-button svg,
+    .mini-button svg,
+    .dialog-button svg {
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    .shape-icon {
+      width: 23px;
+      height: 16px;
+      border: 2px solid currentColor;
+      background: #fff;
+      flex: 0 0 auto;
+    }
+
+    .shape-icon.artifact {
+      border-radius: 4px;
+      color: var(--artifact-border);
+    }
+
+    .shape-icon.process {
+      border-radius: 999px;
+      color: var(--process-border);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-width: 190px;
+      max-width: min(42vw, 430px);
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid #dce2e7;
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--panel-2);
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .app {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(#dfe5ea 1px, transparent 1px),
+        linear-gradient(90deg, #dfe5ea 1px, transparent 1px),
+        radial-gradient(circle at 15% 14%, rgba(23, 123, 132, .07), transparent 28%),
+        radial-gradient(circle at 86% 82%, rgba(185, 95, 33, .07), transparent 30%),
+        var(--bg);
+      background-size: 28px 28px, 28px 28px, auto, auto, auto;
+    }
+
+    .viewport {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .viewport.is-panning {
+      cursor: grabbing;
+    }
+
+    .stage {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 1px;
+      transform-origin: 0 0;
+    }
+
+    .edges {
+      position: absolute;
+      left: -5000px;
+      top: -5000px;
+      width: 10000px;
+      height: 10000px;
+      overflow: visible;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .edge {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .edge.ghost {
+      stroke: var(--accent);
+      stroke-dasharray: 8 7;
+      opacity: .82;
+    }
+
+    .edge-hit {
+      fill: none;
+      pointer-events: stroke;
+      stroke: rgba(255, 255, 255, .01);
+      stroke-width: 28;
+      cursor: pointer;
+    }
+
+    .edge.selected {
+      stroke: var(--accent-2);
+      stroke-width: 3.5;
+    }
+
+    .edge.critical {
+      stroke: #d32832;
+      stroke-width: 3.7;
+    }
+
+    .edge.critical.selected {
+      stroke: #d32832;
+      stroke-width: 4.4;
+    }
+
+    .arrow {
+      fill: var(--line);
+    }
+
+    .arrow.selected {
+      fill: var(--accent-2);
+    }
+
+    .arrow.critical {
+      fill: #d32832;
+    }
+
+    .node-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .edge-control-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .edge-handle {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid #9aa8b3;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .96);
+      color: var(--line);
+      box-shadow: 0 7px 18px rgba(22, 31, 40, .18);
+      cursor: pointer;
+      pointer-events: auto;
+      transform: translate(-50%, -50%);
+      transition: background .14s ease, border-color .14s ease, color .14s ease, box-shadow .14s ease;
+    }
+
+    .edge-handle:hover,
+    .edge-handle.selected {
+      border-color: var(--accent-2);
+      color: var(--accent-2);
+      box-shadow: 0 0 0 5px rgba(185, 95, 33, .14), 0 8px 20px rgba(22, 31, 40, .2);
+    }
+
+    .edge-handle.selected {
+      background: #fff7f1;
+    }
+
+    .edge-handle svg {
+      width: 15px;
+      height: 15px;
+      pointer-events: none;
+    }
+
+    .node {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 150px;
+      min-height: 72px;
+      padding: 14px 18px;
+      color: var(--ink);
+      background: #fff;
+      border: 2px solid #88949f;
+      box-shadow: 0 9px 24px rgba(22, 31, 40, .12);
+      transform: translate(-50%, -50%);
+      transition: left .25s ease, top .25s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .node.artifact {
+      background: var(--artifact);
+      border-color: var(--artifact-border);
+      border-radius: 7px;
+    }
+
+    .node.process {
+      width: 164px;
+      min-height: 86px;
+      padding-inline: 24px;
+      background: var(--process);
+      border-color: var(--process-border);
+      border-radius: 999px;
+    }
+
+    .node.selected {
+      box-shadow: 0 0 0 5px rgba(23, 123, 132, .16), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
+    .node.artifact.selected {
+      box-shadow: 0 0 0 5px var(--artifact-glow), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
+    .node.process.selected {
+      box-shadow: 0 0 0 5px var(--process-glow), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
+    .node.pending-connect {
+      box-shadow: 0 0 0 6px rgba(23, 123, 132, .2), 0 14px 34px rgba(22, 31, 40, .2);
+    }
+
+    .node-label {
+      max-width: 100%;
+      min-width: 0;
+      text-align: center;
+      line-height: 1.32;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+      font-weight: 650;
+      pointer-events: none;
+    }
+
+    .node.detail-mode {
+      min-height: 90px;
+      padding-block: 24px 22px;
+    }
+
+    .node.process.detail-mode {
+      min-height: 100px;
+      padding-block: 27px 24px;
+    }
+
+    .node.detail-mode .node-label {
+      font-size: var(--node-title-size, 13px);
+      line-height: 1.25;
+    }
+
+    .node-status-icons {
+      position: absolute;
+      top: 7px;
+      left: 9px;
+      display: flex;
+      gap: 3px;
+      pointer-events: none;
+    }
+
+    .node.process .node-status-icons {
+      left: 24px;
+      top: 9px;
+    }
+
+    .status-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--node-status-icon-size, 18px);
+      height: var(--node-status-icon-size, 18px);
+      border: 1px solid #b8c3cc;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .92);
+      color: #4d5b66;
+    }
+
+    .status-icon svg {
+      width: var(--node-status-svg-size, 12px);
+      height: var(--node-status-svg-size, 12px);
+      stroke-width: 2.4;
+    }
+
+    .status-icon.progress {
+      border-color: rgba(23, 123, 132, .42);
+      background: #e9f7f7;
+      color: var(--accent);
+    }
+
+    .status-icon.done {
+      border-color: rgba(49, 134, 86, .44);
+      background: #ecf8f0;
+      color: #2b7d4f;
+    }
+
+    .status-icon.trouble {
+      border-color: rgba(185, 95, 33, .46);
+      background: #fff3ea;
+      color: var(--accent-2);
+    }
+
+    .node-meta-row {
+      position: absolute;
+      left: 11px;
+      right: 11px;
+      bottom: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .node.process .node-meta-row {
+      left: 25px;
+      right: 25px;
+      bottom: 11px;
+    }
+
+    .node-meta {
+      min-width: 0;
+      max-width: 64px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #52606a;
+      font-size: var(--node-meta-size, 10.5px);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .node-meta.owner {
+      text-align: right;
+    }
+
+    .node-meta:empty {
+      visibility: hidden;
+    }
+
+    .node-field-editor {
+      position: absolute;
+      z-index: 6;
+      pointer-events: auto;
+    }
+
+    .node-field-editor.estimate {
+      left: 9px;
+      bottom: 4px;
+      width: var(--node-estimate-field-width, 68px);
+    }
+
+    .node-field-editor.owner {
+      right: 9px;
+      bottom: 4px;
+      width: var(--node-owner-field-width, 72px);
+    }
+
+    .node.process .node-field-editor.estimate {
+      left: 23px;
+      bottom: 8px;
+    }
+
+    .node.process .node-field-editor.owner {
+      right: 23px;
+      bottom: 8px;
+    }
+
+    .node-field-input {
+      width: 100%;
+      border: 1px solid #aeb8c1;
+      border-radius: 6px;
+      padding: 2px 4px;
+      background: rgba(255, 255, 255, .98);
+      color: #34404a;
+      font-size: var(--node-meta-size, 10.5px);
+      font-weight: 700;
+      line-height: 1.2;
+      box-shadow: 0 5px 14px rgba(22, 31, 40, .16);
+    }
+
+    .node-field-input.owner {
+      text-align: right;
+    }
+
+    .node-field-input:focus {
+      outline: 3px solid rgba(23, 123, 132, .16);
+      border-color: var(--accent);
+    }
+
+    .node-status-editor {
+      top: 4px;
+      left: 7px;
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid #c8d1d8;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: 0 8px 20px rgba(22, 31, 40, .18);
+    }
+
+    .node.process .node-status-editor {
+      left: 22px;
+      top: 6px;
+    }
+
+    .node-status-choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      min-height: var(--node-status-choice-height, 22px);
+      padding: 2px 5px 2px 3px;
+      border: 1px solid #cbd5dc;
+      border-radius: 999px;
+      background: #fff;
+      color: #46535d;
+      font-size: var(--node-meta-size, 10.5px);
+      font-weight: 750;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .node-status-choice:not(:has(input:checked)) {
+      opacity: .5;
+      background: #f7fafb;
+    }
+
+    .node-status-choice input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .title-editor {
+      display: grid;
+      width: min(132px, 100%);
+      z-index: 5;
+    }
+
+    .node.process .title-editor {
+      width: min(128px, 100%);
+    }
+
+    .title-input {
+      width: 100%;
+      min-height: 44px;
+      max-height: 96px;
+      resize: vertical;
+      border: 1px solid #9eb0bb;
+      border-radius: 7px;
+      padding: 6px 7px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.32;
+      text-align: center;
+    }
+
+    .title-input:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .node.empty .node-label {
+      color: #8b96a1;
+      font-weight: 550;
+    }
+
+    .port {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 2px 9px rgba(22, 31, 40, .22);
+      opacity: .3;
+      cursor: crosshair;
+      z-index: 3;
+      transition: opacity .14s ease, background .14s ease, box-shadow .14s ease;
+    }
+
+    .port:disabled,
+    .port.disabled {
+      background: #aab3bc;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: .34;
+    }
+
+    .node:hover .port:not(:disabled):not(.disabled),
+    .node.pending-connect .port:not(:disabled):not(.disabled) {
+      opacity: 1;
+    }
+
+    .port::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 8px;
+      height: 2px;
+      background: #fff;
+      transform: translate(-50%, -50%);
+      border-radius: 99px;
+    }
+
+    .port::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 8px;
+      background: #fff;
+      transform: translate(-50%, -50%);
+      border-radius: 99px;
+    }
+
+    .port.top {
+      left: 50%;
+      top: -12px;
+      transform: translateX(-50%);
+    }
+
+    .port.right {
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .port.bottom {
+      left: 50%;
+      bottom: -12px;
+      transform: translateX(-50%);
+    }
+
+    .port.left {
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .mini-palette {
+      position: absolute;
+      display: flex;
+      gap: 6px;
+      padding: 7px;
+      border: 1px solid #cdd5dc;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+      z-index: 15;
+      transform: translate(-50%, -50%);
+    }
+
+    .mini-button {
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      color: var(--ink);
+    }
+
+    .mini-button[data-action="artifact"] {
+      color: var(--artifact-border);
+    }
+
+    .mini-button[data-action="process"] {
+      color: var(--process-border);
+    }
+
+    .mini-button[data-action="connect"] {
+      color: var(--accent);
+    }
+
+    .mini-button:disabled {
+      color: #a0a9b2;
+      background: #f1f3f5;
+      border-color: #d7dde2;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: .58;
+    }
+
+    .mini-button:disabled .shape-icon {
+      color: #a0a9b2;
+      background: #f1f3f5;
+    }
+
+    .hud {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #d0d7dd;
+      border-radius: 8px;
+      background: rgba(251, 252, 253, .92);
+      box-shadow: 0 10px 24px rgba(22, 31, 40, .12);
+      z-index: 18;
+    }
+
+    .detail-panel {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      width: min(390px, calc(100vw - 28px));
+      border: 1px solid #cdd5dc;
+      border-radius: 8px;
+      background: rgba(251, 252, 253, .98);
+      box-shadow: 0 24px 58px rgba(17, 25, 34, .24);
+      z-index: 30;
+      transform: translateX(calc(100% + 28px));
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .22s ease, opacity .18s ease;
+    }
+
+    .detail-panel.open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .detail-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: start;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid #dbe1e6;
+    }
+
+    .detail-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding-inline: 8px;
+      border: 1px solid #cfd6dc;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .type-badge.artifact {
+      border-color: rgba(191, 140, 50, .5);
+      color: var(--artifact-border);
+      background: #fff9ec;
+    }
+
+    .type-badge.process {
+      border-color: rgba(24, 135, 115, .5);
+      color: var(--process-border);
+      background: #edfffa;
+    }
+
+    .detail-title {
+      margin-top: 7px;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 750;
+      line-height: 1.26;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .detail-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 14px;
+    }
+
+    .detail-meta-view {
+      margin-bottom: 12px;
+    }
+
+    .detail-meta-grid {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 10px;
+      border: 1px solid #dbe2e7;
+      border-radius: 8px;
+      background: #f7fafb;
+    }
+
+    .detail-meta-grid > div {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 9px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .detail-meta-grid dt {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .detail-meta-grid dd {
+      margin: 0;
+      min-width: 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-muted {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      padding: 12px 14px;
+      border-top: 1px solid #dbe1e6;
+      background: rgba(244, 247, 248, .88);
+    }
+
+    .detail-panel:not(.editing) .detail-actions,
+    .detail-panel [data-detail="edit"],
+    .detail-panel:not(.editing) .detail-edit,
+    .detail-panel:not(.editing) [data-detail="save"],
+    .detail-panel:not(.editing) [data-detail="cancel"] {
+      display: none;
+    }
+
+    .detail-panel:not(.editing) .detail-view,
+    .detail-panel:not(.editing) .detail-title {
+      cursor: text;
+    }
+
+    .detail-panel.editing .markdown-body,
+    .detail-panel.editing .detail-edit > :not(:has(.detail-textarea.markdown)) {
+      display: none;
+    }
+
+    .detail-panel.editing .detail-edit {
+      margin-top: 12px;
+    }
+
+    .detail-title[contenteditable="true"],
+    .detail-inline-edit[contenteditable="true"] {
+      outline: none;
+      cursor: text;
+    }
+
+    .detail-inline-edit {
+      display: inline;
+      min-width: 1.5em;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .detail-inline-edit:empty::before {
+      content: attr(data-placeholder);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .detail-inline-input {
+      display: inline-block;
+      width: min(100%, 15em);
+      min-width: 7em;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+    }
+
+    .detail-inline-input::placeholder {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .detail-inline-input:focus {
+      outline: none;
+    }
+
+    .detail-field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .detail-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .detail-textarea {
+      width: 100%;
+      resize: vertical;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .detail-input {
+      width: 100%;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .detail-textarea.name {
+      min-height: 74px;
+    }
+
+    .detail-textarea.markdown {
+      min-height: 260px;
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+      font-size: 13px;
+    }
+
+    .detail-input:focus,
+    .detail-textarea:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .detail-fieldset {
+      margin: 0 0 14px;
+      padding: 0;
+      border: 0;
+    }
+
+    .status-choice-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 7px;
+    }
+
+    .status-choice {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 5px 8px;
+      border: 1px solid #c9d2d9;
+      border-radius: 999px;
+      background: #fff;
+      color: #46535d;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .status-choice input {
+      accent-color: var(--accent);
+    }
+
+    .detail-status-list {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .detail-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 24px;
+      padding: 3px 8px 3px 5px;
+      border: 1px solid #cbd5dc;
+      border-radius: 999px;
+      background: #fff;
+      color: #46535d;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .detail-status-pill.status-toggle {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .detail-status-pill.status-toggle:not(:has(input:checked)) {
+      opacity: .48;
+      background: #f7fafb;
+    }
+
+    .status-pill-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .markdown-body {
+      min-height: 220px;
+      padding: 2px 2px 18px;
+      color: var(--ink);
+      line-height: 1.58;
+      overflow-wrap: anywhere;
+    }
+
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4 {
+      margin: 18px 0 8px;
+      line-height: 1.25;
+    }
+
+    .markdown-body h1:first-child,
+    .markdown-body h2:first-child,
+    .markdown-body h3:first-child,
+    .markdown-body h4:first-child,
+    .markdown-body p:first-child,
+    .markdown-body ul:first-child,
+    .markdown-body ol:first-child,
+    .markdown-body blockquote:first-child {
+      margin-top: 0;
+    }
+
+    .markdown-body p {
+      margin: 10px 0;
+    }
+
+    .markdown-body ul,
+    .markdown-body ol {
+      margin: 10px 0;
+      padding-left: 22px;
+    }
+
+    .markdown-body blockquote {
+      margin: 12px 0;
+      padding: 6px 10px;
+      border-left: 3px solid #b8c3cc;
+      color: #4f5b66;
+      background: #f2f5f7;
+    }
+
+    .markdown-body pre {
+      overflow: auto;
+      padding: 10px;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      background: #f6f8fa;
+    }
+
+    .markdown-body code {
+      padding: 1px 4px;
+      border-radius: 5px;
+      background: #eef2f4;
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+      font-size: .92em;
+    }
+
+    .markdown-body pre code {
+      padding: 0;
+      background: transparent;
+    }
+
+    .markdown-empty {
+      color: var(--muted);
+    }
+
+    .zoom-readout {
+      min-width: 48px;
+      color: var(--muted);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    .dialog-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(23, 32, 41, .26);
+      z-index: 50;
+    }
+
+    .dialog-backdrop.open {
+      display: flex;
+    }
+
+    .dialog {
+      width: min(440px, calc(100vw - 28px));
+      border: 1px solid #cdd5dc;
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 24px 62px rgba(17, 25, 34, .28);
+      overflow: hidden;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 46px;
+      padding: 10px 12px 10px 16px;
+      border-bottom: 1px solid #dbe1e6;
+      font-weight: 700;
+    }
+
+    .dialog-body {
+      padding: 14px 16px 16px;
+    }
+
+    .editor {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid #bac4cc;
+      border-radius: 8px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .editor:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+
+    .dialog-button {
+      min-width: 82px;
+      height: 36px;
+      padding-inline: 12px;
+      gap: 7px;
+      border-radius: 8px;
+      font-weight: 650;
+    }
+
+    .dialog-button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .dialog-button.danger {
+      border-color: rgba(180, 35, 47, .42);
+      color: var(--danger);
+    }
+
+    .hint {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      max-width: min(520px, calc(100vw - 150px));
+      padding: 8px 10px;
+      border: 1px solid #d6dde3;
+      border-radius: 8px;
+      background: rgba(251, 252, 253, .92);
+      color: var(--muted);
+      font-size: 12px;
+      box-shadow: 0 10px 24px rgba(22, 31, 40, .1);
+      z-index: 18;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --toolbar-h: 142px;
+      }
+
+      .toolbar {
+        flex-wrap: wrap;
+        align-content: center;
+      }
+
+      .brand {
+        min-width: 150px;
+      }
+
+      .toolbar-spacer {
+        display: none;
+      }
+
+      .toolbar-group {
+        border-left: 0;
+        padding-inline: 0;
+      }
+
+      .detail-tools {
+        order: 8;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .metric-strip {
+        flex-wrap: wrap;
+      }
+
+      .status {
+        order: 9;
+        min-width: min(100%, 330px);
+        max-width: calc(100vw - 28px);
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .hud {
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .detail-panel {
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        width: calc(100vw - 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand" aria-label="PFD Sketch">
+      <strong>PFD Sketch</strong>
+      <span>Process Flow Diagram</span>
+    </div>
+    <div class="toolbar-group" aria-label="追加">
+      <button class="shape-button" data-add-root="artifact" title="成果物を追加">
+        <span class="shape-icon artifact" aria-hidden="true"></span>
+        <span>成果物</span>
+      </button>
+      <button class="shape-button" data-add-root="process" title="プロセスを追加">
+        <span class="shape-icon process" aria-hidden="true"></span>
+        <span>プロセス</span>
+      </button>
+    </div>
+    <div class="toolbar-group" aria-label="操作">
+      <button class="icon-button" data-command="undo" title="元に戻す" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 14 4 9l5-5"></path>
+          <path d="M4 9h10a6 6 0 0 1 0 12h-3"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="redo" title="やり直す" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m15 14 5-5-5-5"></path>
+          <path d="M20 9H10a6 6 0 0 0 0 12h3"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="layout" title="自動配列">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 6h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6z"></path>
+          <path d="M10 9h4M17 10v4"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="fit" title="全体表示">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M21 16v3a2 2 0 0 1-2 2h-3"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="delete" title="削除">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="toolbar-group mode-group" aria-label="表示">
+      <button class="mode-button active" data-mode="simple" type="button" aria-pressed="true">シンプル</button>
+      <button class="mode-button" data-mode="detail" type="button" aria-pressed="false">詳細</button>
+    </div>
+    <div class="toolbar-group detail-tools" id="detailTools" aria-label="詳細集計">
+      <div class="metric-strip" aria-label="プロセス見積もり">
+        <div class="metric-pill">
+          <span class="metric-label">全見積</span>
+          <span class="metric-value" id="totalEstimateValue">0日</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-label">完了分</span>
+          <span class="metric-value" id="doneEstimateValue">0日</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-label">進捗率</span>
+          <span class="metric-value" id="progressRateValue">0%</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-label">CP長さ</span>
+          <span class="metric-value" id="criticalEstimateValue">0日</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-label">CP完了</span>
+          <span class="metric-value" id="criticalDoneValue">0日</span>
+        </div>
+        <div class="metric-pill">
+          <span class="metric-label">CP進捗</span>
+          <span class="metric-value" id="criticalProgressValue">0%</span>
+        </div>
+      </div>
+      <label class="text-size-control">
+        文字
+        <input id="nodeTextSizeSlider" type="range" min="10" max="18" step="1" value="13" aria-label="エンティティ内文字サイズ">
+        <span class="text-size-value" id="nodeTextSizeValue">13px</span>
+      </label>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="toolbar-group" aria-label="ファイル">
+      <input id="jsonFileInput" type="file" accept="application/json,.json" hidden>
+      <button class="icon-button" data-command="upload" title="JSON読込">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 21V9"></path>
+          <path d="m7 14 5-5 5 5"></path>
+          <path d="M5 3h14"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="download" title="JSON保存">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M12 3v12"></path>
+          <path d="m7 10 5 5 5-5"></path>
+          <path d="M5 21h14"></path>
+        </svg>
+      </button>
+      <button class="icon-button" data-command="reset" title="新規作成">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 4v6h6"></path>
+          <path d="M20 12a8 8 0 0 0-14.9-4"></path>
+          <path d="M20 20v-6h-6"></path>
+          <path d="M4 12a8 8 0 0 0 14.9 4"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="viewport" id="viewport">
+      <div class="stage" id="stage">
+        <svg class="edges" id="edges" viewBox="-5000 -5000 10000 10000" aria-hidden="true">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="7.5" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path class="arrow" d="M0,0 L0,6 L8,3 z"></path>
+            </marker>
+            <marker id="arrow-selected" markerWidth="10" markerHeight="10" refX="7.5" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path class="arrow selected" d="M0,0 L0,6 L8,3 z"></path>
+            </marker>
+            <marker id="arrow-critical" markerWidth="10" markerHeight="10" refX="7.5" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path class="arrow critical" d="M0,0 L0,6 L8,3 z"></path>
+            </marker>
+          </defs>
+        </svg>
+        <div class="edge-control-layer" id="edgeControlLayer"></div>
+        <div class="node-layer" id="nodeLayer"></div>
+      </div>
+    </div>
+    <aside class="detail-panel" id="detailPanel" aria-label="詳細">
+      <div class="detail-head">
+        <div>
+          <div class="detail-kicker">
+            <span class="type-badge" id="detailTypeBadge">未選択</span>
+          </div>
+          <div class="detail-title" id="detailTitle">詳細</div>
+        </div>
+        <button class="icon-button" data-detail="close" title="詳細を閉じる">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="detail-body">
+        <div class="detail-view">
+          <div class="detail-meta-view" id="detailMetaView"></div>
+          <div class="markdown-body" id="detailMarkdownView"></div>
+        </div>
+        <div class="detail-edit">
+          <label class="detail-field">
+            <span class="detail-label">図形内の表示名</span>
+            <textarea class="detail-textarea name" id="detailNameEditor" rows="3" spellcheck="false"></textarea>
+          </label>
+          <label class="detail-field">
+            <span class="detail-label">見積もり期間</span>
+            <input class="detail-input" id="detailEstimateEditor" type="text" autocomplete="off">
+          </label>
+          <label class="detail-field">
+            <span class="detail-label">担当者</span>
+            <input class="detail-input" id="detailOwnerEditor" type="text" autocomplete="off">
+          </label>
+          <fieldset class="detail-fieldset">
+            <legend class="detail-label">状況</legend>
+            <div class="status-choice-list">
+              <label class="status-choice">
+                <input type="checkbox" data-status-editor="progress">
+                <span>進行中</span>
+              </label>
+              <label class="status-choice">
+                <input type="checkbox" data-status-editor="done">
+                <span>完了</span>
+              </label>
+              <label class="status-choice">
+                <input type="checkbox" data-status-editor="trouble">
+                <span>トラブル</span>
+              </label>
+            </div>
+          </fieldset>
+          <label class="detail-field">
+            <span class="detail-label">内容 Markdown</span>
+            <textarea class="detail-textarea markdown" id="detailMarkdownEditor" rows="12" spellcheck="false"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="dialog-button" data-detail="cancel">キャンセル</button>
+        <button class="dialog-button primary" data-detail="save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+            <path d="M17 21v-8H7v8M7 3v5h8"></path>
+          </svg>
+          保存
+        </button>
+      </div>
+    </aside>
+    <div class="hint" id="hint"></div>
+    <div class="hud">
+      <button class="icon-button" data-command="zoom-out" title="縮小">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M8 11h6M16 16l5 5"></path>
+        </svg>
+      </button>
+      <span class="zoom-readout" id="zoomReadout">100%</span>
+      <button class="icon-button" data-command="zoom-in" title="拡大">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M8 11h6M11 8v6M16 16l5 5"></path>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <div class="dialog-backdrop" id="editorDialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <div class="dialog">
+      <div class="dialog-head">
+        <span id="dialogTitle">文字を編集</span>
+        <button class="icon-button" data-editor="close" title="閉じる">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <textarea class="editor" id="editorText" rows="6" spellcheck="false"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button class="dialog-button danger" data-editor="clear">空にする</button>
+        <button class="dialog-button" data-editor="cancel">キャンセル</button>
+        <button class="dialog-button primary" data-editor="save">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
+            <path d="M17 21v-8H7v8M7 3v5h8"></path>
+          </svg>
+          保存
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const GRID_X = 250;
+      const GRID_Y = 170;
+      const LAYOUT_ROW_GAP = 1;
+      const STORAGE_KEY = "pfd-sketch-state-v1";
+      const DEFAULT_NODE_TEXT_SIZE = 13;
+      const WORK_HOURS_PER_DAY = 8;
+      const STATUS_OPTIONS = [
+        { id: "progress", label: "進行中" },
+        { id: "done", label: "完了" },
+        { id: "trouble", label: "トラブル" }
+      ];
+      const STATUS_IDS = new Set(STATUS_OPTIONS.map(status => status.id));
+      const SIDES = ["top", "right", "bottom", "left"];
+      const DIRS = {
+        top: { x: 0, y: -1 },
+        right: { x: 1, y: 0 },
+        bottom: { x: 0, y: 1 },
+        left: { x: -1, y: 0 }
+      };
+      const OPPOSITE = { top: "bottom", right: "left", bottom: "top", left: "right" };
+      const JAPANESE_SIDE = { top: "上", right: "右", bottom: "下", left: "左" };
+
+      const viewport = document.getElementById("viewport");
+      const stage = document.getElementById("stage");
+      const nodeLayer = document.getElementById("nodeLayer");
+      const edgeControlLayer = document.getElementById("edgeControlLayer");
+      const edgesSvg = document.getElementById("edges");
+      const statusEl = document.getElementById("status");
+      const hintEl = document.getElementById("hint");
+      const zoomReadout = document.getElementById("zoomReadout");
+      const editorDialog = document.getElementById("editorDialog");
+      const editorText = document.getElementById("editorText");
+      const jsonFileInput = document.getElementById("jsonFileInput");
+      const detailTools = document.getElementById("detailTools");
+      const totalEstimateValue = document.getElementById("totalEstimateValue");
+      const doneEstimateValue = document.getElementById("doneEstimateValue");
+      const progressRateValue = document.getElementById("progressRateValue");
+      const criticalEstimateValue = document.getElementById("criticalEstimateValue");
+      const criticalDoneValue = document.getElementById("criticalDoneValue");
+      const criticalProgressValue = document.getElementById("criticalProgressValue");
+      const nodeTextSizeSlider = document.getElementById("nodeTextSizeSlider");
+      const nodeTextSizeValue = document.getElementById("nodeTextSizeValue");
+      const detailPanel = document.getElementById("detailPanel");
+      const detailTypeBadge = document.getElementById("detailTypeBadge");
+      const detailTitle = document.getElementById("detailTitle");
+      const detailMetaView = document.getElementById("detailMetaView");
+      const detailMarkdownView = document.getElementById("detailMarkdownView");
+      const detailNameEditor = document.getElementById("detailNameEditor");
+      const detailEstimateEditor = document.getElementById("detailEstimateEditor");
+      const detailOwnerEditor = document.getElementById("detailOwnerEditor");
+      const detailMarkdownEditor = document.getElementById("detailMarkdownEditor");
+
+      const history = {
+        past: [],
+        future: [],
+        limit: 80
+      };
+
+      const state = {
+        nodes: [],
+        edges: [],
+        selected: null,
+        pendingPort: null,
+        palette: null,
+        editingNodeId: null,
+        editingNodeField: null,
+        detailVisible: false,
+        detailEditing: false,
+        detailEditingNodeId: null,
+        viewMode: "simple",
+        nodeTextSize: DEFAULT_NODE_TEXT_SIZE,
+        pan: { x: 0, y: 0 },
+        zoom: 1
+      };
+
+      let nextId = 1;
+      let panGesture = null;
+      let centerClickTimer = null;
+
+      function freshId(prefix) {
+        const id = `${prefix}-${nextId}`;
+        nextId += 1;
+        return id;
+      }
+
+      function makeInitialState() {
+        const root = {
+          id: freshId("node"),
+          type: "artifact",
+          text: "成果物",
+          detail: "",
+          estimate: "",
+          owner: "",
+          statuses: [],
+          x: 0,
+          y: 0,
+          gridX: 0,
+          gridY: 0
+        };
+        state.nodes = [root];
+        state.edges = [];
+        state.selected = { type: "node", id: root.id };
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+      }
+
+      function normalizeGraphData(parsed) {
+        if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges) || !parsed.nodes.length) {
+          throw new Error("PFD JSONとして読み込めませんでした。");
+        }
+
+        const usedNodeIds = new Set();
+        const nodes = parsed.nodes.map((node, index) => {
+          let id = String(node.id || `node-import-${index + 1}`);
+          while (usedNodeIds.has(id)) id = `${id}-${index + 1}`;
+          usedNodeIds.add(id);
+          return {
+            id,
+            type: node.type === "process" ? "process" : "artifact",
+            text: typeof node.text === "string" ? node.text : "",
+            detail: typeof node.detail === "string" ? node.detail : "",
+            estimate: typeof node.estimate === "string" ? node.estimate : "",
+            owner: typeof node.owner === "string" ? node.owner : "",
+            statuses: normalizeStatuses(node.statuses),
+            x: Number.isFinite(node.x) ? node.x : index * GRID_X,
+            y: Number.isFinite(node.y) ? node.y : 0,
+            gridX: Number.isFinite(node.gridX) ? node.gridX : index,
+            gridY: Number.isFinite(node.gridY) ? node.gridY : 0
+          };
+        });
+        const nodeById = new Map(nodes.map(node => [node.id, node]));
+        const usedEdgeIds = new Set();
+        const seenPairs = new Set();
+        const edges = parsed.edges
+          .filter(edge => {
+            const source = nodeById.get(edge.from);
+            const target = nodeById.get(edge.to);
+            if (!source || !target || source.id === target.id || source.type === target.type) return false;
+            const key = `${source.id}->${target.id}`;
+            if (seenPairs.has(key)) return false;
+            seenPairs.add(key);
+            return true;
+          })
+          .map((edge, index) => {
+            let id = String(edge.id || `edge-import-${index + 1}`);
+            while (usedEdgeIds.has(id)) id = `${id}-${index + 1}`;
+            usedEdgeIds.add(id);
+            return {
+              id,
+              from: edge.from,
+              to: edge.to,
+              fromSide: "right",
+              toSide: "left"
+            };
+          });
+
+        return {
+          nodes,
+          edges,
+          viewMode: parsed.viewMode === "detail" ? "detail" : null,
+          nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize)
+        };
+      }
+
+      function cloneNodeData(node) {
+        return {
+          ...node,
+          estimate: typeof node.estimate === "string" ? node.estimate : "",
+          owner: typeof node.owner === "string" ? node.owner : "",
+          statuses: normalizeStatuses(node.statuses)
+        };
+      }
+
+      function graphPayload() {
+        return {
+          nodes: state.nodes.map(cloneNodeData),
+          edges: state.edges.map(edge => ({ ...edge })),
+          viewMode: state.viewMode,
+          nodeTextSize: state.nodeTextSize
+        };
+      }
+
+      function normalizeNodeTextSize(value) {
+        const number = Number(value);
+        return Number.isFinite(number)
+          ? Math.min(18, Math.max(10, Math.round(number)))
+          : DEFAULT_NODE_TEXT_SIZE;
+      }
+
+      function applyGraphData(graph) {
+        state.nodes = graph.nodes.map(cloneNodeData);
+        state.edges = graph.edges.map(edge => ({ ...edge }));
+        if (graph.viewMode) state.viewMode = graph.viewMode;
+        state.nodeTextSize = normalizeNodeTextSize(graph.nodeTextSize);
+        state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        nextId = computeNextIdFromGraph();
+        autoLayout();
+        closePalette();
+        closeEditor();
+        render();
+        saveState();
+        centerOnGraph();
+      }
+
+      function loadState() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+          makeInitialState();
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(saved);
+          const graph = normalizeGraphData(parsed);
+          state.nodes = graph.nodes.map(cloneNodeData);
+          state.edges = graph.edges;
+          if (graph.viewMode) state.viewMode = graph.viewMode;
+          state.nodeTextSize = normalizeNodeTextSize(graph.nodeTextSize);
+          nextId = computeNextIdFromGraph();
+          state.selected = { type: "node", id: state.nodes[0].id };
+          state.editingNodeField = null;
+        } catch {
+          makeInitialState();
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(graphPayload()));
+      }
+
+      function cloneSnapshot() {
+        return {
+          nodes: state.nodes.map(cloneNodeData),
+          edges: state.edges.map(edge => ({ ...edge })),
+          selected: state.selected ? { ...state.selected } : null,
+          nextId
+        };
+      }
+
+      function snapshotKey(snapshot) {
+        return JSON.stringify(snapshot);
+      }
+
+      function computeNextIdFromGraph() {
+        return Math.max(
+          1,
+          ...state.nodes.concat(state.edges).map(item => {
+            const match = String(item.id).match(/-(\d+)$/);
+            return match ? Number(match[1]) + 1 : 1;
+          })
+        );
+      }
+
+      function recordHistory() {
+        const snapshot = cloneSnapshot();
+        const previous = history.past[history.past.length - 1];
+        if (!previous || snapshotKey(previous) !== snapshotKey(snapshot)) {
+          history.past.push(snapshot);
+          if (history.past.length > history.limit) history.past.shift();
+        }
+        history.future = [];
+        updateHistoryControls();
+      }
+
+      function restoreSnapshot(snapshot) {
+        state.nodes = snapshot.nodes.map(cloneNodeData);
+        state.edges = snapshot.edges.map(edge => ({ ...edge }));
+        state.pendingPort = null;
+        state.editingNodeId = null;
+        state.editingNodeField = null;
+        const nodeIds = new Set(state.nodes.map(node => node.id));
+        const edgeIds = new Set(state.edges.map(edge => edge.id));
+        if (snapshot.selected?.type === "node" && nodeIds.has(snapshot.selected.id)) {
+          state.selected = { ...snapshot.selected };
+        } else if (snapshot.selected?.type === "edge" && edgeIds.has(snapshot.selected.id)) {
+          state.selected = { ...snapshot.selected };
+        } else {
+          state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
+        }
+        nextId = Math.max(snapshot.nextId || 1, computeNextIdFromGraph());
+        closePalette();
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        closeEditor();
+        render();
+        saveState();
+      }
+
+      function undo() {
+        if (!history.past.length) {
+          setStatus("戻せる操作はありません");
+          return;
+        }
+        history.future.push(cloneSnapshot());
+        restoreSnapshot(history.past.pop());
+        setStatus("元に戻しました");
+        updateHistoryControls();
+      }
+
+      function redo() {
+        if (!history.future.length) {
+          setStatus("やり直せる操作はありません");
+          return;
+        }
+        history.past.push(cloneSnapshot());
+        restoreSnapshot(history.future.pop());
+        setStatus("やり直しました");
+        updateHistoryControls();
+      }
+
+      function updateHistoryControls() {
+        document.querySelectorAll('[data-command="undo"]').forEach(button => {
+          button.disabled = history.past.length === 0;
+        });
+        document.querySelectorAll('[data-command="redo"]').forEach(button => {
+          button.disabled = history.future.length === 0;
+        });
+      }
+
+      function setViewMode(mode) {
+        const nextMode = mode === "detail" ? "detail" : "simple";
+        if (state.viewMode === nextMode) return;
+        state.viewMode = nextMode;
+        state.editingNodeField = null;
+        render();
+        saveState();
+        setStatus(nextMode === "detail" ? "詳細モードに切り替えました" : "シンプルモードに切り替えました");
+      }
+
+      function updateViewModeControls() {
+        document.querySelectorAll("[data-mode]").forEach(button => {
+          const active = button.dataset.mode === state.viewMode;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+        detailTools.classList.toggle("visible", state.viewMode === "detail");
+        updateDetailMetrics();
+        updateTextSizeControls();
+      }
+
+      function updateDetailMetrics() {
+        const metrics = estimateMetrics();
+        const critical = criticalPathInfo();
+        totalEstimateValue.textContent = formatEstimateDays(metrics.totalDays);
+        doneEstimateValue.textContent = formatEstimateDays(metrics.doneDays);
+        progressRateValue.textContent = `${Math.round(metrics.progress * 100)}%`;
+        criticalEstimateValue.textContent = formatEstimateDays(critical.totalDays);
+        criticalDoneValue.textContent = formatEstimateDays(critical.doneDays);
+        criticalProgressValue.textContent = `${Math.round(critical.progress * 100)}%`;
+      }
+
+      function updateTextSizeControls() {
+        const size = normalizeNodeTextSize(state.nodeTextSize);
+        nodeTextSizeSlider.value = String(size);
+        nodeTextSizeValue.textContent = `${size}px`;
+      }
+
+      function setNodeTextSize(value, persist = false) {
+        const nextSize = normalizeNodeTextSize(value);
+        if (state.nodeTextSize === nextSize && !persist) return;
+        state.nodeTextSize = nextSize;
+        renderNodes();
+        updateTextSizeControls();
+        if (persist) saveState();
+      }
+
+      function applyNodeDisplayScale(el) {
+        const titleSize = normalizeNodeTextSize(state.nodeTextSize);
+        const metaSize = Math.max(9, Math.round(titleSize * .82 * 10) / 10);
+        const iconSize = Math.max(15, Math.round(titleSize * 1.38));
+        const iconSvgSize = Math.max(10, Math.round(titleSize * .92));
+        el.style.setProperty("--node-title-size", `${titleSize}px`);
+        el.style.setProperty("--node-meta-size", `${metaSize}px`);
+        el.style.setProperty("--node-status-icon-size", `${iconSize}px`);
+        el.style.setProperty("--node-status-svg-size", `${iconSvgSize}px`);
+        el.style.setProperty("--node-status-choice-height", `${iconSize + 4}px`);
+        el.style.setProperty("--node-estimate-field-width", `${Math.round(metaSize * 6.5)}px`);
+        el.style.setProperty("--node-owner-field-width", `${Math.round(metaSize * 6.8)}px`);
+      }
+
+      function isTextEditingTarget(target) {
+        return Boolean(target.closest("textarea, input, [contenteditable='true']"));
+      }
+
+      function isTitleEditingTarget(target) {
+        return Boolean(target.closest(".title-editor"));
+      }
+
+      function clearCenterClickTimer() {
+        if (centerClickTimer) {
+          clearTimeout(centerClickTimer);
+          centerClickTimer = null;
+        }
+      }
+
+      function isNodeCenterClick(nodeEl, event) {
+        const rect = nodeEl.getBoundingClientRect();
+        const dx = Math.abs(event.clientX - (rect.left + rect.width / 2));
+        const dy = Math.abs(event.clientY - (rect.top + rect.height / 2));
+        return dx <= rect.width * .28 && dy <= rect.height * .28;
+      }
+
+      function nodeDetailFieldFromClick(nodeEl, event) {
+        if (state.viewMode !== "detail") return null;
+        const hotspot = event.target.closest("[data-node-field-hotspot]");
+        if (hotspot) return hotspot.dataset.nodeFieldHotspot;
+        const rect = nodeEl.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        if (x <= .45 && y <= .42) return "statuses";
+        if (x <= .48 && y >= .58) return "estimate";
+        if (x >= .52 && y >= .58) return "owner";
+        return null;
+      }
+
+      function findNode(id) {
+        return state.nodes.find(node => node.id === id);
+      }
+
+      function findEdge(id) {
+        return state.edges.find(edge => edge.id === id);
+      }
+
+      function selectedNode() {
+        return state.selected?.type === "node" ? findNode(state.selected.id) : null;
+      }
+
+      function setStatus(text) {
+        statusEl.textContent = text;
+      }
+
+      function setHint(text) {
+        hintEl.textContent = text;
+      }
+
+      function displayText(node) {
+        if (node.text.trim()) return node.text;
+        return node.type === "process" ? "プロセス" : "成果物";
+      }
+
+      function nodeTypeLabel(type) {
+        return type === "process" ? "プロセス" : "成果物";
+      }
+
+      function defaultText(type) {
+        return type === "process" ? "プロセス" : "成果物";
+      }
+
+      function oppositeType(type) {
+        return type === "process" ? "artifact" : "process";
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value).replaceAll("`", "&#96;");
+      }
+
+      function normalizeStatuses(value) {
+        if (!Array.isArray(value)) return [];
+        const seen = new Set();
+        return value
+          .map(item => String(item))
+          .filter(id => {
+            if (!STATUS_IDS.has(id) || seen.has(id)) return false;
+            seen.add(id);
+            return true;
+          })
+          .slice(0, 3);
+      }
+
+      function statusLabel(id) {
+        return STATUS_OPTIONS.find(status => status.id === id)?.label || id;
+      }
+
+      function estimateMetrics() {
+        const processNodes = state.nodes.filter(node => node.type === "process");
+        const totalDays = processNodes.reduce((sum, node) => sum + estimateDaysFromText(node.estimate), 0);
+        const doneDays = processNodes
+          .filter(node => normalizeStatuses(node.statuses).includes("done"))
+          .reduce((sum, node) => sum + estimateDaysFromText(node.estimate), 0);
+        return {
+          totalDays,
+          doneDays,
+          progress: totalDays > 0 ? Math.min(1, doneDays / totalDays) : 0
+        };
+      }
+
+      function estimateDaysFromText(value) {
+        const text = normalizeEstimateText(value);
+        if (!text) return 0;
+        const tokenPattern = /(\d+(?:\.\d+)?)\s*(ヶ月|カ月|か月|weeks?|week|w|週間|週|months?|month|mo|days?|day|d|日間|日|hours?|hour|hrs?|hr|h|時間|時|minutes?|minute|mins?|min|分)?/gi;
+        let total = 0;
+        let matched = false;
+        let match;
+        while ((match = tokenPattern.exec(text))) {
+          const amount = Number(match[1]);
+          if (!Number.isFinite(amount)) continue;
+          matched = true;
+          total += amount * estimateUnitToDays(match[2] || "");
+        }
+        return matched ? total : 0;
+      }
+
+      function normalizeEstimateText(value) {
+        return String(value || "")
+          .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
+          .replace(/[．，]/g, char => char === "．" ? "." : ",")
+          .replace(/,/g, "")
+          .trim();
+      }
+
+      function estimateUnitToDays(unit) {
+        const normalized = String(unit || "").toLowerCase();
+        if (!normalized) return 1;
+        if (/^(時間|時|h|hr|hrs|hour|hours)$/.test(normalized)) return 1 / WORK_HOURS_PER_DAY;
+        if (/^(分|min|mins|minute|minutes)$/.test(normalized)) return 1 / (WORK_HOURS_PER_DAY * 60);
+        if (/^(週|週間|w|week|weeks)$/.test(normalized)) return 5;
+        if (/^(ヶ月|カ月|か月|月|mo|month|months)$/.test(normalized)) return 20;
+        return 1;
+      }
+
+      function formatEstimateDays(days) {
+        if (!Number.isFinite(days) || days <= 0) return "0日";
+        if (days < 1) return `${formatNumber(days * WORK_HOURS_PER_DAY)}時間`;
+        return `${formatNumber(days)}日`;
+      }
+
+      function formatNumber(value) {
+        const rounded = Math.round(value * 10) / 10;
+        return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+      }
+
+      function criticalPathInfo() {
+        const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        const validEdges = state.edges.filter(edge => nodeMap.has(edge.from) && nodeMap.has(edge.to));
+        const outgoing = new Map(state.nodes.map(node => [node.id, []]));
+        const indegree = new Map(state.nodes.map(node => [node.id, 0]));
+        validEdges.forEach(edge => {
+          outgoing.get(edge.from).push(edge);
+          indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
+        });
+
+        const queue = state.nodes
+          .filter(node => (indegree.get(node.id) || 0) === 0)
+          .sort(compareGraphOrder)
+          .map(node => node.id);
+        const order = [];
+        const queued = new Set(queue);
+        while (queue.length) {
+          const id = queue.shift();
+          order.push(id);
+          (outgoing.get(id) || []).forEach(edge => {
+            indegree.set(edge.to, Math.max(0, (indegree.get(edge.to) || 0) - 1));
+            if (indegree.get(edge.to) === 0 && !queued.has(edge.to)) {
+              queued.add(edge.to);
+              queue.push(edge.to);
+              queue.sort((left, right) => compareGraphOrder(nodeMap.get(left), nodeMap.get(right)));
+            }
+          });
+        }
+
+        state.nodes
+          .filter(node => !queued.has(node.id))
+          .sort(compareGraphOrder)
+          .forEach(node => order.push(node.id));
+
+        const distance = new Map();
+        const predecessor = new Map();
+        state.nodes.forEach(node => {
+          distance.set(node.id, nodeDurationDays(node));
+        });
+
+        order.forEach(id => {
+          const baseDistance = distance.get(id) || 0;
+          (outgoing.get(id) || []).forEach(edge => {
+            const target = nodeMap.get(edge.to);
+            const candidate = baseDistance + nodeDurationDays(target);
+            const currentDistance = distance.get(edge.to) || 0;
+            const tiesInitialProcess = target?.type === "process" &&
+              !predecessor.has(edge.to) &&
+              Math.abs(candidate - currentDistance) <= 1e-9 &&
+              candidate > 0;
+            if (candidate > currentDistance + 1e-9 || tiesInitialProcess) {
+              distance.set(edge.to, candidate);
+              predecessor.set(edge.to, edge);
+            }
+          });
+        });
+
+        const endId = [...distance.entries()]
+          .sort((a, b) => b[1] - a[1] || compareGraphOrder(nodeMap.get(b[0]), nodeMap.get(a[0])))
+          [0]?.[0];
+        if (!endId || (distance.get(endId) || 0) <= 0) return emptyCriticalPathInfo();
+
+        const criticalEdges = new Set();
+        const criticalNodes = new Set([endId]);
+        const seenNodes = new Set();
+        let currentId = endId;
+        while (predecessor.has(currentId) && !seenNodes.has(currentId)) {
+          seenNodes.add(currentId);
+          const edge = predecessor.get(currentId);
+          criticalEdges.add(edge.id);
+          currentId = edge.from;
+          criticalNodes.add(currentId);
+        }
+        const totalDays = distance.get(endId) || 0;
+        const doneDays = [...criticalNodes].reduce((sum, nodeId) => {
+          const node = nodeMap.get(nodeId);
+          if (node?.type !== "process" || !normalizeStatuses(node.statuses).includes("done")) return sum;
+          return sum + nodeDurationDays(node);
+        }, 0);
+        return {
+          edgeIds: criticalEdges,
+          nodeIds: criticalNodes,
+          totalDays,
+          doneDays,
+          progress: totalDays > 0 ? Math.min(1, doneDays / totalDays) : 0
+        };
+      }
+
+      function emptyCriticalPathInfo() {
+        return {
+          edgeIds: new Set(),
+          nodeIds: new Set(),
+          totalDays: 0,
+          doneDays: 0,
+          progress: 0
+        };
+      }
+
+      function criticalPathEdgeIds() {
+        return criticalPathInfo().edgeIds;
+      }
+
+      function nodeDurationDays(node) {
+        return node?.type === "process" ? estimateDaysFromText(node.estimate) : 0;
+      }
+
+      function compareGraphOrder(left, right) {
+        if (!left || !right) return 0;
+        return (left.gridX || 0) - (right.gridX || 0) ||
+          (left.gridY || 0) - (right.gridY || 0) ||
+          left.id.localeCompare(right.id);
+      }
+
+      function statusIcon(id) {
+        if (id === "done") {
+          return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+        }
+        if (id === "trouble") {
+          return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="m10.3 4.3-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-2.7l-8-14a2 2 0 0 0-3.4 0Z"></path></svg>';
+        }
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg>';
+      }
+
+      function renderStatusIcon(id) {
+        const safeId = escapeAttribute(id);
+        const label = escapeAttribute(statusLabel(id));
+        return `<span class="status-icon ${safeId}" title="${label}" aria-label="${label}">${statusIcon(id)}</span>`;
+      }
+
+      function renderStatusPill(id) {
+        return `<span class="detail-status-pill">${renderStatusIcon(id)}${escapeHtml(statusLabel(id))}</span>`;
+      }
+
+      function renderDetailMeta(node, editing = false) {
+        const estimate = (node.estimate || "").trim();
+        const owner = (node.owner || "").trim();
+        const statuses = normalizeStatuses(node.statuses);
+        if (editing) {
+          return `
+          <dl class="detail-meta-grid">
+            <div><dt>見積もり期間</dt><dd data-meta-field="estimate">${renderEditableText(estimate, "estimate", "未設定")}</dd></div>
+            <div><dt>担当者</dt><dd data-meta-field="owner">${renderEditableOwner(owner)}</dd></div>
+            <div><dt>状況</dt><dd data-meta-field="status">${renderEditableStatuses(statuses)}</dd></div>
+          </dl>
+        `;
+        }
+        const statusHtml = statuses.length
+          ? `<span class="detail-status-list">${statuses.map(renderStatusPill).join("")}</span>`
+          : '<span class="detail-muted">未設定</span>';
+        return `
+          <dl class="detail-meta-grid">
+            <div><dt>見積もり期間</dt><dd data-meta-field="estimate">${estimate ? escapeHtml(estimate) : '<span class="detail-muted">未設定</span>'}</dd></div>
+            <div><dt>担当者</dt><dd data-meta-field="owner">${owner ? escapeHtml(owner) : '<span class="detail-muted">未設定</span>'}</dd></div>
+            <div><dt>状況</dt><dd data-meta-field="status">${statusHtml}</dd></div>
+          </dl>
+        `;
+      }
+
+      function renderEditableText(value, field, placeholder) {
+        return `<span class="detail-inline-edit" contenteditable="true" spellcheck="false" data-detail-inline="${escapeAttribute(field)}" data-placeholder="${escapeAttribute(placeholder)}">${escapeHtml(value)}</span>`;
+      }
+
+      function renderEditableOwner(value) {
+        const suggestions = ownerSuggestions(value);
+        return `
+          <input class="detail-inline-input" data-detail-owner-input value="${escapeAttribute(value)}" list="ownerSuggestionList" placeholder="未設定" autocomplete="off">
+          <datalist id="ownerSuggestionList">
+            ${suggestions.map(owner => `<option value="${escapeAttribute(owner)}"></option>`).join("")}
+          </datalist>
+        `;
+      }
+
+      function ownerSuggestions(currentValue = "") {
+        const seen = new Set();
+        return state.nodes
+          .map(node => (node.owner || "").trim())
+          .concat((currentValue || "").trim())
+          .filter(owner => {
+            if (!owner || seen.has(owner)) return false;
+            seen.add(owner);
+            return true;
+          })
+          .sort((a, b) => a.localeCompare(b, "ja"));
+      }
+
+      function renderEditableStatuses(statuses) {
+        const selected = new Set(statuses);
+        return `<span class="detail-status-list editable-statuses">${STATUS_OPTIONS.map(status => `
+          <label class="detail-status-pill status-toggle">
+            <input class="status-pill-input" type="checkbox" data-status-editor="${escapeAttribute(status.id)}"${selected.has(status.id) ? " checked" : ""}>
+            ${renderStatusIcon(status.id)}${escapeHtml(status.label)}
+          </label>
+        `).join("")}</span>`;
+      }
+
+      function readStatusEditorValues() {
+        const inlineEditors = [...detailMetaView.querySelectorAll("[data-status-editor]")];
+        const inputs = inlineEditors.length ? inlineEditors : [...document.querySelectorAll("[data-status-editor]")];
+        return normalizeStatuses(inputs
+          .filter(input => input.checked)
+          .map(input => input.dataset.statusEditor));
+      }
+
+      function syncDetailEditorFields(node) {
+        detailNameEditor.value = node.text || "";
+        detailEstimateEditor.value = node.estimate || "";
+        detailOwnerEditor.value = node.owner || "";
+        detailMarkdownEditor.value = node.detail || "";
+        const statuses = new Set(normalizeStatuses(node.statuses));
+        document.querySelectorAll("[data-status-editor]").forEach(input => {
+          input.checked = statuses.has(input.dataset.statusEditor);
+        });
+      }
+
+      function sameList(left, right) {
+        return left.length === right.length && left.every((value, index) => value === right[index]);
+      }
+
+      function renderInlineMarkdown(value) {
+        let html = escapeHtml(value);
+        html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+        html = html.replace(/\[([^\]]+)]\(([^)\s]+)\)/g, (_, label, href) => {
+          const safeHref = /^https?:\/\//i.test(href) || href.startsWith("#") || href.startsWith("mailto:")
+            ? href
+            : "#";
+          return `<a href="${escapeAttribute(safeHref)}" target="_blank" rel="noreferrer">${label}</a>`;
+        });
+        html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+        return html;
+      }
+
+      function renderMarkdown(markdown) {
+        const source = String(markdown || "").replace(/\r\n/g, "\n").trim();
+        if (!source) return '<p class="markdown-empty">内容はまだありません。</p>';
+
+        const lines = source.split("\n");
+        const blocks = [];
+        let index = 0;
+        while (index < lines.length) {
+          const line = lines[index];
+          if (!line.trim()) {
+            index += 1;
+            continue;
+          }
+
+          if (line.trim().startsWith("```")) {
+            const code = [];
+            index += 1;
+            while (index < lines.length && !lines[index].trim().startsWith("```")) {
+              code.push(lines[index]);
+              index += 1;
+            }
+            if (index < lines.length) index += 1;
+            blocks.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
+            continue;
+          }
+
+          const heading = line.match(/^(#{1,4})\s+(.+)$/);
+          if (heading) {
+            const level = heading[1].length;
+            blocks.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+            index += 1;
+            continue;
+          }
+
+          if (/^>\s?/.test(line)) {
+            const quote = [];
+            while (index < lines.length && /^>\s?/.test(lines[index])) {
+              quote.push(lines[index].replace(/^>\s?/, ""));
+              index += 1;
+            }
+            blocks.push(`<blockquote>${quote.map(part => `<p>${renderInlineMarkdown(part)}</p>`).join("")}</blockquote>`);
+            continue;
+          }
+
+          if (/^\s*[-*]\s+/.test(line)) {
+            const items = [];
+            while (index < lines.length && /^\s*[-*]\s+/.test(lines[index])) {
+              items.push(lines[index].replace(/^\s*[-*]\s+/, ""));
+              index += 1;
+            }
+            blocks.push(`<ul>${items.map(item => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</ul>`);
+            continue;
+          }
+
+          if (/^\s*\d+\.\s+/.test(line)) {
+            const items = [];
+            while (index < lines.length && /^\s*\d+\.\s+/.test(lines[index])) {
+              items.push(lines[index].replace(/^\s*\d+\.\s+/, ""));
+              index += 1;
+            }
+            blocks.push(`<ol>${items.map(item => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</ol>`);
+            continue;
+          }
+
+          const paragraph = [];
+          while (
+            index < lines.length &&
+            lines[index].trim() &&
+            !lines[index].trim().startsWith("```") &&
+            !/^(#{1,4})\s+/.test(lines[index]) &&
+            !/^>\s?/.test(lines[index]) &&
+            !/^\s*[-*]\s+/.test(lines[index]) &&
+            !/^\s*\d+\.\s+/.test(lines[index])
+          ) {
+            paragraph.push(lines[index]);
+            index += 1;
+          }
+          blocks.push(`<p>${renderInlineMarkdown(paragraph.join("\n")).replace(/\n/g, "<br>")}</p>`);
+        }
+        return blocks.join("");
+      }
+
+      function stagePointFromClient(clientX, clientY) {
+        const rect = viewport.getBoundingClientRect();
+        return {
+          x: (clientX - rect.left - state.pan.x) / state.zoom,
+          y: (clientY - rect.top - state.pan.y) / state.zoom
+        };
+      }
+
+      function clientPointFromStage(x, y) {
+        const rect = viewport.getBoundingClientRect();
+        return {
+          x: rect.left + state.pan.x + x * state.zoom,
+          y: rect.top + state.pan.y + y * state.zoom
+        };
+      }
+
+      function updateTransform() {
+        stage.style.transform = `translate(${state.pan.x}px, ${state.pan.y}px) scale(${state.zoom})`;
+        zoomReadout.textContent = `${Math.round(state.zoom * 100)}%`;
+      }
+
+      function centerOnGraph() {
+        const bounds = graphBounds();
+        const rect = viewport.getBoundingClientRect();
+        state.zoom = Math.min(1.15, Math.max(.42, Math.min(
+          (rect.width - 130) / Math.max(bounds.width, 300),
+          (rect.height - 130) / Math.max(bounds.height, 220)
+        )));
+        state.pan.x = rect.width / 2 - (bounds.cx * state.zoom);
+        state.pan.y = rect.height / 2 - (bounds.cy * state.zoom);
+        updateTransform();
+      }
+
+      function graphBounds() {
+        if (!state.nodes.length) {
+          return { minX: -100, maxX: 100, minY: -80, maxY: 80, width: 200, height: 160, cx: 0, cy: 0 };
+        }
+        const minX = Math.min(...state.nodes.map(node => node.x - 120));
+        const maxX = Math.max(...state.nodes.map(node => node.x + 120));
+        const minY = Math.min(...state.nodes.map(node => node.y - 90));
+        const maxY = Math.max(...state.nodes.map(node => node.y + 90));
+        return {
+          minX,
+          maxX,
+          minY,
+          maxY,
+          width: maxX - minX,
+          height: maxY - minY,
+          cx: (minX + maxX) / 2,
+          cy: (minY + maxY) / 2
+        };
+      }
+
+      function setZoom(nextZoom, anchorClient) {
+        const oldZoom = state.zoom;
+        const clamped = Math.min(1.9, Math.max(.36, nextZoom));
+        if (oldZoom === clamped) return;
+        const anchor = anchorClient || {
+          x: viewport.getBoundingClientRect().left + viewport.clientWidth / 2,
+          y: viewport.getBoundingClientRect().top + viewport.clientHeight / 2
+        };
+        const before = stagePointFromClient(anchor.x, anchor.y);
+        state.zoom = clamped;
+        const rect = viewport.getBoundingClientRect();
+        state.pan.x = anchor.x - rect.left - before.x * state.zoom;
+        state.pan.y = anchor.y - rect.top - before.y * state.zoom;
+        updateTransform();
+      }
+
+      function createNode(type, gridX, gridY, text = "") {
+        const node = {
+          id: freshId("node"),
+          type,
+          text: text || defaultText(type),
+          detail: "",
+          estimate: "",
+          owner: "",
+          statuses: [],
+          x: gridX * GRID_X,
+          y: gridY * GRID_Y,
+          gridX,
+          gridY
+        };
+        state.nodes.push(node);
+        return node;
+      }
+
+      function isValidConnection(from, to) {
+        const source = findNode(from);
+        const target = findNode(to);
+        return Boolean(source && target && source.id !== target.id && source.type !== target.type);
+      }
+
+      function primaryOutgoingEdge(nodeId) {
+        const edges = state.edges.filter(edge => edge.from === nodeId && findNode(edge.to));
+        return edges.find(edge => edge.fromSide === "right") || edges[0] || null;
+      }
+
+      function portPlan(node, side) {
+        if (!node) {
+          return { enabled: false, validType: null, mode: "none", connectable: false, title: "" };
+        }
+        if (side === "right") {
+          return {
+            enabled: true,
+            validType: oppositeType(node.type),
+            mode: "downstream",
+            connectable: true,
+            title: "右に接続先を追加"
+          };
+        }
+        if (side === "left") {
+          return {
+            enabled: true,
+            validType: oppositeType(node.type),
+            mode: "upstream",
+            connectable: true,
+            title: "左に接続元を追加"
+          };
+        }
+        const edge = primaryOutgoingEdge(node.id);
+        const target = edge ? findNode(edge.to) : null;
+        if (!target) {
+          return {
+            enabled: false,
+            validType: null,
+            mode: "parallel",
+            connectable: false,
+            target: null,
+            title: "接続先があるときだけ並列入力を追加できます"
+          };
+        }
+        return {
+          enabled: true,
+          validType: node.type,
+          mode: "parallel",
+          connectable: false,
+          target,
+          title: `${displayText(target)}への並列入力を追加`
+        };
+      }
+
+      function isValidPendingPort(node, side) {
+        const pending = state.pendingPort;
+        if (!pending || !node) return false;
+        const anchor = findNode(pending.nodeId);
+        if (!anchor || anchor.id === node.id) return false;
+        if (pending.mode === "source") {
+          return side === "left" && isValidConnection(anchor.id, node.id);
+        }
+        return side === "right" && isValidConnection(node.id, anchor.id);
+      }
+
+      function isPortEnabled(node, side) {
+        if (state.pendingPort) return isValidPendingPort(node, side);
+        return portPlan(node, side).enabled;
+      }
+
+      function createEdge(from, to, fromSide = "right", toSide = "left") {
+        if (from === to) return null;
+        if (!isValidConnection(from, to)) return null;
+        fromSide = "right";
+        toSide = "left";
+        const exists = state.edges.some(edge =>
+          edge.from === from &&
+          edge.to === to
+        );
+        if (exists) return null;
+        const edge = {
+          id: freshId("edge"),
+          from,
+          to,
+          fromSide,
+          toSide
+        };
+        state.edges.push(edge);
+        return edge;
+      }
+
+      function nextFreeGridNear(origin, side, index = 0) {
+        const occupied = new Set(state.nodes.map(node => `${node.gridX},${node.gridY}`));
+        const dir = DIRS[side];
+        const horizontal = side === "top" || side === "bottom";
+        const offsets = [0, -1, 1, -2, 2, -3, 3, -4, 4];
+        const start = Math.min(index, offsets.length - 1);
+        for (let distance = 1; distance < 18; distance += 1) {
+          for (let i = start; i < offsets.length; i += 1) {
+            const offset = offsets[i];
+            const gridX = origin.gridX + dir.x * distance + (horizontal ? offset : 0);
+            const gridY = origin.gridY + dir.y * distance + (horizontal ? 0 : offset);
+            if (!occupied.has(`${gridX},${gridY}`)) {
+              return { gridX, gridY };
+            }
+          }
+        }
+        return {
+          gridX: origin.gridX + dir.x,
+          gridY: origin.gridY + dir.y + state.nodes.length
+        };
+      }
+
+      function addFromPort(anchorId, side, type) {
+        const anchor = findNode(anchorId);
+        if (!anchor) return;
+        const plan = portPlan(anchor, side);
+        if (!plan.enabled) {
+          setStatus(plan.title);
+          return;
+        }
+        if (type !== plan.validType) {
+          setStatus("成果物どうし、プロセスどうしは接続できません");
+          return;
+        }
+
+        let node;
+        let edge;
+        recordHistory();
+        if (plan.mode === "downstream") {
+          const siblingIndex = state.edges.filter(existing => existing.from === anchorId).length;
+          const spot = nextFreeGridNear(anchor, "right", siblingIndex);
+          node = createNode(type, spot.gridX, spot.gridY);
+          edge = createEdge(anchor.id, node.id);
+        } else if (plan.mode === "upstream") {
+          const siblingIndex = state.edges.filter(existing => existing.to === anchorId).length;
+          const spot = nextFreeGridNear(anchor, "left", siblingIndex);
+          node = createNode(type, spot.gridX, spot.gridY);
+          edge = createEdge(node.id, anchor.id);
+        } else {
+          const target = plan.target;
+          const siblingIndex = state.edges.filter(existing => existing.to === target.id).length;
+          const spot = nextFreeGridNear(anchor, side, siblingIndex);
+          node = createNode(type, spot.gridX, spot.gridY);
+          edge = createEdge(node.id, target.id);
+        }
+
+        if (!edge) {
+          state.nodes = state.nodes.filter(existing => existing.id !== node.id);
+          setStatus("同じ接続がすでにあります");
+          return;
+        }
+        state.selected = { type: "node", id: node.id };
+        state.pendingPort = null;
+        closePalette();
+        autoLayout();
+        render();
+        saveState();
+        startTitleEdit(node.id);
+        if (plan.mode === "downstream") {
+          setStatus(`${displayText(anchor)} の接続先として ${displayText(node)} を追加`);
+        } else if (plan.mode === "upstream") {
+          setStatus(`${displayText(anchor)} の接続元として ${displayText(node)} を追加`);
+        } else {
+          setStatus(`${displayText(plan.target)} への並列入力として ${displayText(node)} を追加`);
+        }
+      }
+
+      function addRoot(type) {
+        const selected = selectedNode();
+        let spot;
+        if (selected) {
+          spot = nextFreeGridNear(selected, "right");
+        } else {
+          spot = nextFreeGridNear({ gridX: 0, gridY: 0 }, "right");
+        }
+        recordHistory();
+        const node = createNode(type, spot.gridX, spot.gridY);
+        state.selected = { type: "node", id: node.id };
+        autoLayout();
+        render();
+        saveState();
+        startTitleEdit(node.id);
+        setStatus(`${displayText(node)} を追加`);
+      }
+
+      function startConnection(anchorId, side) {
+        const node = findNode(anchorId);
+        const plan = portPlan(node, side);
+        if (!node || !plan.connectable) {
+          setStatus("上下のポートは並列入力の追加に使います");
+          return;
+        }
+        state.pendingPort = {
+          nodeId: anchorId,
+          side,
+          mode: side === "right" ? "source" : "target"
+        };
+        closePalette();
+        render();
+        setStatus(side === "right"
+          ? `${displayText(node)} の接続先を選択中`
+          : `${displayText(node)} の接続元を選択中`
+        );
+      }
+
+      function completeConnection(nodeId, side) {
+        const pending = state.pendingPort;
+        if (!pending) return false;
+        if (pending.nodeId === nodeId) {
+          state.pendingPort = null;
+          render();
+          setStatus("同じオブジェクトへの接続はキャンセルしました");
+          return true;
+        }
+        const anchor = findNode(pending.nodeId);
+        const node = findNode(nodeId);
+        if (!isValidPendingPort(node, side)) {
+          setStatus("接続できる候補だけ選択できます");
+          return false;
+        }
+        const fromId = pending.mode === "source" ? anchor.id : node.id;
+        const toId = pending.mode === "source" ? node.id : anchor.id;
+        if (state.edges.some(edge => edge.from === fromId && edge.to === toId)) {
+          state.pendingPort = null;
+          render();
+          setStatus("同じ接続がすでにあります");
+          return false;
+        }
+        recordHistory();
+        const edge = createEdge(fromId, toId);
+        state.pendingPort = null;
+        if (edge) {
+          state.selected = { type: "edge", id: edge.id };
+          autoLayout();
+          saveState();
+          setStatus("接続を追加");
+        } else {
+          setStatus("同じ接続がすでにあります");
+        }
+        render();
+        return true;
+      }
+
+      function deleteSelection() {
+        if (!state.selected) return;
+        let message = "削除しました";
+        if (state.selected.type === "node") {
+          const id = state.selected.id;
+          if (state.nodes.length <= 1) {
+            setStatus("最後のオブジェクトは残します");
+            return;
+          }
+          if (!findNode(id)) return;
+          recordHistory();
+          state.nodes = state.nodes.filter(node => node.id !== id);
+          state.edges = state.edges.filter(edge => edge.from !== id && edge.to !== id);
+          message = "オブジェクトを削除しました";
+        } else if (state.selected.type === "edge") {
+          if (!findEdge(state.selected.id)) return;
+          recordHistory();
+          state.edges = state.edges.filter(edge => edge.id !== state.selected.id);
+          message = "接続を削除しました";
+        }
+        state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
+        state.pendingPort = null;
+        closePalette();
+        autoLayout();
+        render();
+        saveState();
+        setStatus(message);
+      }
+
+      function clearAll() {
+        if (!confirm("現在の図を消して新しく始めますか？")) return;
+        recordHistory();
+        localStorage.removeItem(STORAGE_KEY);
+        nextId = 1;
+        makeInitialState();
+        state.pan = { x: 0, y: 0 };
+        state.zoom = 1;
+        autoLayout();
+        render();
+        saveState();
+        centerOnGraph();
+        setStatus("新しいPFDを開始");
+      }
+
+      function autoLayout() {
+        if (!state.nodes.length) return;
+
+        const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        state.edges = state.edges.filter(edge => {
+          const source = nodeMap.get(edge.from);
+          const target = nodeMap.get(edge.to);
+          if (!source || !target || source.id === target.id || source.type === target.type) return false;
+          edge.fromSide = "right";
+          edge.toSide = "left";
+          return true;
+        });
+
+        const outgoing = new Map();
+        const incoming = new Map();
+        const indegree = new Map(state.nodes.map(node => [node.id, 0]));
+        state.edges.forEach(edge => {
+          if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
+          if (!incoming.has(edge.to)) incoming.set(edge.to, []);
+          outgoing.get(edge.from).push(edge);
+          incoming.get(edge.to).push(edge);
+          indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
+        });
+
+        const layer = new Map(state.nodes.map(node => [node.id, 0]));
+        const queue = state.nodes
+          .filter(node => (indegree.get(node.id) || 0) === 0)
+          .sort((a, b) => a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id))
+          .map(node => node.id);
+        if (!queue.length && state.nodes[0]) queue.push(state.nodes[0].id);
+
+        const remainingIndegree = new Map(indegree);
+        const visited = new Set();
+        while (queue.length) {
+          const id = queue.shift();
+          if (visited.has(id)) continue;
+          visited.add(id);
+          (outgoing.get(id) || []).forEach(edge => {
+            layer.set(edge.to, Math.max(layer.get(edge.to) || 0, (layer.get(id) || 0) + 1));
+            remainingIndegree.set(edge.to, Math.max(0, (remainingIndegree.get(edge.to) || 0) - 1));
+            if (remainingIndegree.get(edge.to) === 0) queue.push(edge.to);
+          });
+        }
+
+        state.nodes.forEach((node, index) => {
+          if (!visited.has(node.id)) {
+            layer.set(node.id, Math.max(0, Number.isFinite(node.gridX) ? node.gridX : index));
+          }
+        });
+
+        alignSingleTargetLayers(layer, incoming, outgoing);
+
+        const minLayer = Math.min(...Array.from(layer.values()));
+        const groups = new Map();
+        state.nodes.forEach(node => {
+          const nodeLayerIndex = (layer.get(node.id) || 0) - minLayer;
+          if (!groups.has(nodeLayerIndex)) groups.set(nodeLayerIndex, []);
+          groups.get(nodeLayerIndex).push(node);
+        });
+
+        const layerKeys = [...groups.keys()].sort((a, b) => a - b);
+        const yPosition = new Map();
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex)
+            .sort((a, b) => a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
+          const offsets = centeredOffsets(group.length);
+          group.forEach((node, index) => yPosition.set(node.id, offsets[index]));
+        });
+
+        for (let pass = 0; pass < 7; pass += 1) {
+          layerKeys.forEach(nodeLayerIndex => {
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), incoming, edge => edge.from, yPosition);
+          });
+          [...layerKeys].reverse().forEach(nodeLayerIndex => {
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), outgoing, edge => edge.to, yPosition);
+          });
+        }
+
+        const averageY = Array.from(yPosition.values()).reduce((sum, value) => sum + value, 0) / Math.max(1, yPosition.size);
+        layerKeys.forEach(nodeLayerIndex => {
+          groups.get(nodeLayerIndex).forEach(node => {
+            node.gridX = nodeLayerIndex;
+            node.gridY = Math.round((yPosition.get(node.id) - averageY) * 4) / 4;
+          });
+        });
+
+        state.nodes.forEach(node => {
+          node.x = node.gridX * GRID_X;
+          node.y = node.gridY * GRID_Y;
+        });
+      }
+
+      function alignSingleTargetLayers(layer, incoming, outgoing) {
+        let changed = true;
+        for (let pass = 0; changed && pass < state.nodes.length; pass += 1) {
+          changed = false;
+          state.nodes.forEach(node => {
+            const edges = outgoing.get(node.id) || [];
+            if (!edges.length) return;
+
+            const targetLayers = [...new Set(edges
+              .map(edge => layer.get(edge.to))
+              .filter(value => Number.isFinite(value)))];
+            if (targetLayers.length !== 1) return;
+
+            const desiredLayer = Math.max(0, targetLayers[0] - 1);
+            const minAllowedLayer = Math.max(
+              0,
+              ...(incoming.get(node.id) || []).map(edge => (layer.get(edge.from) || 0) + 1)
+            );
+            const currentLayer = layer.get(node.id) || 0;
+            if (desiredLayer > currentLayer && desiredLayer >= minAllowedLayer) {
+              layer.set(node.id, desiredLayer);
+              changed = true;
+            }
+          });
+        }
+      }
+
+      function placeLayerNearNeighbors(group, edgeMap, neighborIdFromEdge, yPosition) {
+        if (!group || !group.length) return;
+        const desired = new Map();
+        group.forEach(node => {
+          const neighbors = (edgeMap.get(node.id) || [])
+            .map(edge => yPosition.get(neighborIdFromEdge(edge)))
+            .filter(value => Number.isFinite(value));
+          if (neighbors.length) {
+            desired.set(node.id, neighbors.reduce((sum, value) => sum + value, 0) / neighbors.length);
+          }
+        });
+
+        const ordered = [...group].sort((a, b) =>
+          neighborSortValue(a, desired, yPosition) - neighborSortValue(b, desired, yPosition) ||
+          yPosition.get(a.id) - yPosition.get(b.id) ||
+          a.id.localeCompare(b.id)
+        );
+
+        const fallbackOffsets = centeredOffsets(ordered.length);
+        const values = ordered.map((node, index) =>
+          desired.has(node.id) ? desired.get(node.id) : (Number.isFinite(yPosition.get(node.id)) ? yPosition.get(node.id) : fallbackOffsets[index])
+        );
+
+        for (let i = 1; i < values.length; i += 1) {
+          values[i] = Math.max(values[i], values[i - 1] + LAYOUT_ROW_GAP);
+        }
+        for (let i = values.length - 2; i >= 0; i -= 1) {
+          values[i] = Math.min(values[i], values[i + 1] - LAYOUT_ROW_GAP);
+        }
+
+        const desiredValues = ordered
+          .map(node => desired.get(node.id))
+          .filter(value => Number.isFinite(value));
+        if (desiredValues.length) {
+          const desiredAverage = desiredValues.reduce((sum, value) => sum + value, 0) / desiredValues.length;
+          const valueAverage = values.reduce((sum, value) => sum + value, 0) / values.length;
+          const shift = desiredAverage - valueAverage;
+          values.forEach((value, index) => {
+            values[index] = value + shift;
+          });
+        }
+
+        ordered.forEach((node, index) => {
+          yPosition.set(node.id, values[index]);
+        });
+      }
+
+      function neighborSortValue(node, desired, yPosition) {
+        const desiredValue = desired.get(node.id);
+        if (Number.isFinite(desiredValue)) return desiredValue;
+        const currentValue = yPosition.get(node.id);
+        return Number.isFinite(currentValue) ? currentValue : 0;
+      }
+
+      function centeredOffsets(count) {
+        if (count === 1) return [0];
+        if (count % 2 === 1) {
+          const middle = Math.floor(count / 2);
+          return Array.from({ length: count }, (_, index) => (index - middle) * LAYOUT_ROW_GAP);
+        }
+        const leftCount = count / 2;
+        return Array.from({ length: count }, (_, index) =>
+          (index < leftCount ? index - leftCount : index - leftCount + 1) * LAYOUT_ROW_GAP
+        );
+      }
+
+      function resolveGrid(gridX, gridY, occupied, axis) {
+        const candidates = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6];
+        for (const offset of candidates) {
+          const candidateX = axis === "x" ? gridX + offset : gridX;
+          const candidateY = axis === "y" ? gridY + offset : gridY;
+          if (!occupied.has(`${candidateX},${candidateY}`)) {
+            return { gridX: candidateX, gridY: candidateY };
+          }
+        }
+        return { gridX: gridX + occupied.size, gridY };
+      }
+
+      function untangleLooseEdges() {
+        const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        for (let pass = 0; pass < 3; pass += 1) {
+          state.edges.forEach(edge => {
+            const source = nodeMap.get(edge.from);
+            const target = nodeMap.get(edge.to);
+            if (!source || !target) return;
+            const dir = DIRS[edge.fromSide];
+            if (dir.x && Math.sign(target.gridX - source.gridX) !== dir.x) {
+              target.gridX = source.gridX + dir.x * Math.max(1, Math.abs(target.gridX - source.gridX));
+            }
+            if (dir.y && Math.sign(target.gridY - source.gridY) !== dir.y) {
+              target.gridY = source.gridY + dir.y * Math.max(1, Math.abs(target.gridY - source.gridY));
+            }
+          });
+          spreadCollisions();
+        }
+      }
+
+      function spreadCollisions() {
+        const used = new Set();
+        state.nodes.forEach(node => {
+          let key = `${node.gridX},${node.gridY}`;
+          let step = 0;
+          while (used.has(key)) {
+            step += 1;
+            node.gridX += step % 2 ? 1 : -1;
+            node.gridY += step % 3 === 0 ? 1 : 0;
+            key = `${node.gridX},${node.gridY}`;
+          }
+          used.add(key);
+        });
+      }
+
+      function render() {
+        renderEdges();
+        renderNodes();
+        renderGhostEdge();
+        renderDetailPanel();
+        updateTransform();
+        updateHint();
+        updateHistoryControls();
+        updateViewModeControls();
+      }
+
+      function renderNodes() {
+        nodeLayer.innerHTML = "";
+        state.nodes.forEach(node => {
+          const el = document.createElement("div");
+          el.className = `node ${node.type}`;
+          if (state.viewMode === "detail") {
+            el.classList.add("detail-mode");
+            applyNodeDisplayScale(el);
+          }
+          if (state.selected?.type === "node" && state.selected.id === node.id) el.classList.add("selected");
+          if (state.pendingPort?.nodeId === node.id) el.classList.add("pending-connect");
+          if (!node.text.trim()) el.classList.add("empty");
+          el.dataset.nodeId = node.id;
+          el.style.left = `${node.x}px`;
+          el.style.top = `${node.y}px`;
+          el.setAttribute("role", "button");
+          el.setAttribute("tabindex", "0");
+          el.setAttribute("title", "ダブルクリックで詳細を表示");
+
+          if (state.editingNodeId === node.id) {
+            const editor = document.createElement("div");
+            editor.className = "title-editor";
+            editor.innerHTML = `
+              <textarea class="title-input" data-title-input="${node.id}" rows="2" spellcheck="false"></textarea>
+            `;
+            const input = editor.querySelector(".title-input");
+            input.value = node.text || "";
+            input.addEventListener("blur", () => saveTitleEdit(node.id));
+            el.append(editor);
+          } else {
+            const label = document.createElement("div");
+            label.className = "node-label";
+            label.textContent = displayText(node);
+            el.append(label);
+            if (state.viewMode === "detail") {
+              renderNodeDetailBadges(el, node);
+            }
+          }
+
+          SIDES.forEach(side => {
+            const plan = portPlan(node, side);
+            const enabled = isPortEnabled(node, side);
+            const port = document.createElement("button");
+            port.className = `port ${side}`;
+            if (!enabled) port.classList.add("disabled");
+            port.dataset.nodeId = node.id;
+            port.dataset.side = side;
+            port.setAttribute("type", "button");
+            if (!enabled) port.disabled = true;
+            const title = state.pendingPort
+              ? "接続できる候補だけ選択できます"
+              : plan.title;
+            port.setAttribute("title", title);
+            port.setAttribute("aria-label", `${displayText(node)}の${JAPANESE_SIDE[side]}ポート`);
+            el.append(port);
+          });
+
+          nodeLayer.append(el);
+        });
+      }
+
+      function renderNodeDetailBadges(el, node) {
+        const statuses = normalizeStatuses(node.statuses);
+        const editingField = state.editingNodeField?.nodeId === node.id ? state.editingNodeField.field : null;
+
+        if (editingField === "statuses") {
+          renderNodeStatusEditor(el, node, statuses);
+        } else if (statuses.length) {
+          const statusList = document.createElement("div");
+          statusList.className = "node-status-icons";
+          statusList.innerHTML = statuses.map(renderStatusIcon).join("");
+          el.append(statusList);
+        }
+
+        const estimate = (node.estimate || "").trim();
+        const owner = (node.owner || "").trim();
+        if (editingField === "estimate") {
+          renderNodeTextFieldEditor(el, node, "estimate", estimate);
+        }
+        if (editingField === "owner") {
+          renderNodeTextFieldEditor(el, node, "owner", owner);
+        }
+        if (estimate || owner || editingField === "estimate" || editingField === "owner") {
+          const meta = document.createElement("div");
+          meta.className = "node-meta-row";
+          meta.innerHTML = `
+            <span class="node-meta estimate" data-node-field-hotspot="estimate" title="${escapeAttribute(estimate)}">${editingField === "estimate" ? "" : escapeHtml(estimate)}</span>
+            <span class="node-meta owner" data-node-field-hotspot="owner" title="${escapeAttribute(owner)}">${editingField === "owner" ? "" : escapeHtml(owner)}</span>
+          `;
+          el.append(meta);
+        }
+      }
+
+      function renderNodeTextFieldEditor(el, node, field, value) {
+        const editor = document.createElement("div");
+        editor.className = `node-field-editor ${field}`;
+        const listAttr = field === "owner" ? ` list="${nodeOwnerSuggestionListId(node.id)}"` : "";
+        const listHtml = field === "owner" ? renderNodeOwnerDatalist(node.id, value) : "";
+        editor.innerHTML = `
+          <input class="node-field-input ${field}" data-node-field-input="${field}" value="${escapeAttribute(value)}"${listAttr} autocomplete="off" spellcheck="false">
+          ${listHtml}
+        `;
+        const input = editor.querySelector("[data-node-field-input]");
+        input.addEventListener("blur", () => saveNodeFieldEdit());
+        el.append(editor);
+      }
+
+      function renderNodeStatusEditor(el, node, statuses) {
+        const selected = new Set(statuses);
+        const editor = document.createElement("div");
+        editor.className = "node-field-editor node-status-editor";
+        editor.innerHTML = STATUS_OPTIONS.map(status => `
+          <label class="node-status-choice" title="${escapeAttribute(status.label)}">
+            <input type="checkbox" data-node-status-editor="${escapeAttribute(status.id)}"${selected.has(status.id) ? " checked" : ""}>
+            ${renderStatusIcon(status.id)}${escapeHtml(status.label)}
+          </label>
+        `).join("");
+        el.append(editor);
+      }
+
+      function nodeOwnerSuggestionListId(nodeId) {
+        return `nodeOwnerSuggestions-${String(nodeId).replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+      }
+
+      function renderNodeOwnerDatalist(nodeId, value) {
+        return `
+          <datalist id="${escapeAttribute(nodeOwnerSuggestionListId(nodeId))}">
+            ${ownerSuggestions(value).map(owner => `<option value="${escapeAttribute(owner)}"></option>`).join("")}
+          </datalist>
+        `;
+      }
+
+      function renderEdges() {
+        [...edgesSvg.querySelectorAll(".edge-dynamic, .edge-hit")].forEach(el => el.remove());
+        edgeControlLayer.innerHTML = "";
+        const criticalEdges = state.viewMode === "detail" ? criticalPathEdgeIds() : new Set();
+        state.edges.forEach(edge => {
+          const from = findNode(edge.from);
+          const to = findNode(edge.to);
+          if (!from || !to) return;
+          const d = edgePath(from, to, edge.fromSide, edge.toSide);
+          const selected = state.selected?.type === "edge" && state.selected.id === edge.id;
+          const critical = criticalEdges.has(edge.id);
+
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${selected ? " selected" : ""}`);
+          path.setAttribute("d", d);
+          path.setAttribute("marker-end", critical ? "url(#arrow-critical)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"));
+          edgesSvg.append(path);
+
+          const hit = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          hit.setAttribute("class", "edge-hit edge-dynamic");
+          hit.setAttribute("d", d);
+          hit.dataset.edgeId = edge.id;
+          hit.addEventListener("click", event => {
+            event.stopPropagation();
+            selectEdge(edge.id);
+          });
+          edgesSvg.append(hit);
+
+          const midpoint = edgeMidpoint(from, to, edge.fromSide, edge.toSide);
+          const handle = document.createElement("button");
+          handle.className = `edge-handle${selected ? " selected" : ""}`;
+          handle.type = "button";
+          handle.dataset.edgeId = edge.id;
+          handle.style.left = `${midpoint.x}px`;
+          handle.style.top = `${midpoint.y}px`;
+          handle.title = selected ? "接続を削除" : "接続を選択";
+          handle.setAttribute("aria-label", selected ? "接続を削除" : "接続を選択");
+          handle.innerHTML = selected
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path></svg>`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>`;
+          handle.addEventListener("click", event => {
+            event.stopPropagation();
+            if (state.selected?.type === "edge" && state.selected.id === edge.id) {
+              deleteSelection();
+            } else {
+              selectEdge(edge.id);
+            }
+          });
+          edgeControlLayer.append(handle);
+        });
+      }
+
+      function selectEdge(edgeId) {
+        if (!findEdge(edgeId)) return;
+        state.selected = { type: "edge", id: edgeId };
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        closePalette();
+        render();
+        setStatus("接続を選択しました。削除ボタンまたはDeleteキーで消せます");
+      }
+
+      function renderGhostEdge() {
+        edgesSvg.querySelectorAll(".ghost").forEach(el => el.remove());
+        if (!state.pendingPort) return;
+        const source = findNode(state.pendingPort.nodeId);
+        if (!source) return;
+        const start = portPoint(source, state.pendingPort.side);
+        const dir = DIRS[state.pendingPort.side];
+        const end = { x: start.x + dir.x * 120, y: start.y + dir.y * 120 };
+        if (!dir.x && !dir.y) return;
+        const d = cubicPath(start, end, state.pendingPort.side, OPPOSITE[state.pendingPort.side]);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("class", "edge ghost");
+        path.setAttribute("d", d);
+        edgesSvg.append(path);
+      }
+
+      function portPoint(node, side) {
+        const { width, height } = nodeSize(node);
+        if (side === "top") return { x: node.x, y: node.y - height / 2 };
+        if (side === "right") return { x: node.x + width / 2, y: node.y };
+        if (side === "bottom") return { x: node.x, y: node.y + height / 2 };
+        return { x: node.x - width / 2, y: node.y };
+      }
+
+      function nodeSize(node) {
+        const detailMode = state.viewMode === "detail";
+        return {
+          width: node.type === "process" ? 164 : 150,
+          height: node.type === "process"
+            ? (detailMode ? 100 : 86)
+            : (detailMode ? 90 : 72)
+        };
+      }
+
+      function edgePath(from, to, fromSide, toSide) {
+        return cubicPath(portPoint(from, fromSide), portPoint(to, toSide), fromSide, toSide);
+      }
+
+      function edgeMidpoint(from, to, fromSide, toSide) {
+        const start = portPoint(from, fromSide);
+        const end = portPoint(to, toSide);
+        const sourceDir = DIRS[fromSide];
+        const targetDir = DIRS[toSide];
+        const dx = Math.abs(end.x - start.x);
+        const dy = Math.abs(end.y - start.y);
+        const distance = Math.max(70, Math.min(170, Math.max(dx, dy) * .52));
+        const c1 = {
+          x: start.x + sourceDir.x * distance,
+          y: start.y + sourceDir.y * distance
+        };
+        const c2 = {
+          x: end.x + targetDir.x * distance,
+          y: end.y + targetDir.y * distance
+        };
+        return cubicPoint(start, c1, c2, end, .5);
+      }
+
+      function cubicPoint(p0, p1, p2, p3, t) {
+        const i = 1 - t;
+        return {
+          x: i ** 3 * p0.x + 3 * i ** 2 * t * p1.x + 3 * i * t ** 2 * p2.x + t ** 3 * p3.x,
+          y: i ** 3 * p0.y + 3 * i ** 2 * t * p1.y + 3 * i * t ** 2 * p2.y + t ** 3 * p3.y
+        };
+      }
+
+      function cubicPath(start, end, fromSide, toSide) {
+        const sourceDir = DIRS[fromSide];
+        const targetDir = DIRS[toSide];
+        const dx = Math.abs(end.x - start.x);
+        const dy = Math.abs(end.y - start.y);
+        const distance = Math.max(70, Math.min(170, Math.max(dx, dy) * .52));
+        const c1 = {
+          x: start.x + sourceDir.x * distance,
+          y: start.y + sourceDir.y * distance
+        };
+        const c2 = {
+          x: end.x + targetDir.x * distance,
+          y: end.y + targetDir.y * distance
+        };
+        return `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
+      }
+
+      function showPalette(nodeId, side) {
+        closePalette();
+        const node = findNode(nodeId);
+        if (!node) return;
+        const plan = portPlan(node, side);
+        if (!plan.enabled) {
+          setStatus(plan.title);
+          return;
+        }
+        const point = portPoint(node, side);
+        const client = clientPointFromStage(point.x, point.y);
+        const viewportRect = viewport.getBoundingClientRect();
+        const palette = document.createElement("div");
+        palette.className = "mini-palette";
+        palette.dataset.nodeId = nodeId;
+        palette.dataset.side = side;
+        palette.style.left = `${Math.min(Math.max(client.x - viewportRect.left, 58), viewportRect.width - 58)}px`;
+        palette.style.top = `${Math.min(Math.max(client.y - viewportRect.top, 50), viewportRect.height - 50)}px`;
+        palette.innerHTML = `
+          <button class="mini-button" data-action="artifact" title="成果物を作成" aria-label="成果物を作成">
+            <span class="shape-icon artifact" aria-hidden="true"></span>
+          </button>
+          <button class="mini-button" data-action="process" title="プロセスを作成" aria-label="プロセスを作成">
+            <span class="shape-icon process" aria-hidden="true"></span>
+          </button>
+          <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
+              <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"></path>
+            </svg>
+          </button>
+        `;
+        const artifactButton = palette.querySelector('[data-action="artifact"]');
+        const processButton = palette.querySelector('[data-action="process"]');
+        const connectButton = palette.querySelector('[data-action="connect"]');
+        artifactButton.disabled = plan.validType !== "artifact";
+        processButton.disabled = plan.validType !== "process";
+        artifactButton.title = artifactButton.disabled ? "この接続では成果物を選べません" : "成果物を作成";
+        processButton.title = processButton.disabled ? "この接続ではプロセスを選べません" : "プロセスを作成";
+        connectButton.disabled = !plan.connectable;
+        connectButton.title = plan.connectable ? "既存のオブジェクトへ接続" : "上下は並列入力の追加専用です";
+        viewport.append(palette);
+        state.palette = palette;
+      }
+
+      function closePalette() {
+        if (state.palette) {
+          state.palette.remove();
+          state.palette = null;
+        }
+      }
+
+      function startTitleEdit(nodeId) {
+        const node = findNode(nodeId);
+        if (!node) return;
+        state.selected = { type: "node", id: nodeId };
+        state.editingNodeId = nodeId;
+        state.editingNodeField = null;
+        state.pendingPort = null;
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        closePalette();
+        render();
+        requestAnimationFrame(() => {
+          const input = nodeLayer.querySelector(`[data-title-input="${nodeId}"]`);
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        });
+      }
+
+      function cancelTitleEdit() {
+        if (!state.editingNodeId) return;
+        state.editingNodeId = null;
+        render();
+        setStatus("タイトル編集をキャンセル");
+      }
+
+      function saveTitleEdit(nodeId) {
+        const node = findNode(nodeId || state.editingNodeId);
+        if (!node) return;
+        if (state.editingNodeId !== node.id) return;
+        const input = nodeLayer.querySelector(`[data-title-input="${node.id}"]`);
+        const nextText = (input?.value || "").trim();
+        if ((node.text || "") === nextText) {
+          state.editingNodeId = null;
+          render();
+          setStatus("タイトルは変更されていません");
+          return;
+        }
+        recordHistory();
+        node.text = nextText;
+        state.selected = { type: "node", id: node.id };
+        state.editingNodeId = null;
+        render();
+        saveState();
+        setStatus("タイトルを更新しました");
+      }
+
+      function startNodeFieldEdit(nodeId, field) {
+        const node = findNode(nodeId);
+        if (!node || state.viewMode !== "detail") return;
+        state.selected = { type: "node", id: node.id };
+        state.editingNodeId = null;
+        state.editingNodeField = { nodeId: node.id, field };
+        state.pendingPort = null;
+        closePalette();
+        render();
+        requestAnimationFrame(() => {
+          if (field === "statuses") {
+            nodeLayer.querySelector("[data-node-status-editor]")?.focus();
+          } else {
+            const input = nodeLayer.querySelector(`[data-node-field-input="${field}"]`);
+            input?.focus();
+            input?.select();
+          }
+        });
+      }
+
+      function cancelNodeFieldEdit() {
+        if (!state.editingNodeField) return;
+        state.editingNodeField = null;
+        render();
+        setStatus("ノード上の編集をキャンセルしました");
+      }
+
+      function saveNodeFieldEdit() {
+        const editing = state.editingNodeField;
+        if (!editing || editing.field === "statuses") return;
+        const node = findNode(editing.nodeId);
+        if (!node) {
+          state.editingNodeField = null;
+          render();
+          return;
+        }
+        const input = nodeLayer.querySelector(`[data-node-field-input="${editing.field}"]`);
+        const nextValue = (input?.value || "").trim();
+        const currentValue = (node[editing.field] || "").trim();
+        state.editingNodeField = null;
+        if (currentValue === nextValue) {
+          render();
+          return;
+        }
+        recordHistory();
+        node[editing.field] = nextValue;
+        state.selected = { type: "node", id: node.id };
+        render();
+        saveState();
+        setStatus(editing.field === "owner" ? "担当者を更新しました" : "見積もり期間を更新しました");
+      }
+
+      function saveNodeStatusesFromEditor() {
+        const editing = state.editingNodeField;
+        if (!editing || editing.field !== "statuses") return;
+        const node = findNode(editing.nodeId);
+        if (!node) return;
+        const nextStatuses = normalizeStatuses([...nodeLayer.querySelectorAll("[data-node-status-editor]")]
+          .filter(input => input.checked)
+          .map(input => input.dataset.nodeStatusEditor));
+        if (sameList(normalizeStatuses(node.statuses), nextStatuses)) return;
+        recordHistory();
+        node.statuses = nextStatuses;
+        state.selected = { type: "node", id: node.id };
+        render();
+        saveState();
+        setStatus("状況を更新しました");
+      }
+
+      function addFromSelected(side) {
+        const node = selectedNode();
+        if (!node) {
+          setStatus("追加元のノードを選択してください");
+          return;
+        }
+        if (state.pendingPort) {
+          state.pendingPort = null;
+          closePalette();
+          render();
+        }
+        const plan = portPlan(node, side);
+        if (!plan.enabled || !plan.validType) {
+          setStatus(plan.title || "この方向には追加できません");
+          return;
+        }
+        addFromPort(node.id, side, plan.validType);
+      }
+
+      function selectNodeInDirection(direction) {
+        const current = selectedNode();
+        if (!current) {
+          if (state.nodes[0]) {
+            state.selected = { type: "node", id: state.nodes[0].id };
+            render();
+            setStatus("ノードを選択しました");
+          }
+          return;
+        }
+
+        const linked = linkedCandidatesInDirection(current, direction);
+        const candidates = linked.length ? linked : spatialCandidatesInDirection(current, direction);
+        if (!candidates.length) {
+          setStatus("その方向にノードがありません");
+          return;
+        }
+
+        const next = candidates
+          .map(node => ({ node, score: directionalScore(current, node, direction, linked.includes(node)) }))
+          .sort((a, b) => a.score - b.score || a.node.id.localeCompare(b.node.id))[0].node;
+
+        state.selected = { type: "node", id: next.id };
+        state.pendingPort = null;
+        state.editingNodeId = null;
+        closePalette();
+        render();
+        setStatus(`${displayText(next)} を選択`);
+      }
+
+      function linkedCandidatesInDirection(current, direction) {
+        if (direction === "right") {
+          return state.edges
+            .filter(edge => edge.from === current.id)
+            .map(edge => findNode(edge.to))
+            .filter(Boolean);
+        }
+        if (direction === "left") {
+          return state.edges
+            .filter(edge => edge.to === current.id)
+            .map(edge => findNode(edge.from))
+            .filter(Boolean);
+        }
+        return [];
+      }
+
+      function spatialCandidatesInDirection(current, direction) {
+        return state.nodes.filter(node => {
+          if (node.id === current.id) return false;
+          const dx = node.x - current.x;
+          const dy = node.y - current.y;
+          if (direction === "right") return dx > 20;
+          if (direction === "left") return dx < -20;
+          if (direction === "down") return dy > 20;
+          return dy < -20;
+        });
+      }
+
+      function directionalScore(current, node, direction, linked) {
+        const dx = node.x - current.x;
+        const dy = node.y - current.y;
+        const primary = direction === "left" || direction === "right" ? Math.abs(dx) : Math.abs(dy);
+        const secondary = direction === "left" || direction === "right" ? Math.abs(dy) : Math.abs(dx);
+        return primary + secondary * 1.8 + (linked ? -1000 : 0);
+      }
+
+      function renderDetailPanel() {
+        const node = selectedNode();
+        if (!node || !state.detailVisible) {
+          detailPanel.classList.remove("open", "editing");
+          return;
+        }
+
+        detailPanel.classList.add("open");
+        const editing = state.detailEditing && state.detailEditingNodeId === node.id;
+        detailPanel.classList.toggle("editing", editing);
+        detailTypeBadge.className = `type-badge ${node.type}`;
+        detailTypeBadge.textContent = nodeTypeLabel(node.type);
+        detailTitle.textContent = displayText(node);
+        if (editing) {
+          detailTitle.setAttribute("contenteditable", "true");
+          detailTitle.setAttribute("spellcheck", "false");
+        } else {
+          detailTitle.removeAttribute("contenteditable");
+          detailTitle.removeAttribute("spellcheck");
+        }
+        detailMetaView.innerHTML = renderDetailMeta(node, editing);
+        detailMarkdownView.innerHTML = renderMarkdown(node.detail || "");
+
+        if (editing) {
+          detailMarkdownEditor.value = node.detail || "";
+        } else {
+          syncDetailEditorFields(node);
+        }
+      }
+
+      function openDetailPanel(nodeId) {
+        if (!findNode(nodeId)) return;
+        state.selected = { type: "node", id: nodeId };
+        state.detailVisible = true;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        closePalette();
+        render();
+        setStatus("詳細を表示");
+      }
+
+      function closeDetailPanel() {
+        state.detailVisible = false;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        renderDetailPanel();
+      }
+
+      function detailInlineValue(field) {
+        if (field === "owner") {
+          return (detailMetaView.querySelector("[data-detail-owner-input]")?.value || "").trim();
+        }
+        return (detailMetaView.querySelector(`[data-detail-inline="${field}"]`)?.textContent || "").trim();
+      }
+
+      function selectElementContents(element) {
+        if (!element || !document.createRange || !window.getSelection) return;
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
+      function startDetailEdit(focusTarget = "detail") {
+        const node = selectedNode();
+        if (!node) return;
+        state.detailVisible = true;
+        state.detailEditing = true;
+        state.detailEditingNodeId = node.id;
+        syncDetailEditorFields(node);
+        renderDetailPanel();
+        requestAnimationFrame(() => {
+          if (focusTarget === "title") {
+            detailTitle.focus();
+            selectElementContents(detailTitle);
+          } else if (focusTarget === "estimate" || focusTarget === "owner") {
+            const target = focusTarget === "owner"
+              ? detailMetaView.querySelector("[data-detail-owner-input]")
+              : detailMetaView.querySelector(`[data-detail-inline="${focusTarget}"]`);
+            target?.focus();
+            if (target?.select) target.select();
+            else selectElementContents(target);
+          } else if (focusTarget === "status") {
+            detailMetaView.querySelector("[data-status-editor]")?.focus();
+          } else {
+            detailMarkdownEditor.focus();
+          }
+        });
+      }
+
+      function cancelDetailEdit() {
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        renderDetailPanel();
+        setStatus("詳細編集をキャンセル");
+      }
+
+      function saveDetailEdit() {
+        const node = findNode(state.detailEditingNodeId) || selectedNode();
+        if (!node) return;
+        const nextText = (detailTitle.textContent || "").trim();
+        const nextEstimate = detailInlineValue("estimate");
+        const nextOwner = detailInlineValue("owner");
+        const nextStatuses = readStatusEditorValues();
+        const nextDetail = detailMarkdownEditor.value.replace(/\r\n/g, "\n").trim();
+        if (
+          (node.text || "") === nextText &&
+          (node.estimate || "") === nextEstimate &&
+          (node.owner || "") === nextOwner &&
+          sameList(normalizeStatuses(node.statuses), nextStatuses) &&
+          (node.detail || "") === nextDetail
+        ) {
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          renderDetailPanel();
+          setStatus("詳細は変更されていません");
+          return;
+        }
+        recordHistory();
+        node.text = nextText;
+        node.estimate = nextEstimate;
+        node.owner = nextOwner;
+        node.statuses = nextStatuses;
+        node.detail = nextDetail;
+        state.selected = { type: "node", id: node.id };
+        state.detailVisible = true;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        render();
+        saveState();
+        setStatus("詳細を保存しました");
+      }
+
+      function openEditor(nodeId) {
+        const node = findNode(nodeId);
+        if (!node) return;
+        state.editingNodeId = nodeId;
+        editorText.value = node.text;
+        editorDialog.classList.add("open");
+        requestAnimationFrame(() => {
+          editorText.focus();
+          editorText.select();
+        });
+      }
+
+      function closeEditor() {
+        state.editingNodeId = null;
+        editorDialog.classList.remove("open");
+      }
+
+      function saveEditor(clear = false) {
+        const node = findNode(state.editingNodeId);
+        if (!node) {
+          closeEditor();
+          return;
+        }
+        const nextText = clear ? "" : editorText.value.trim();
+        if (node.text === nextText) {
+          closeEditor();
+          setStatus("文字は変更されていません");
+          return;
+        }
+        recordHistory();
+        node.text = nextText;
+        closeEditor();
+        render();
+        saveState();
+        setStatus("文字を更新");
+      }
+
+      function updateHint() {
+        if (state.pendingPort) {
+          const node = findNode(state.pendingPort.nodeId);
+          setHint(state.pendingPort.mode === "source"
+            ? `${displayText(node)} の接続先を選択中。候補は左ポートだけです。`
+            : `${displayText(node)} の接続元を選択中。候補は右ポートだけです。`
+          );
+          return;
+        }
+        setHint("中央クリックでタイトル編集、周辺クリックで選択、ダブルクリックで詳細を表示します。");
+      }
+
+      function downloadJson() {
+        const blob = new Blob([JSON.stringify(graphPayload(), null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `pfd-sketch-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.append(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        setStatus("JSONを保存");
+      }
+
+      function openJsonFilePicker() {
+        jsonFileInput.value = "";
+        jsonFileInput.click();
+      }
+
+      function importJsonFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result || ""));
+            const graph = normalizeGraphData(parsed);
+            recordHistory();
+            applyGraphData(graph);
+            setStatus(`${file.name} を読み込みました`);
+          } catch (error) {
+            setStatus(error.message || "JSONを読み込めませんでした");
+          }
+        };
+        reader.onerror = () => {
+          setStatus("JSONファイルを読み込めませんでした");
+        };
+        reader.readAsText(file);
+      }
+
+      function handleCommand(command) {
+        if (command === "undo") {
+          undo();
+        } else if (command === "redo") {
+          redo();
+        } else if (command === "layout") {
+          recordHistory();
+          autoLayout();
+          render();
+          saveState();
+          setStatus("自動配列しました");
+        } else if (command === "fit") {
+          centerOnGraph();
+          setStatus("全体を表示");
+        } else if (command === "delete") {
+          deleteSelection();
+        } else if (command === "download") {
+          downloadJson();
+        } else if (command === "upload") {
+          openJsonFilePicker();
+        } else if (command === "reset") {
+          clearAll();
+        } else if (command === "zoom-in") {
+          setZoom(state.zoom * 1.15);
+        } else if (command === "zoom-out") {
+          setZoom(state.zoom / 1.15);
+        }
+      }
+
+      document.addEventListener("click", event => {
+        clearCenterClickTimer();
+
+        const commandButton = event.target.closest("[data-command]");
+        if (commandButton) {
+          handleCommand(commandButton.dataset.command);
+          return;
+        }
+
+        const modeButton = event.target.closest("[data-mode]");
+        if (modeButton) {
+          setViewMode(modeButton.dataset.mode);
+          return;
+        }
+
+        const addRootButton = event.target.closest("[data-add-root]");
+        if (addRootButton) {
+          addRoot(addRootButton.dataset.addRoot);
+          return;
+        }
+
+        const editorAction = event.target.closest("[data-editor]");
+        if (editorAction) {
+          const action = editorAction.dataset.editor;
+          if (action === "save") saveEditor(false);
+          if (action === "clear") saveEditor(true);
+          if (action === "cancel" || action === "close") closeEditor();
+          return;
+        }
+
+        const detailAction = event.target.closest("[data-detail]");
+        if (detailAction) {
+          const action = detailAction.dataset.detail;
+          if (action === "edit") startDetailEdit();
+          if (action === "save") saveDetailEdit();
+          if (action === "cancel") cancelDetailEdit();
+          if (action === "close") closeDetailPanel();
+          return;
+        }
+
+        const editableDetail = event.target.closest(".detail-view, .detail-title");
+        if (editableDetail && state.detailVisible && !state.detailEditing) {
+          const metaField = event.target.closest("[data-meta-field]")?.dataset.metaField;
+          startDetailEdit(editableDetail.classList.contains("detail-title") ? "title" : (metaField || "detail"));
+          setStatus("詳細を編集中です");
+          return;
+        }
+
+        const paletteButton = event.target.closest(".mini-button");
+        if (paletteButton && state.palette) {
+          if (paletteButton.disabled) return;
+          const action = paletteButton.dataset.action;
+          const { nodeId, side } = state.palette.dataset;
+          if (action === "connect") startConnection(nodeId, side);
+          if (action === "artifact" || action === "process") addFromPort(nodeId, side, action);
+          return;
+        }
+
+        const port = event.target.closest(".port");
+        if (port) {
+          event.stopPropagation();
+          const { nodeId, side } = port.dataset;
+          const node = findNode(nodeId);
+          if (!isPortEnabled(node, side)) {
+            setStatus(state.pendingPort ? "接続できる候補だけ選択できます" : portPlan(node, side).title);
+            return;
+          }
+          if (state.pendingPort) {
+            completeConnection(nodeId, side);
+            return;
+          }
+          state.selected = { type: "node", id: nodeId };
+          render();
+          showPalette(nodeId, side);
+          setStatus(portPlan(node, side).title);
+          return;
+        }
+
+        if (event.target.closest(".title-editor")) {
+          return;
+        }
+
+        if (event.target.closest(".node-field-editor")) {
+          return;
+        }
+
+        const nodeEl = event.target.closest(".node");
+        if (nodeEl) {
+          const id = nodeEl.dataset.nodeId;
+          clearCenterClickTimer();
+          const nodeField = nodeDetailFieldFromClick(nodeEl, event);
+          if (nodeField) {
+            startNodeFieldEdit(id, nodeField);
+            setStatus(nodeField === "statuses" ? "状況を選択できます" : (nodeField === "owner" ? "担当者を編集中です" : "見積もり期間を編集中です"));
+          } else if (isNodeCenterClick(nodeEl, event)) {
+            centerClickTimer = setTimeout(() => {
+              centerClickTimer = null;
+              startTitleEdit(id);
+              setStatus("タイトルを編集中です");
+            }, 260);
+          } else {
+            state.selected = { type: "node", id };
+            if (state.editingNodeId !== id) state.editingNodeId = null;
+            state.editingNodeField = null;
+            state.detailVisible = false;
+            state.detailEditing = false;
+            state.detailEditingNodeId = null;
+            closePalette();
+            render();
+            setStatus("ノードを選択しました。ダブルクリックで詳細を表示します");
+          }
+          return;
+        }
+
+        const edgeHit = event.target.closest(".edge-hit");
+        if (edgeHit) {
+          selectEdge(edgeHit.dataset.edgeId);
+          return;
+        }
+
+        if (!event.target.closest(".dialog, .detail-panel")) {
+          closePalette();
+          if (state.editingNodeField) {
+            state.editingNodeField = null;
+            render();
+          }
+          if (state.pendingPort) {
+            state.pendingPort = null;
+            render();
+            setStatus("接続をキャンセル");
+          }
+        }
+      });
+
+      jsonFileInput.addEventListener("change", event => {
+        importJsonFile(event.target.files?.[0]);
+      });
+
+      nodeTextSizeSlider.addEventListener("input", event => {
+        setNodeTextSize(event.target.value);
+      });
+
+      nodeTextSizeSlider.addEventListener("change", event => {
+        setNodeTextSize(event.target.value, true);
+      });
+
+      document.addEventListener("change", event => {
+        if (event.target.closest("[data-node-status-editor]")) {
+          saveNodeStatusesFromEditor();
+        }
+      });
+
+      document.addEventListener("dblclick", event => {
+        if (event.target.closest(".port, .mini-palette, button, textarea, input, .detail-panel")) return;
+        const nodeEl = event.target.closest(".node");
+        if (!nodeEl) return;
+        clearCenterClickTimer();
+        event.preventDefault();
+        openDetailPanel(nodeEl.dataset.nodeId);
+      });
+
+      nodeLayer.addEventListener("keydown", event => {
+        const nodeEl = event.target.closest(".node");
+        if (!nodeEl) return;
+        if (event.key === " ") {
+          event.preventDefault();
+          state.selected = { type: "node", id: nodeEl.dataset.nodeId };
+          render();
+          setStatus("ノードを選択しました。F2でタイトル編集、ダブルクリックで詳細を表示します");
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (editorDialog.classList.contains("open")) {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeEditor();
+          }
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            saveEditor(false);
+          }
+          return;
+        }
+
+        if (isTextEditingTarget(event.target)) {
+          if (event.target.closest(".node-field-editor") && event.key === "Enter") {
+            event.preventDefault();
+            saveNodeFieldEdit();
+          } else if (event.target.closest(".node-field-editor") && event.key === "Escape") {
+            event.preventDefault();
+            cancelNodeFieldEdit();
+          } else if (isTitleEditingTarget(event.target) && (event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            saveTitleEdit(state.editingNodeId);
+          } else if (isTitleEditingTarget(event.target) && event.key === "Escape") {
+            event.preventDefault();
+            cancelTitleEdit();
+          } else if (state.detailEditing && (event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            saveDetailEdit();
+          } else if (state.detailEditing && event.key === "Escape") {
+            event.preventDefault();
+            cancelDetailEdit();
+          }
+          return;
+        }
+
+        const key = event.key.toLowerCase();
+        if ((event.ctrlKey || event.metaKey) && key === "z") {
+          event.preventDefault();
+          if (event.shiftKey) {
+            redo();
+          } else {
+            undo();
+          }
+          return;
+        }
+        if ((event.ctrlKey || event.metaKey) && key === "y") {
+          event.preventDefault();
+          redo();
+          return;
+        }
+
+        if (event.key === "F2") {
+          const node = selectedNode();
+          if (node) {
+            event.preventDefault();
+            startTitleEdit(node.id);
+          }
+          return;
+        }
+
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addFromSelected(event.shiftKey ? "top" : "bottom");
+          return;
+        }
+
+        if (event.key === "Tab") {
+          event.preventDefault();
+          addFromSelected(event.shiftKey ? "left" : "right");
+          return;
+        }
+
+        const arrowDirections = {
+          ArrowUp: "up",
+          ArrowRight: "right",
+          ArrowDown: "down",
+          ArrowLeft: "left"
+        };
+        if (arrowDirections[event.key]) {
+          event.preventDefault();
+          selectNodeInDirection(arrowDirections[event.key]);
+          return;
+        }
+
+        if (event.key === "Delete" || event.key === "Backspace") {
+          event.preventDefault();
+          deleteSelection();
+        }
+        if (event.key === "Escape") {
+          state.pendingPort = null;
+          closePalette();
+          render();
+          setStatus("操作をキャンセル");
+        }
+      });
+
+      viewport.addEventListener("pointerdown", event => {
+        if (event.button !== 0) return;
+        if (event.target.closest(".node, .port, .mini-palette, button")) return;
+        panGesture = {
+          pointerId: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          panX: state.pan.x,
+          panY: state.pan.y
+        };
+        viewport.classList.add("is-panning");
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener("pointermove", event => {
+        if (!panGesture || event.pointerId !== panGesture.pointerId) return;
+        state.pan.x = panGesture.panX + event.clientX - panGesture.x;
+        state.pan.y = panGesture.panY + event.clientY - panGesture.y;
+        updateTransform();
+        closePalette();
+      });
+
+      viewport.addEventListener("pointerup", event => {
+        if (!panGesture || event.pointerId !== panGesture.pointerId) return;
+        panGesture = null;
+        viewport.classList.remove("is-panning");
+      });
+
+      viewport.addEventListener("wheel", event => {
+        event.preventDefault();
+        setZoom(state.zoom * (event.deltaY > 0 ? .92 : 1.08), { x: event.clientX, y: event.clientY });
+        closePalette();
+      }, { passive: false });
+
+      editorDialog.addEventListener("click", event => {
+        if (event.target === editorDialog) closeEditor();
+      });
+
+      window.addEventListener("resize", () => {
+        updateTransform();
+        closePalette();
+      });
+
+      loadState();
+      autoLayout();
+      render();
+      requestAnimationFrame(centerOnGraph);
+      setStatus("最初の成果物を配置しました");
+    })();
+  </script>
+</body>
+</html>

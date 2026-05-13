@@ -1,0 +1,74 @@
+{
+  "diagramType": "ec",
+  "viewMode": "simple",
+  "nodeTextSize": 13,
+  "nodes": [
+    {
+      "id": "head",
+      "type": "ec",
+      "text": "健康で楽しく過ごす"
+    },
+    {
+      "id": "left_shoulder",
+      "type": "ec",
+      "text": "痩せて綺麗な体型になる"
+    },
+    {
+      "id": "right_shoulder",
+      "type": "ec",
+      "text": "ストレスを発散する"
+    },
+    {
+      "id": "left_hand",
+      "type": "ec",
+      "text": "我慢する"
+    },
+    {
+      "id": "right_hand",
+      "type": "ec",
+      "text": "ケーキを食べる"
+    },
+    {
+      "id": "left_shoulder_to_head",
+      "type": "ec",
+      "text": "- 健康でいるためには痩せている必要がある\n- 綺麗な体型だと楽しく過ごせる"
+    },
+    {
+      "id": "right_shoulder_to_head",
+      "type": "ec",
+      "text": "- ストレスが溜まると健康に悪い\n- 楽しく過ごすには気分転換が必要"
+    },
+    {
+      "id": "left_hand_to_shoulder",
+      "type": "ec",
+      "text": "- ケーキを我慢すれば摂取カロリーを減らせる\n- 摂取カロリーを減らせば痩せられる"
+    },
+    {
+      "id": "right_hand_to_shoulder",
+      "type": "ec",
+      "text": "- ケーキを食べると気分が上がる\n- 好きなものを食べることがストレス発散になる"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-left-hand-shoulder",
+      "from": "left_hand",
+      "to": "left_shoulder"
+    },
+    {
+      "id": "edge-left-shoulder-head",
+      "from": "left_shoulder",
+      "to": "head"
+    },
+    {
+      "id": "edge-right-hand-shoulder",
+      "from": "right_hand",
+      "to": "right_shoulder"
+    },
+    {
+      "id": "edge-right-shoulder-head",
+      "from": "right_shoulder",
+      "to": "head"
+    }
+  ]
+}

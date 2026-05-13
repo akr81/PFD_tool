@@ -1,0 +1,166 @@
+{
+  "diagramType": "ccpm",
+  "viewMode": "detail",
+  "nodeTextSize": 13,
+  "ganttHeight": 320,
+  "project": {
+    "start": "2026-05-11",
+    "end": "2026-05-29",
+    "today": "2026-05-15",
+    "holidays": [],
+    "resources": [
+      "PM",
+      "Akira",
+      "Mika",
+      "Sato"
+    ],
+    "baseline": {
+      "cc_length": 12,
+      "total_buffer": 3,
+      "registered_at": "2026-05-11",
+      "project_finish": "2026-05-29"
+    }
+  },
+  "nodes": [
+    {
+      "id": "task-1",
+      "type": "ccpm",
+      "text": "要件整理",
+      "detail": "目的、制約、完了条件をそろえる。",
+      "estimate": "1日",
+      "owner": "PM",
+      "statuses": [
+        "done"
+      ],
+      "x": 0,
+      "y": 0,
+      "gridX": 0,
+      "gridY": 0,
+      "start": "2026-05-11",
+      "end": "2026-05-11",
+      "remains": 0,
+      "finished": true
+    },
+    {
+      "id": "task-2",
+      "type": "ccpm",
+      "text": "画面設計",
+      "detail": "主要画面と操作の流れを決める。Akira担当のため、API設計とは同時に進められない想定。",
+      "estimate": "4日",
+      "owner": "Akira",
+      "statuses": [
+        "progress"
+      ],
+      "x": 290,
+      "y": -82.5,
+      "gridX": 1,
+      "gridY": -0.5,
+      "start": "2026-05-12",
+      "remains": 2,
+      "finished": false
+    },
+    {
+      "id": "task-3",
+      "type": "ccpm",
+      "text": "API設計",
+      "detail": "データ構造とAPI境界を整理する。画面設計とは依存関係ではなく、担当者制約で直列化される。",
+      "estimate": "4日",
+      "owner": "Akira",
+      "statuses": [],
+      "x": 290,
+      "y": 82.5,
+      "gridX": 1,
+      "gridY": 0.5
+    },
+    {
+      "id": "task-4",
+      "type": "ccpm",
+      "text": "プロトタイプ実装",
+      "detail": "画面設計とAPI設計を受けて、動作する試作を作る。",
+      "estimate": "2日",
+      "owner": "Mika",
+      "statuses": [],
+      "x": 580,
+      "y": 0,
+      "gridX": 2,
+      "gridY": 0
+    },
+    {
+      "id": "task-5",
+      "type": "ccpm",
+      "text": "レビュー",
+      "detail": "計画と試作の妥当性を確認する。",
+      "estimate": "1日",
+      "owner": "Sato",
+      "statuses": [],
+      "x": 870,
+      "y": 0,
+      "gridX": 3,
+      "gridY": 0
+    },
+    {
+      "id": "task-6",
+      "type": "ccpm",
+      "text": "ドキュメント整備",
+      "detail": "利用手順と運用メモを整える。クリティカルチェーンには乗らない短い並行作業。",
+      "estimate": "2日",
+      "owner": "Sato",
+      "statuses": [],
+      "x": 580,
+      "y": 170,
+      "gridX": 2,
+      "gridY": 1
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "task-1",
+      "to": "task-2",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-2",
+      "from": "task-1",
+      "to": "task-3",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-3",
+      "from": "task-2",
+      "to": "task-4",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-4",
+      "from": "task-3",
+      "to": "task-4",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-5",
+      "from": "task-4",
+      "to": "task-5",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-6",
+      "from": "task-1",
+      "to": "task-6",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-7",
+      "from": "task-6",
+      "to": "task-5",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

@@ -1,0 +1,294 @@
+{
+  "diagramType": "goal",
+  "nodes": [],
+  "edges": [],
+  "goalNavi": {
+    "project": {
+      "start": "2026-05-01",
+      "end": "2026-09-30",
+      "holidays": [
+        "2026-05-03",
+        "2026-05-04",
+        "2026-05-05",
+        "2026-05-06",
+        "2026-07-20",
+        "2026-08-11",
+        "2026-09-21",
+        "2026-09-22",
+        "2026-09-23"
+      ]
+    },
+    "targetRatio": 0.667,
+    "phases": [
+      {
+        "id": "goal-phase-1",
+        "name": "要件定義～基本設計",
+        "plannedDays": 15
+      },
+      {
+        "id": "goal-phase-2",
+        "name": "詳細設計～実装～単体テスト",
+        "plannedDays": 30
+      },
+      {
+        "id": "goal-phase-3",
+        "name": "結合テスト～受け入れテスト",
+        "plannedDays": 20
+      }
+    ],
+    "records": [
+      {
+        "id": "goal-record-1",
+        "date": "2026-05-01",
+        "velocityOverride": "",
+        "note": "プロジェクト開始",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 15, "totalEstimate": 0, "doneEstimate": 0 },
+          "goal-phase-2": { "remainingPlanDays": 30, "totalEstimate": 0, "doneEstimate": 0 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-2",
+        "date": "2026-05-08",
+        "velocityOverride": "",
+        "note": "初期検討を開始",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 10, "totalEstimate": 6, "doneEstimate": 2 },
+          "goal-phase-2": { "remainingPlanDays": 30, "totalEstimate": 0, "doneEstimate": 0 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-3",
+        "date": "2026-05-15",
+        "velocityOverride": "",
+        "note": "初期検討は安全圏で進行",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 5, "totalEstimate": 10, "doneEstimate": 6 },
+          "goal-phase-2": { "remainingPlanDays": 30, "totalEstimate": 0, "doneEstimate": 0 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-4",
+        "date": "2026-05-22",
+        "velocityOverride": "",
+        "note": "要件の粒度がそろい注意域へ",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 2, "totalEstimate": 13, "doneEstimate": 10 },
+          "goal-phase-2": { "remainingPlanDays": 30, "totalEstimate": 2, "doneEstimate": 0 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-5",
+        "date": "2026-05-29",
+        "velocityOverride": "",
+        "note": "フェーズ1の見積が固まり注意域へ",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 15, "doneEstimate": 13 },
+          "goal-phase-2": { "remainingPlanDays": 30, "totalEstimate": 5, "doneEstimate": 0 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-6",
+        "date": "2026-06-05",
+        "velocityOverride": "",
+        "note": "基本設計完了、安全域へ戻る",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 15, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 24, "totalEstimate": 10, "doneEstimate": 2 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-7",
+        "date": "2026-06-12",
+        "velocityOverride": "",
+        "note": "検証結果が良く安全域へ戻る",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 15, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 16, "totalEstimate": 15, "doneEstimate": 6 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-8",
+        "date": "2026-06-19",
+        "velocityOverride": "",
+        "note": "実装計画の詳細化で注意",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 15, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 12, "totalEstimate": 20, "doneEstimate": 10 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-9",
+        "date": "2026-06-26",
+        "velocityOverride": "",
+        "note": "フェーズ2の詳細化で再び注意",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 15, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 8, "totalEstimate": 25, "doneEstimate": 13 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 0, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-10",
+        "date": "2026-07-03",
+        "velocityOverride": "",
+        "note": "追加要件を取り込み速度低下",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 6, "totalEstimate": 29, "doneEstimate": 15 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 2, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-11",
+        "date": "2026-07-10",
+        "velocityOverride": 0.85,
+        "note": "手戻り発生、危険域へ突入",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 15 },
+          "goal-phase-2": { "remainingPlanDays": 6, "totalEstimate": 30, "doneEstimate": 11 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 4, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-12",
+        "date": "2026-07-17",
+        "velocityOverride": "",
+        "note": "再計画して立て直し開始",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 2, "totalEstimate": 32, "doneEstimate": 15 },
+          "goal-phase-3": { "remainingPlanDays": 20, "totalEstimate": 7, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-13",
+        "date": "2026-07-24",
+        "velocityOverride": "",
+        "note": "危険域で踏みとどまる",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 34, "doneEstimate": 20 },
+          "goal-phase-3": { "remainingPlanDays": 18, "totalEstimate": 10, "doneEstimate": 0 }
+        }
+      },
+      {
+        "id": "goal-record-14",
+        "date": "2026-07-31",
+        "velocityOverride": "",
+        "note": "対策の効果が出始める",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 24 },
+          "goal-phase-3": { "remainingPlanDays": 15, "totalEstimate": 13, "doneEstimate": 1 }
+        }
+      },
+      {
+        "id": "goal-record-15",
+        "date": "2026-08-07",
+        "velocityOverride": "",
+        "note": "対策完了、遅れの底を確認",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 28 },
+          "goal-phase-3": { "remainingPlanDays": 12, "totalEstimate": 16, "doneEstimate": 2 }
+        }
+      },
+      {
+        "id": "goal-record-16",
+        "date": "2026-08-14",
+        "velocityOverride": "",
+        "note": "結合テストへ移行",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 32 },
+          "goal-phase-3": { "remainingPlanDays": 10, "totalEstimate": 17, "doneEstimate": 4 }
+        }
+      },
+      {
+        "id": "goal-record-17",
+        "date": "2026-08-21",
+        "velocityOverride": "",
+        "note": "フェーズ2完了、バッファ回復傾向",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 36 },
+          "goal-phase-3": { "remainingPlanDays": 6, "totalEstimate": 18, "doneEstimate": 6 }
+        }
+      },
+      {
+        "id": "goal-record-18",
+        "date": "2026-08-28",
+        "velocityOverride": "",
+        "note": "テスト消化が安定",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 36 },
+          "goal-phase-3": { "remainingPlanDays": 4, "totalEstimate": 19, "doneEstimate": 10 }
+        }
+      },
+      {
+        "id": "goal-record-19",
+        "date": "2026-09-04",
+        "velocityOverride": "",
+        "note": "展開作業が安定し注意域を維持",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 36 },
+          "goal-phase-3": { "remainingPlanDays": 2, "totalEstimate": 19, "doneEstimate": 14 }
+        }
+      },
+      {
+        "id": "goal-record-20",
+        "date": "2026-09-11",
+        "velocityOverride": "",
+        "note": "受け入れ確認がほぼ完了",
+        "showNoteOnChart": false,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 36 },
+          "goal-phase-3": { "remainingPlanDays": 0, "totalEstimate": 20, "doneEstimate": 18 }
+        }
+      },
+      {
+        "id": "goal-record-21",
+        "date": "2026-09-18",
+        "velocityOverride": "",
+        "note": "完了目前、9月末には間に合う見込み",
+        "showNoteOnChart": true,
+        "phases": {
+          "goal-phase-1": { "remainingPlanDays": 0, "totalEstimate": 16, "doneEstimate": 16 },
+          "goal-phase-2": { "remainingPlanDays": 0, "totalEstimate": 36, "doneEstimate": 36 },
+          "goal-phase-3": { "remainingPlanDays": 0, "totalEstimate": 20, "doneEstimate": 19.9 }
+        }
+      }
+    ]
+  }
+}

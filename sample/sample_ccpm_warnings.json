@@ -1,0 +1,70 @@
+{
+  "diagramType": "ccpm",
+  "viewMode": "detail",
+  "nodeTextSize": 13,
+  "ganttHeight": 300,
+  "nodes": [
+    {
+      "id": "loop-a",
+      "type": "ccpm",
+      "text": "ループA",
+      "detail": "警告確認用のタスクです。",
+      "estimate": "",
+      "owner": "Akira",
+      "statuses": [],
+      "x": 0,
+      "y": 0,
+      "gridX": 0,
+      "gridY": 0
+    },
+    {
+      "id": "loop-b",
+      "type": "ccpm",
+      "text": "ループB",
+      "detail": "見積もりが不正なタスクです。",
+      "estimate": "abc",
+      "owner": "Akira",
+      "statuses": [],
+      "x": 290,
+      "y": 0,
+      "gridX": 1,
+      "gridY": 0
+    },
+    {
+      "id": "loop-c",
+      "type": "ccpm",
+      "text": "ループC",
+      "detail": "Aへ戻る依存でループを作ります。",
+      "estimate": "2日",
+      "owner": "Mika",
+      "statuses": [],
+      "x": 580,
+      "y": 0,
+      "gridX": 2,
+      "gridY": 0
+    }
+  ],
+  "edges": [
+    {
+      "id": "loop-edge-a-b",
+      "from": "loop-a",
+      "to": "loop-b",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "loop-edge-b-c",
+      "from": "loop-b",
+      "to": "loop-c",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "loop-edge-c-a",
+      "from": "loop-c",
+      "to": "loop-a",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

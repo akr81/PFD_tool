@@ -1,0 +1,183 @@
+{
+  "diagramType": "crt",
+  "viewMode": "detail",
+  "nodeTextSize": 12,
+  "nodes": [
+    {
+      "id": "ude_no_study_time",
+      "type": "crt",
+      "text": "勉強に時間を取れない",
+      "color": "Red",
+      "gridX": 0,
+      "gridY": 0,
+      "detail": "UDE: 学びたい気持ちはあるが、実際には勉強時間を確保できていない状態です。"
+    },
+    {
+      "id": "no_study_slot",
+      "type": "crt",
+      "text": "勉強する枠が\n確保されていない",
+      "color": "Yellow",
+      "gridX": -1,
+      "gridY": 0
+    },
+    {
+      "id": "slow_start",
+      "type": "crt",
+      "text": "勉強開始までに\n時間がかかる",
+      "color": "Yellow",
+      "gridX": 0,
+      "gridY": 0
+    },
+    {
+      "id": "concentration_low",
+      "type": "crt",
+      "text": "短い時間があっても\n集中が続かない",
+      "color": "Yellow",
+      "gridX": 1,
+      "gridY": 0
+    },
+    {
+      "id": "free_time_low",
+      "type": "crt",
+      "text": "平日の自由時間が\n残らない",
+      "color": "Blue",
+      "gridX": -2,
+      "gridY": 0
+    },
+    {
+      "id": "study_slot_taken",
+      "type": "crt",
+      "text": "予定した勉強枠が\n他用で消える",
+      "color": "Blue",
+      "gridX": -1,
+      "gridY": 0
+    },
+    {
+      "id": "morning_slot_lost",
+      "type": "crt",
+      "text": "朝の勉強枠が\n消える",
+      "color": "Blue",
+      "gridX": 0,
+      "gridY": 0
+    },
+    {
+      "id": "phone_break_long",
+      "type": "crt",
+      "text": "スマホ休憩が\n長引く",
+      "color": "Blue",
+      "gridX": 1,
+      "gridY": 0
+    },
+    {
+      "id": "sleep_short",
+      "type": "crt",
+      "text": "睡眠不足で\n朝起きられない",
+      "color": "Blue",
+      "gridX": 2,
+      "gridY": 0
+    },
+    {
+      "id": "residual_work",
+      "type": "crt",
+      "text": "残業・持ち帰り作業が\n常態化している",
+      "color": "Orange",
+      "gridX": -3,
+      "gridY": 0
+    },
+    {
+      "id": "chores_night",
+      "type": "crt",
+      "text": "家事を夜に\nまとめて処理している",
+      "color": "Orange",
+      "gridX": -2,
+      "gridY": 0
+    },
+    {
+      "id": "no_calendar_block",
+      "type": "crt",
+      "text": "勉強時間を\nカレンダーに固定していない",
+      "color": "Orange",
+      "gridX": -1,
+      "gridY": 0
+    },
+    {
+      "id": "accept_requests",
+      "type": "crt",
+      "text": "依頼を即受けして\n予定を動かしてしまう",
+      "color": "Orange",
+      "gridX": 0,
+      "gridY": 0
+    },
+    {
+      "id": "no_next_action",
+      "type": "crt",
+      "text": "次にやる教材・範囲が\n決まっていない",
+      "color": "Green",
+      "gridX": 1,
+      "gridY": 0
+    },
+    {
+      "id": "environment_not_ready",
+      "type": "crt",
+      "text": "教材・ノート・PCが\nすぐ開けない",
+      "color": "Green",
+      "gridX": 2,
+      "gridY": 0
+    },
+    {
+      "id": "fatigue_need_stimulus",
+      "type": "crt",
+      "text": "疲れて短い刺激を\n求めてしまう",
+      "color": "Purple",
+      "gridX": 3,
+      "gridY": 0
+    },
+    {
+      "id": "notifications_on",
+      "type": "crt",
+      "text": "通知が常に入り\n中断される",
+      "color": "Orange",
+      "gridX": 4,
+      "gridY": 0
+    },
+    {
+      "id": "late_housework",
+      "type": "crt",
+      "text": "夜の家事・雑務が\n後ろ倒しになる",
+      "color": "Orange",
+      "gridX": 5,
+      "gridY": 0
+    },
+    {
+      "id": "no_bedtime",
+      "type": "crt",
+      "text": "就寝時刻を\n決めていない",
+      "color": "Orange",
+      "gridX": 6,
+      "gridY": 0
+    }
+  ],
+  "edges": [
+    { "id": "study-edge-1", "from": "no_study_slot", "to": "ude_no_study_time" },
+    { "id": "study-edge-2", "from": "slow_start", "to": "ude_no_study_time" },
+    { "id": "study-edge-3", "from": "concentration_low", "to": "ude_no_study_time" },
+    { "id": "study-edge-4", "from": "free_time_low", "to": "no_study_slot" },
+    { "id": "study-edge-5", "from": "study_slot_taken", "to": "no_study_slot" },
+    { "id": "study-edge-6", "from": "morning_slot_lost", "to": "no_study_slot" },
+    { "id": "study-edge-7", "from": "residual_work", "to": "free_time_low", "and": "1" },
+    { "id": "study-edge-8", "from": "chores_night", "to": "free_time_low", "and": "1" },
+    { "id": "study-edge-9", "from": "no_calendar_block", "to": "study_slot_taken", "and": "2" },
+    { "id": "study-edge-10", "from": "accept_requests", "to": "study_slot_taken", "and": "2" },
+    { "id": "study-edge-11", "from": "no_next_action", "to": "slow_start", "and": "3" },
+    { "id": "study-edge-12", "from": "environment_not_ready", "to": "slow_start", "and": "3" },
+    { "id": "study-edge-13", "from": "phone_break_long", "to": "slow_start" },
+    { "id": "study-edge-14", "from": "phone_break_long", "to": "concentration_low" },
+    { "id": "study-edge-15", "from": "sleep_short", "to": "concentration_low" },
+    { "id": "study-edge-16", "from": "fatigue_need_stimulus", "to": "phone_break_long", "and": "4" },
+    { "id": "study-edge-17", "from": "notifications_on", "to": "phone_break_long", "and": "4" },
+    { "id": "study-edge-18", "from": "sleep_short", "to": "morning_slot_lost" },
+    { "id": "study-edge-19", "from": "late_housework", "to": "sleep_short", "and": "5" },
+    { "id": "study-edge-20", "from": "no_bedtime", "to": "sleep_short", "and": "5" },
+    { "id": "study-edge-21", "from": "residual_work", "to": "fatigue_need_stimulus" }
+  ]
+}

@@ -1,0 +1,1035 @@
+{
+  "diagramType": "ccpm",
+  "viewMode": "detail",
+  "nodeTextSize": 12,
+  "ganttHeight": 420,
+  "project": {
+    "start": "2025-07-01",
+    "end": "2025-10-31",
+    "today": "2025-08-05",
+    "holidays": [
+      "2025-07-21",
+      "2025-08-11",
+      "2025-09-15",
+      "2025-09-23",
+      "2025-10-13"
+    ],
+    "resources": [
+      "鈴木",
+      "佐藤",
+      "高橋",
+      "伊藤",
+      "山田",
+      "渡辺",
+      "田中"
+    ],
+    "baseline": {
+      "cc_length": 60,
+      "total_buffer": 24,
+      "registered_at": "2025-07-01",
+      "project_finish": "2025-10-31"
+    },
+    "feverHistory": [
+      {
+        "date": "2025-07-01",
+        "progressRate": 0,
+        "bufferRate": 0,
+        "memo": "ベースライン登録"
+      },
+      {
+        "date": "2025-07-08",
+        "progressRate": 7.5,
+        "bufferRate": 0,
+        "memo": "要件ヒアリング完了"
+      },
+      {
+        "date": "2025-07-15",
+        "progressRate": 14,
+        "bufferRate": 4,
+        "memo": "要件定義書作成まで完了"
+      },
+      {
+        "date": "2025-07-22",
+        "progressRate": 20,
+        "bufferRate": 8,
+        "memo": "設計系タスクに着手"
+      },
+      {
+        "date": "2025-07-29",
+        "progressRate": 27,
+        "bufferRate": 14,
+        "memo": "UI・DB・APIの先行作業が並行進行"
+      },
+      {
+        "date": "2025-08-05",
+        "progressRate": 33,
+        "bufferRate": 24,
+        "memo": "設計後半。レビューと性能設計が進行中"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "31a52e5ce46a414aaea9779d449b54f9",
+      "type": "ccpm-milestone",
+      "text": "画面実装完了",
+      "detail": "画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 0,
+      "y": 0,
+      "gridX": 0,
+      "gridY": 0,
+      "deadline": "2025-09-17"
+    },
+    {
+      "id": "d01",
+      "type": "ccpm-milestone",
+      "text": "要件定義完了",
+      "detail": "要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 250,
+      "y": 0,
+      "gridX": 1,
+      "gridY": 0,
+      "deadline": "2025-07-16"
+    },
+    {
+      "id": "d02",
+      "type": "ccpm-milestone",
+      "text": "設計完了",
+      "detail": "画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 500,
+      "y": 0,
+      "gridX": 2,
+      "gridY": 0,
+      "deadline": "2025-08-19"
+    },
+    {
+      "id": "d03",
+      "type": "ccpm-milestone",
+      "text": "本番リリース完了",
+      "detail": "プロジェクトの最終到達点を示す期限マイルストーンです。",
+      "estimate": "",
+      "owner": "",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 750,
+      "y": 0,
+      "gridX": 3,
+      "gridY": 0,
+      "deadline": "2025-10-31"
+    },
+    {
+      "id": "t01",
+      "type": "ccpm",
+      "text": "要件ヒアリング",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日",
+      "estimate": "5日",
+      "owner": "田中",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-01",
+      "end": "2025-07-07",
+      "remains": 0,
+      "finished": true,
+      "x": 1000,
+      "y": 0,
+      "gridX": 4,
+      "gridY": 0
+    },
+    {
+      "id": "t02",
+      "type": "ccpm",
+      "text": "業務フロー分析",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "鈴木",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-08",
+      "end": "2025-07-09",
+      "remains": 0,
+      "finished": true,
+      "x": 1250,
+      "y": 0,
+      "gridX": 5,
+      "gridY": 0
+    },
+    {
+      "id": "t03",
+      "type": "ccpm",
+      "text": "要件定義書作成",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "田中",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-10",
+      "end": "2025-07-15",
+      "remains": 0,
+      "finished": true,
+      "x": 1500,
+      "y": 0,
+      "gridX": 6,
+      "gridY": 0
+    },
+    {
+      "id": "t04",
+      "type": "ccpm",
+      "text": "画面設計",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日",
+      "estimate": "5日",
+      "owner": "鈴木",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-16",
+      "end": "2025-07-24",
+      "remains": 0,
+      "finished": true,
+      "x": 1750,
+      "y": 0,
+      "gridX": 7,
+      "gridY": 0
+    },
+    {
+      "id": "t05",
+      "type": "ccpm",
+      "text": "UIプロトタイプ作成",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "佐藤",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-25",
+      "end": "2025-08-04",
+      "remains": 0,
+      "finished": true,
+      "x": 2000,
+      "y": 0,
+      "gridX": 8,
+      "gridY": 0
+    },
+    {
+      "id": "t06",
+      "type": "ccpm",
+      "text": "ユーザビリティレビュー",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "田中",
+      "statuses": [
+        "progress"
+      ],
+      "start": "2025-08-05",
+      "end": "",
+      "remains": 2,
+      "finished": false,
+      "x": 2250,
+      "y": 0,
+      "gridX": 9,
+      "gridY": 0
+    },
+    {
+      "id": "t07",
+      "type": "ccpm",
+      "text": "データモデル設計",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "鈴木",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-25",
+      "end": "2025-07-31",
+      "remains": 0,
+      "finished": true,
+      "x": 2500,
+      "y": 0,
+      "gridX": 10,
+      "gridY": 0
+    },
+    {
+      "id": "t08",
+      "type": "ccpm",
+      "text": "ER図作成",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "高橋",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-08-01",
+      "end": "2025-08-04",
+      "remains": 0,
+      "finished": true,
+      "x": 2750,
+      "y": 0,
+      "gridX": 11,
+      "gridY": 0
+    },
+    {
+      "id": "t09",
+      "type": "ccpm",
+      "text": "DB性能設計",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "高橋",
+      "statuses": [
+        "progress"
+      ],
+      "start": "2025-08-05",
+      "end": "",
+      "remains": 3,
+      "finished": false,
+      "x": 3000,
+      "y": 0,
+      "gridX": 12,
+      "gridY": 0
+    },
+    {
+      "id": "t10",
+      "type": "ccpm",
+      "text": "API仕様設計",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "伊藤",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-16",
+      "end": "2025-07-18",
+      "remains": 0,
+      "finished": true,
+      "x": 3250,
+      "y": 0,
+      "gridX": 13,
+      "gridY": 0
+    },
+    {
+      "id": "t11",
+      "type": "ccpm",
+      "text": "認証設計",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "伊藤",
+      "statuses": [
+        "done"
+      ],
+      "start": "2025-07-22",
+      "end": "2025-07-23",
+      "remains": 0,
+      "finished": true,
+      "x": 3500,
+      "y": 0,
+      "gridX": 14,
+      "gridY": 0
+    },
+    {
+      "id": "t12",
+      "type": "ccpm",
+      "text": "共通コンポーネント実装",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日",
+      "estimate": "5日",
+      "owner": "佐藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 3750,
+      "y": 0,
+      "gridX": 15,
+      "gridY": 0
+    },
+    {
+      "id": "t13",
+      "type": "ccpm",
+      "text": "画面A実装",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "佐藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 4000,
+      "y": 0,
+      "gridX": 16,
+      "gridY": 0
+    },
+    {
+      "id": "t14",
+      "type": "ccpm",
+      "text": "画面B実装",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "山田",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 4250,
+      "y": 0,
+      "gridX": 17,
+      "gridY": 0
+    },
+    {
+      "id": "t15",
+      "type": "ccpm",
+      "text": "画面C実装",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "佐藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 4500,
+      "y": 0,
+      "gridX": 18,
+      "gridY": 0
+    },
+    {
+      "id": "t16",
+      "type": "ccpm",
+      "text": "DB構築・マイグレーション",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "高橋",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 4750,
+      "y": 0,
+      "gridX": 19,
+      "gridY": 0
+    },
+    {
+      "id": "t17",
+      "type": "ccpm",
+      "text": "API実装(認証)",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "伊藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 5000,
+      "y": 0,
+      "gridX": 20,
+      "gridY": 0
+    },
+    {
+      "id": "t18",
+      "type": "ccpm",
+      "text": "API実装(業務ロジック)",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日",
+      "estimate": "6日",
+      "owner": "伊藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 5250,
+      "y": 0,
+      "gridX": 21,
+      "gridY": 0
+    },
+    {
+      "id": "t19",
+      "type": "ccpm",
+      "text": "バッチ処理実装",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "佐藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 5500,
+      "y": 0,
+      "gridX": 22,
+      "gridY": 0
+    },
+    {
+      "id": "t20",
+      "type": "ccpm",
+      "text": "CI/CDパイプライン構築",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "渡辺",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 5750,
+      "y": 0,
+      "gridX": 23,
+      "gridY": 0
+    },
+    {
+      "id": "t21",
+      "type": "ccpm",
+      "text": "ステージング環境構築",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "渡辺",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 6000,
+      "y": 0,
+      "gridX": 24,
+      "gridY": 0
+    },
+    {
+      "id": "t22",
+      "type": "ccpm",
+      "text": "単体テスト(FE)",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "山田",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 6250,
+      "y": 0,
+      "gridX": 25,
+      "gridY": 0
+    },
+    {
+      "id": "t23",
+      "type": "ccpm",
+      "text": "単体テスト(BE)",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "伊藤",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 6500,
+      "y": 0,
+      "gridX": 26,
+      "gridY": 0
+    },
+    {
+      "id": "t24",
+      "type": "ccpm",
+      "text": "結合テスト",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日",
+      "estimate": "5日",
+      "owner": "田中",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 6750,
+      "y": 0,
+      "gridX": 27,
+      "gridY": 0
+    },
+    {
+      "id": "t25",
+      "type": "ccpm",
+      "text": "性能テスト",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日",
+      "estimate": "5日",
+      "owner": "田中",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 7000,
+      "y": 0,
+      "gridX": 28,
+      "gridY": 0
+    },
+    {
+      "id": "t26",
+      "type": "ccpm",
+      "text": "セキュリティテスト",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "渡辺",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 7250,
+      "y": 0,
+      "gridX": 29,
+      "gridY": 0
+    },
+    {
+      "id": "t27",
+      "type": "ccpm",
+      "text": "UAT(ユーザ受入テスト)",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日",
+      "estimate": "4日",
+      "owner": "田中",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 7500,
+      "y": 0,
+      "gridX": 30,
+      "gridY": 0
+    },
+    {
+      "id": "t28",
+      "type": "ccpm",
+      "text": "本番環境構築",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日",
+      "estimate": "2日",
+      "owner": "渡辺",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 7750,
+      "y": 0,
+      "gridX": 31,
+      "gridY": 0
+    },
+    {
+      "id": "t29",
+      "type": "ccpm",
+      "text": "データ移行",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日",
+      "estimate": "3日",
+      "owner": "高橋",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 8000,
+      "y": 0,
+      "gridX": 32,
+      "gridY": 0
+    },
+    {
+      "id": "t30",
+      "type": "ccpm",
+      "text": "リリース作業",
+      "detail": "元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日",
+      "estimate": "1日",
+      "owner": "渡辺",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 8250,
+      "y": 0,
+      "gridX": 33,
+      "gridY": 0
+    },
+    {
+      "id": "t31",
+      "type": "ccpm",
+      "text": "設計書統合レビュー",
+      "detail": "画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。",
+      "estimate": "5日",
+      "owner": "田中",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 1250,
+      "y": -170,
+      "gridX": 5,
+      "gridY": -1
+    },
+    {
+      "id": "t32",
+      "type": "ccpm",
+      "text": "画面結合確認",
+      "detail": "画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。",
+      "estimate": "2日",
+      "owner": "山田",
+      "statuses": [],
+      "start": "",
+      "end": "",
+      "remains": "",
+      "finished": false,
+      "x": 2000,
+      "y": -170,
+      "gridX": 8,
+      "gridY": -1
+    }
+  ],
+  "edges": [
+    {
+      "id": "orig-edge-7",
+      "from": "t01",
+      "to": "t02",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-8",
+      "from": "t02",
+      "to": "t03",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-9",
+      "from": "t03",
+      "to": "d01",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-50",
+      "from": "t03",
+      "to": "t04",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-51",
+      "from": "t03",
+      "to": "t07",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-52",
+      "from": "t03",
+      "to": "t10",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-10",
+      "from": "t04",
+      "to": "t05",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-13",
+      "from": "t05",
+      "to": "t06",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-16",
+      "from": "t07",
+      "to": "t08",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-17",
+      "from": "t08",
+      "to": "t09",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-21",
+      "from": "t10",
+      "to": "t11",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-53",
+      "from": "t06",
+      "to": "t31",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-54",
+      "from": "t09",
+      "to": "t31",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-55",
+      "from": "t11",
+      "to": "t31",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-57",
+      "from": "t31",
+      "to": "d02",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-63",
+      "from": "t31",
+      "to": "t12",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-64",
+      "from": "t31",
+      "to": "t16",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-65",
+      "from": "t31",
+      "to": "t17",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-56",
+      "from": "t31",
+      "to": "t20",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-25",
+      "from": "t12",
+      "to": "t13",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-26",
+      "from": "t12",
+      "to": "t14",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-27",
+      "from": "t12",
+      "to": "t15",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-58",
+      "from": "t13",
+      "to": "t32",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-59",
+      "from": "t14",
+      "to": "t32",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-60",
+      "from": "t15",
+      "to": "t32",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-62",
+      "from": "t32",
+      "to": "31a52e5ce46a414aaea9779d449b54f9",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-61",
+      "from": "t32",
+      "to": "t22",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-31",
+      "from": "t16",
+      "to": "t18",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-32",
+      "from": "t16",
+      "to": "t19",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-33",
+      "from": "t17",
+      "to": "t18",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-34",
+      "from": "t18",
+      "to": "t23",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-35",
+      "from": "t19",
+      "to": "t23",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-36",
+      "from": "t20",
+      "to": "t21",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-37",
+      "from": "t21",
+      "to": "t24",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-38",
+      "from": "t21",
+      "to": "t28",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-39",
+      "from": "t22",
+      "to": "t24",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-40",
+      "from": "t23",
+      "to": "t24",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-41",
+      "from": "t24",
+      "to": "t25",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-42",
+      "from": "t24",
+      "to": "t26",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-43",
+      "from": "t25",
+      "to": "t27",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-44",
+      "from": "t26",
+      "to": "t27",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-45",
+      "from": "t27",
+      "to": "t28",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-46",
+      "from": "t27",
+      "to": "t29",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-47",
+      "from": "t28",
+      "to": "t30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-48",
+      "from": "t29",
+      "to": "t30",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "orig-edge-49",
+      "from": "t30",
+      "to": "d03",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

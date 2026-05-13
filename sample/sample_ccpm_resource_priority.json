@@ -1,0 +1,105 @@
+{
+  "diagramType": "ccpm",
+  "viewMode": "detail",
+  "nodeTextSize": 13,
+  "ganttHeight": 320,
+  "project": {
+    "start": "2026-05-11",
+    "end": "2026-05-29",
+    "today": "2026-05-11",
+    "holidays": [
+      "2026-05-18"
+    ],
+    "resources": [
+      "Akira",
+      "Mika",
+      "Sato"
+    ],
+    "baseline": null
+  },
+  "nodes": [
+    {
+      "id": "task-a",
+      "type": "ccpm",
+      "text": "A: 短い後続の設計",
+      "detail": "Akira担当の並行候補です。単体の後続パスは 4日 + 4日 = 8日です。",
+      "estimate": "4日",
+      "owner": "Akira",
+      "statuses": [],
+      "x": 0,
+      "y": -95,
+      "gridX": 0,
+      "gridY": -0.6,
+      "end": "",
+      "remains": "",
+      "finished": false
+    },
+    {
+      "id": "task-b",
+      "type": "ccpm",
+      "text": "B: 長い後続の調査",
+      "detail": "Akira担当の並行候補です。単体の後続パスは 3日 + 6日 = 9日なので、Aより優先されます。",
+      "estimate": "3日",
+      "owner": "Akira",
+      "statuses": [
+        "progress"
+      ],
+      "x": 0,
+      "y": 95,
+      "gridX": 0,
+      "gridY": 0.6,
+      "start": "2026-05-11",
+      "end": "",
+      "remains": 3,
+      "finished": false
+    },
+    {
+      "id": "task-a-next",
+      "type": "ccpm",
+      "text": "A後続: 確認",
+      "detail": "Aの後続作業です。Bが先に直列化されるため、クリティカルチェーン上では B -> A -> A後続 になります。",
+      "estimate": "4日",
+      "owner": "Mika",
+      "statuses": [],
+      "x": 310,
+      "y": -95,
+      "gridX": 1,
+      "gridY": -0.6,
+      "end": "",
+      "remains": "",
+      "finished": false
+    },
+    {
+      "id": "task-b-next",
+      "type": "ccpm",
+      "text": "B後続: 実装",
+      "detail": "依存関係だけで見ると B -> B後続 が9日でクリティカルパスになります。",
+      "estimate": "6日",
+      "owner": "Sato",
+      "statuses": [],
+      "x": 310,
+      "y": 95,
+      "gridX": 1,
+      "gridY": 0.6,
+      "end": "",
+      "remains": "",
+      "finished": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-a-next",
+      "from": "task-a",
+      "to": "task-a-next",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "edge-b-next",
+      "from": "task-b",
+      "to": "task-b-next",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ]
+}

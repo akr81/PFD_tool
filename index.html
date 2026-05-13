@@ -457,6 +457,693 @@
       cursor: grabbing;
     }
 
+    .goal-navi {
+      position: absolute;
+      inset: 0;
+      overflow: auto;
+      padding: 18px;
+      background: var(--bg);
+    }
+
+    .goal-navi-shell {
+      display: grid;
+      grid-template-columns: minmax(420px, 1fr) minmax(420px, 1.05fr);
+      gap: 14px;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .goal-section {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      min-width: 0;
+    }
+
+    .goal-band {
+      border: 1px solid #d4dde4;
+      border-radius: 8px;
+      background: rgba(251, 252, 253, .96);
+      box-shadow: 0 10px 24px rgba(22, 31, 40, .08);
+      overflow: hidden;
+    }
+
+    .goal-band-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #dce3e8;
+      background: #f7fafb;
+    }
+
+    .goal-band-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+      font-weight: 850;
+      color: var(--ink);
+    }
+
+    .goal-band-title span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 720;
+    }
+
+    .goal-band-body {
+      padding: 12px;
+    }
+
+    .goal-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .goal-button {
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid #c7d1d8;
+      border-radius: 8px;
+      background: #fff;
+      color: #3f515d;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .goal-button.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .goal-button.danger {
+      border-color: rgba(180, 35, 47, .38);
+      color: var(--danger);
+    }
+
+    .goal-button:hover {
+      border-color: #9aa8b3;
+      box-shadow: 0 5px 18px rgba(22, 31, 40, .1);
+    }
+
+    .goal-field-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .goal-field {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+      color: #52616f;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .goal-field.wide {
+      grid-column: 1 / -1;
+    }
+
+    .goal-input,
+    .goal-textarea {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid #c6d1d9;
+      border-radius: 8px;
+      padding: 5px 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .goal-textarea {
+      min-height: 62px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .goal-input:focus,
+    .goal-textarea:focus {
+      outline: 3px solid rgba(23, 123, 132, .18);
+      border-color: var(--accent);
+    }
+
+    .goal-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .goal-metric {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid #d8e1e7;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .goal-metric-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 780;
+    }
+
+    .goal-metric-value {
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.15;
+      word-break: keep-all;
+    }
+
+    .goal-metric small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .goal-eval {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .goal-eval.safe {
+      background: #e8f7ed;
+      color: #216d3a;
+    }
+
+    .goal-eval.watch {
+      background: #fff5d8;
+      color: #8a6200;
+    }
+
+    .goal-eval.danger,
+    .goal-eval.late {
+      background: #fff0f0;
+      color: #b4232f;
+    }
+
+    .goal-phase-table {
+      display: grid;
+      border: 1px solid #d7dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .goal-phase-row {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 112px 42px;
+      border-bottom: 1px solid #e3e9ee;
+    }
+
+    .goal-phase-row:last-child {
+      border-bottom: 0;
+    }
+
+    .goal-phase-row.header {
+      background: #f4f7f8;
+      color: #52616f;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .goal-cell {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      min-height: 38px;
+      padding: 6px 8px;
+      border-right: 1px solid #e3e9ee;
+    }
+
+    .goal-cell:last-child {
+      border-right: 0;
+    }
+
+    .goal-cell.goal-plan-cell {
+      background: #fffaf0;
+    }
+
+    .goal-cell.goal-estimate-cell {
+      background: #f2fbfa;
+    }
+
+    .goal-record-phase-row.header .goal-cell {
+      min-height: 46px;
+    }
+
+    .goal-record-phase-row.header .goal-plan-cell {
+      background: #fff4dc;
+      color: #765600;
+    }
+
+    .goal-record-phase-row.header .goal-estimate-cell {
+      background: #eaf7f6;
+      color: #176970;
+    }
+
+    .goal-column-head {
+      display: grid;
+      gap: 2px;
+      line-height: 1.15;
+    }
+
+    .goal-column-head small {
+      color: inherit;
+      font-size: 9px;
+      font-weight: 780;
+      opacity: .78;
+    }
+
+    .goal-record-list {
+      display: grid;
+      gap: 10px;
+      max-height: 560px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .goal-record {
+      border: 1px solid #d7dee4;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .goal-record-head {
+      display: grid;
+      grid-template-columns: 154px minmax(0, 1fr) 132px auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border-bottom: 1px solid #e3e9ee;
+      background: #f8fafb;
+    }
+
+    .goal-record-metrics {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 0;
+      color: #52616f;
+      font-size: 11px;
+      font-weight: 780;
+    }
+
+    .goal-record-metrics span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border: 1px solid #d7dee4;
+      border-radius: 999px;
+      background: #fff;
+      white-space: nowrap;
+    }
+
+    .goal-record-metrics .goal-velocity-anomaly,
+    .goal-chart-summary .goal-velocity-anomaly {
+      border-color: rgba(180, 35, 47, .46);
+      background: #fff0f0;
+      color: var(--danger);
+      font-weight: 950;
+    }
+
+    .goal-record-metrics .goal-velocity-warning,
+    .goal-chart-summary .goal-velocity-warning {
+      border-color: rgba(214, 151, 24, .5);
+      background: #fff8e6;
+      color: #805300;
+      font-weight: 950;
+    }
+
+    .goal-finish-invalid {
+      color: var(--danger);
+      font-weight: 950;
+    }
+
+    .goal-velocity-field {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+      color: #52616f;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .goal-velocity-field .goal-input {
+      min-height: 28px;
+      font-size: 12px;
+    }
+
+    .goal-velocity-prompt {
+      margin-top: -2px;
+      color: var(--danger);
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .goal-record-note-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 8px;
+      border-bottom: 1px solid #e3e9ee;
+      background: #fcfdfd;
+    }
+
+    .goal-record-note-row .goal-textarea {
+      min-height: 44px;
+      resize: vertical;
+    }
+
+    .goal-note-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 6px 9px;
+      border: 1px solid #d7dee4;
+      border-radius: 8px;
+      background: #fff;
+      color: #52616f;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .goal-note-toggle input {
+      accent-color: var(--accent);
+    }
+
+    .goal-record-phases {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .goal-record-phase-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.1fr) repeat(4, minmax(88px, .7fr));
+      min-width: 620px;
+      border-bottom: 1px solid #edf1f4;
+    }
+
+    .goal-record-phase-row:last-child {
+      border-bottom: 0;
+    }
+
+    .goal-record-phase-row.header {
+      background: #fbfcfd;
+      color: #52616f;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .goal-record-phase-row.group {
+      background: #f7fafb;
+      color: #52616f;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .goal-record-phase-row.group .goal-cell {
+      justify-content: center;
+      min-height: 30px;
+      padding-block: 4px;
+      text-transform: none;
+    }
+
+    .goal-record-phase-row.group .goal-plan-cell {
+      background: #fff0c9;
+      color: #725300;
+    }
+
+    .goal-record-phase-row.group .goal-estimate-cell {
+      grid-column: 3 / span 3;
+      background: #dcf1ef;
+      color: #156970;
+    }
+
+    .goal-plan-cell .goal-input {
+      border-color: #d8b45e;
+      background: #fffdf7;
+    }
+
+    .goal-estimate-cell .goal-input {
+      border-color: #a9cbc8;
+      background: #fbffff;
+    }
+
+    .goal-readonly-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      min-height: 30px;
+      padding: 5px 8px;
+      border: 1px solid #d8e1e7;
+      border-radius: 8px;
+      background: #f4f7f8;
+      color: #52616f;
+      font-size: 12px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .goal-phase-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 820;
+      color: #34424c;
+    }
+
+    .goal-chart-wrap {
+      min-height: 360px;
+      overflow: hidden;
+    }
+
+    .goal-chart-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      color: #4e5b65;
+      font-size: 11px;
+      font-weight: 780;
+    }
+
+    .goal-chart-summary span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border: 1px solid #d7dee4;
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .goal-chart-legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .goal-chart-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .goal-chart-legend i {
+      width: 12px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .goal-chart-legend .safe i {
+      background: rgba(70, 158, 95, .28);
+    }
+
+    .goal-chart-legend .watch i {
+      background: rgba(246, 183, 58, .36);
+    }
+
+    .goal-chart-legend .danger i {
+      background: rgba(180, 35, 47, .28);
+    }
+
+    .goal-chart-legend .late i {
+      background: rgba(93, 103, 112, .22);
+    }
+
+    .goal-fever-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 360px;
+      background: #fff;
+    }
+
+    .goal-fever-grid {
+      stroke: #dfe6eb;
+      stroke-width: 1;
+    }
+
+    .goal-fever-axis {
+      fill: none;
+      stroke: #40505d;
+      stroke-width: 1.6;
+    }
+
+    .goal-fever-zone-green {
+      fill: rgba(70, 158, 95, .16);
+    }
+
+    .goal-fever-zone-yellow {
+      fill: rgba(246, 183, 58, .2);
+    }
+
+    .goal-fever-zone-red {
+      fill: rgba(180, 35, 47, .16);
+    }
+
+    .goal-fever-zone-gray {
+      fill: rgba(93, 103, 112, .14);
+    }
+
+    .goal-fever-line {
+      fill: none;
+      stroke: #6b7680;
+      stroke-width: 1.4;
+      stroke-dasharray: 5 5;
+    }
+
+    .goal-fever-history {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2.2;
+    }
+
+    .goal-fever-point {
+      fill: #fff;
+      stroke: var(--accent);
+      stroke-width: 2.4;
+    }
+
+    .goal-fever-point.latest {
+      fill: var(--accent);
+      stroke: #fff;
+      stroke-width: 2;
+    }
+
+    .goal-fever-point.manual {
+      fill: #fff7e6;
+      stroke: #9b6a00;
+    }
+
+    .goal-fever-point.manual.latest {
+      fill: #d58a00;
+      stroke: #fff;
+    }
+
+    .goal-fever-label {
+      fill: #52616f;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .goal-fever-note {
+      pointer-events: none;
+    }
+
+    .goal-fever-note-line {
+      stroke: #40505d;
+      stroke-width: 1.1;
+      stroke-dasharray: 3 3;
+    }
+
+    .goal-fever-note-box {
+      fill: #fff;
+      stroke: rgba(64, 80, 93, .32);
+      stroke-width: 1;
+      filter: drop-shadow(0 3px 6px rgba(22, 31, 40, .14));
+    }
+
+    .goal-fever-note-text {
+      fill: #2d3a43;
+      font-size: 12px;
+      font-weight: 850;
+      pointer-events: none;
+    }
+
+    .goal-record-summary {
+      display: grid;
+      gap: 7px;
+      max-height: 250px;
+      overflow: auto;
+    }
+
+    .goal-record-summary-row {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) 74px 74px 84px;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 8px;
+      border: 1px solid #dce3e8;
+      border-radius: 8px;
+      background: #fff;
+      color: #43515b;
+      font-size: 11px;
+      font-weight: 780;
+    }
+
+    .goal-record-summary-row.header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      min-height: 30px;
+      border-color: #cbd5dc;
+      background: #f6f9fa;
+      color: #52616f;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: none;
+    }
+
+    .goal-record-summary-row.latest {
+      border-color: rgba(23, 123, 132, .45);
+      background: #f0fbfb;
+    }
+
     .stage {
       position: absolute;
       left: 0;
@@ -3841,6 +4528,23 @@
         align-items: stretch;
       }
 
+      .goal-navi {
+        padding: 10px;
+      }
+
+      .goal-navi-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .goal-field-grid,
+      .goal-summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .goal-record-head {
+        grid-template-columns: 1fr;
+      }
+
       .progress-record-row {
         width: 100%;
       }
@@ -3868,6 +4572,7 @@
         <option value="crt">CRT</option>
         <option value="ccpm">CCPM</option>
         <option value="ec">EC</option>
+        <option value="goal">Goal Navi</option>
       </select>
     </div>
     <div class="toolbar-group" id="addToolbarGroup" aria-label="追加">
@@ -3979,6 +4684,8 @@
         <option value="stt-home">S&amp;T: マイホーム</option>
         <option value="crt-project">CRT: 休日の自己嫌悪</option>
         <option value="ec-conflict">EC: ケーキの葛藤</option>
+        <option value="goal-navi-sample">Goal Navi: フェーズ進捗</option>
+        <option value="goal-navi-late-scenario">Goal Navi: 終盤シナリオ</option>
         <option value="ccpm-chain">CCPM: CP/CC比較</option>
         <option value="ccpm-original-like">CCPM: 元ツール相当（序盤）</option>
         <option value="ccpm-original-like-middle">CCPM: 元ツール相当（中盤・トラブル）</option>
@@ -4040,6 +4747,7 @@
         <div class="node-layer" id="nodeLayer"></div>
       </div>
     </div>
+    <section class="goal-navi" id="goalNaviPanel" aria-label="Goal Navi" hidden></section>
     <section class="gantt-panel" id="ganttPanel" aria-label="CCPMガントチャート" hidden></section>
     <aside class="detail-panel" id="detailPanel" aria-label="詳細">
       <div class="detail-head">
@@ -4321,6 +5029,13 @@
           rootType: "ec",
           rootText: "共通目的",
           filePrefix: "ec-sketch"
+        },
+        goal: {
+          title: "Goal Navi",
+          subtitle: "Phase Progress Navigator",
+          rootType: "goal",
+          rootText: "",
+          filePrefix: "goal-navi"
         }
       };
       const EC_NODE_DEFS = [
@@ -4377,6 +5092,18 @@
       const JAPANESE_SIDE = { top: "上", right: "右", bottom: "下", left: "左" };
       const SAMPLE_GRAPHS = [{"id":"pfd-curry","label":"PFD: カレー","path":"sample/sample_curry.json","data":{"nodes":[{"id":"node-29","type":"artifact","text":"カレーライス","detail":"[リンク](https://google.com)","estimate":"","owner":"","statuses":[],"x":1500,"y":42.5,"gridX":6,"gridY":0.25},{"id":"node-30","type":"process","text":"盛り付け","detail":"","estimate":"5","owner":"Cさん","statuses":[],"x":1250,"y":42.5,"gridX":5,"gridY":0.25},{"id":"node-32","type":"artifact","text":"ご飯","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":297.5,"gridX":4,"gridY":1.75},{"id":"node-34","type":"artifact","text":"カレー","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":-212.5,"gridX":4,"gridY":-1.25},{"id":"node-36","type":"process","text":"ご飯を炊く","detail":"","estimate":"30","owner":"Bさん","statuses":[],"x":750,"y":297.5,"gridX":3,"gridY":1.75},{"id":"node-38","type":"artifact","text":"お米","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":510,"gridX":2,"gridY":3},{"id":"node-40","type":"artifact","text":"水","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":340,"gridX":2,"gridY":2},{"id":"node-42","type":"artifact","text":"炊飯器","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":170,"gridX":2,"gridY":1},{"id":"node-44","type":"process","text":"煮込む","detail":"","estimate":"30","owner":"Aさん","statuses":[],"x":750,"y":-212.5,"gridX":3,"gridY":-1.25},{"id":"node-46","type":"artifact","text":"鍋","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-340,"gridX":2,"gridY":-2},{"id":"node-48","type":"artifact","text":"切った肉","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":0,"gridX":2,"gridY":0},{"id":"node-50","type":"artifact","text":"切った野菜","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-170,"gridX":2,"gridY":-1},{"id":"node-54","type":"artifact","text":"お皿","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":-42.5,"gridX":4,"gridY":-0.25},{"id":"node-56","type":"artifact","text":"スプーン","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":127.5,"gridX":4,"gridY":0.75},{"id":"node-60","type":"process","text":"肉を切る","detail":"","estimate":"5","owner":"Bさん","statuses":[],"x":250,"y":0,"gridX":1,"gridY":0},{"id":"node-62","type":"artifact","text":"生の肉","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":85,"gridX":0,"gridY":0.5},{"id":"node-64","type":"artifact","text":"包丁","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":-85,"gridX":0,"gridY":-0.5},{"id":"node-66","type":"process","text":"野菜を切る","detail":"","estimate":"3","owner":"Aさん","statuses":[],"x":250,"y":-170,"gridX":1,"gridY":-1},{"id":"node-68","type":"artifact","text":"野菜","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":-255,"gridX":0,"gridY":-1.5},{"id":"node-71","type":"artifact","text":"カレールウ","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-510,"gridX":2,"gridY":-3}],"edges":[{"id":"edge-31","from":"node-30","to":"node-29","fromSide":"right","toSide":"left"},{"id":"edge-33","from":"node-32","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-35","from":"node-34","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-37","from":"node-36","to":"node-32","fromSide":"right","toSide":"left"},{"id":"edge-39","from":"node-38","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-41","from":"node-40","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-43","from":"node-42","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-45","from":"node-44","to":"node-34","fromSide":"right","toSide":"left"},{"id":"edge-47","from":"node-46","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-49","from":"node-48","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-51","from":"node-50","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-55","from":"node-54","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-57","from":"node-56","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-61","from":"node-60","to":"node-48","fromSide":"right","toSide":"left"},{"id":"edge-63","from":"node-62","to":"node-60","fromSide":"right","toSide":"left"},{"id":"edge-65","from":"node-64","to":"node-60","fromSide":"right","toSide":"left"},{"id":"edge-67","from":"node-66","to":"node-50","fromSide":"right","toSide":"left"},{"id":"edge-69","from":"node-68","to":"node-66","fromSide":"right","toSide":"left"},{"id":"edge-70","from":"node-64","to":"node-66","fromSide":"right","toSide":"left"},{"id":"edge-72","from":"node-71","to":"node-44","fromSide":"right","toSide":"left"}],"viewMode":"detail","nodeTextSize":18}},{"id":"stt-home","label":"S&T: マイホーム","path":"sample/sample_stt.json","data":{"diagramType":"stt","viewMode":"detail","nodeTextSize":13,"nodes":[{"id":"stt_root_home_purchase","type":"stt","text":"1","stt":{"id":"1","necessaryAssumption":"今の家賃を払い続けるより、資産になるマイホームを持ちたい","strategy":"理想のマイホームを購入して家族のQOLを上げる","parallelAssumption":"購入には物件価格の約2割の頭金と諸費用が必要となる","tactics":"頭金500万円と諸費用200万円、合計700万円を3年で貯める","sufficientAssumption":"目標額が貯まれば、無理のない住宅ローン審査に通る可能性が高い"},"gridX":0,"gridY":0},{"id":"stt_sub_expense_review","type":"stt","text":"2.1","stt":{"id":"2.1","necessaryAssumption":"現在の支出ペースでは3年で700万円は貯まらない","strategy":"家計の無駄を徹底的に見直して貯蓄に回す資金を増やす","parallelAssumption":"固定費と変動費の両方を見直すことで効果が最大化する","tactics":"格安SIMへの乗り換えと、サブスクの解約、外食ルールの設定（月1回まで）を行う","sufficientAssumption":"支出が月5万円減れば、3年間で180万円の追加貯蓄が可能になる"},"gridX":-0.5,"gridY":1},{"id":"stt_sub_income_increase","type":"stt","text":"2.2","stt":{"id":"2.2","necessaryAssumption":"支出削減だけでは目標額に届かない","strategy":"世帯の収入（キャッシュイン）を増やす仕組みを作る","parallelAssumption":"本業の手取り額が急激に増えることは見込めない","tactics":"夫婦での副業開始（フリマアプリ活用やスキル販売）と継続的な積立NISAの運用","sufficientAssumption":"これらで月5万円の利益を生み出せれば、複利も含めて目標到達が現実的になる"},"gridX":0.5,"gridY":1}],"edges":[{"id":"edge-stt-expense-root","from":"stt_sub_expense_review","to":"stt_root_home_purchase","fromSide":"top","toSide":"bottom"},{"id":"edge-stt-income-root","from":"stt_sub_income_increase","to":"stt_root_home_purchase","fromSide":"top","toSide":"bottom"}]}},{"id":"crt-project","label":"CRT: 休日の自己嫌悪","path":"sample/sample_crt.json","data":{"diagramType":"crt","viewMode":"simple","nodeTextSize":13,"nodes":[{"id":"ude_self_hatred","type":"crt","text":"休日に何もせずダラダラ過ごして自己嫌悪になる","color":"Red"},{"id":"node_give_up_going_out","type":"crt","text":"今から出かけても遅いと\n諦めてしまう","color":"Yellow"},{"id":"node_already_evening","type":"crt","text":"気づけば夕方になっている","color":"Yellow"},{"id":"node_sleep_in","type":"crt","text":"土曜の昼過ぎまで寝てしまう","color":"Blue"},{"id":"node_watch_smartphone","type":"crt","text":"とりあえずスマホや動画を見てしまう","color":"Blue"},{"id":"node_wonder_what_to_do","type":"crt","text":"起きてから何をしようか迷う","color":"Green"},{"id":"root_no_plan","type":"crt","text":"休日の明確な予定を立てていない","color":"Orange"},{"id":"root_stay_up_late","type":"crt","text":"金曜の夜に夜更かししてしまう","color":"Orange"}],"edges":[{"id":"edge-1","from":"node_already_evening","to":"node_give_up_going_out"},{"id":"edge-2","from":"node_give_up_going_out","to":"ude_self_hatred"},{"id":"edge-3","from":"node_sleep_in","to":"node_already_evening","and":"1"},{"id":"edge-4","from":"node_watch_smartphone","to":"node_already_evening","and":"1"},{"id":"edge-5","from":"node_wonder_what_to_do","to":"node_watch_smartphone"},{"id":"edge-6","from":"root_no_plan","to":"node_wonder_what_to_do"},{"id":"edge-7","from":"root_stay_up_late","to":"node_sleep_in"}]}},{"id":"ec-conflict","label":"EC: ケーキの葛藤","path":"sample/sample_ec.json","data":{"diagramType":"ec","viewMode":"simple","nodeTextSize":13,"nodes":[{"id":"head","type":"ec","text":"健康で楽しく過ごす"},{"id":"left_shoulder","type":"ec","text":"痩せて綺麗な体型になる"},{"id":"right_shoulder","type":"ec","text":"ストレスを発散する"},{"id":"left_hand","type":"ec","text":"我慢する"},{"id":"right_hand","type":"ec","text":"ケーキを食べる"},{"id":"left_shoulder_to_head","type":"ec","text":"- 健康でいるためには痩せている必要がある\n- 綺麗な体型だと楽しく過ごせる"},{"id":"right_shoulder_to_head","type":"ec","text":"- ストレスが溜まると健康に悪い\n- 楽しく過ごすには気分転換が必要"},{"id":"left_hand_to_shoulder","type":"ec","text":"- ケーキを我慢すれば摂取カロリーを減らせる\n- 摂取カロリーを減らせば痩せられる"},{"id":"right_hand_to_shoulder","type":"ec","text":"- ケーキを食べると気分が上がる\n- 好きなものを食べることがストレス発散になる"}],"edges":[{"id":"edge-left-hand-shoulder","from":"left_hand","to":"left_shoulder"},{"id":"edge-left-shoulder-head","from":"left_shoulder","to":"head"},{"id":"edge-right-hand-shoulder","from":"right_hand","to":"right_shoulder"},{"id":"edge-right-shoulder-head","from":"right_shoulder","to":"head"}]}},{"id":"ccpm-chain","label":"CCPM: CP/CC比較","path":"sample/sample_ccpm.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":320,"project":{"start":"2026-05-11","end":"2026-05-29","today":"2026-05-15","holidays":[],"resources":["PM","Akira","Mika","Sato"],"baseline":{"cc_length":12,"total_buffer":3,"registered_at":"2026-05-11","project_finish":"2026-05-29"}},"nodes":[{"id":"task-1","type":"ccpm","text":"要件整理","detail":"目的、制約、完了条件をそろえる。","estimate":"1日","owner":"PM","statuses":["done"],"x":0,"y":0,"gridX":0,"gridY":0,"start":"2026-05-11","end":"2026-05-11","remains":0,"finished":true},{"id":"task-2","type":"ccpm","text":"画面設計","detail":"主要画面と操作の流れを決める。Akira担当のため、API設計とは同時に進められない想定。","estimate":"4日","owner":"Akira","statuses":["progress"],"x":290,"y":-82.5,"gridX":1,"gridY":-0.5,"start":"2026-05-12","remains":2,"finished":false},{"id":"task-3","type":"ccpm","text":"API設計","detail":"データ構造とAPI境界を整理する。画面設計とは依存関係ではなく、担当者制約で直列化される。","estimate":"4日","owner":"Akira","statuses":[],"x":290,"y":82.5,"gridX":1,"gridY":0.5},{"id":"task-4","type":"ccpm","text":"プロトタイプ実装","detail":"画面設計とAPI設計を受けて、動作する試作を作る。","estimate":"2日","owner":"Mika","statuses":[],"x":580,"y":0,"gridX":2,"gridY":0},{"id":"task-5","type":"ccpm","text":"レビュー","detail":"計画と試作の妥当性を確認する。","estimate":"1日","owner":"Sato","statuses":[],"x":870,"y":0,"gridX":3,"gridY":0},{"id":"task-6","type":"ccpm","text":"ドキュメント整備","detail":"利用手順と運用メモを整える。クリティカルチェーンには乗らない短い並行作業。","estimate":"2日","owner":"Sato","statuses":[],"x":580,"y":170,"gridX":2,"gridY":1}],"edges":[{"id":"edge-1","from":"task-1","to":"task-2","fromSide":"right","toSide":"left"},{"id":"edge-2","from":"task-1","to":"task-3","fromSide":"right","toSide":"left"},{"id":"edge-3","from":"task-2","to":"task-4","fromSide":"right","toSide":"left"},{"id":"edge-4","from":"task-3","to":"task-4","fromSide":"right","toSide":"left"},{"id":"edge-5","from":"task-4","to":"task-5","fromSide":"right","toSide":"left"},{"id":"edge-6","from":"task-1","to":"task-6","fromSide":"right","toSide":"left"},{"id":"edge-7","from":"task-6","to":"task-5","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-original-like","label":"CCPM: 元ツール相当（序盤）","path":"sample/sample_ccpm_original_like.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-08-05","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-07-08","progressRate":7.5,"bufferRate":0,"memo":"要件ヒアリング完了"},{"date":"2025-07-15","progressRate":14,"bufferRate":4,"memo":"要件定義書作成まで完了"},{"date":"2025-07-22","progressRate":20,"bufferRate":8,"memo":"設計系タスクに着手"},{"date":"2025-07-29","progressRate":27,"bufferRate":14,"memo":"UI・DB・APIの先行作業が並行進行"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["progress"],"start":"2025-08-05","end":"","remains":2,"finished":false,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["progress"],"start":"2025-08-05","end":"","remains":3,"finished":false,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日","estimate":"6日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日","estimate":"1日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-original-like-middle","label":"CCPM: 元ツール相当（中盤・トラブル）","path":"sample/sample_ccpm_original_like_middle.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-09-18","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"},{"date":"2025-08-19","progressRate":48,"bufferRate":46,"memo":"設計完了、実装工程へ本格移行"},{"date":"2025-08-28","progressRate":55,"bufferRate":72,"memo":"画面結合で仕様齟齬が発覚"},{"date":"2025-09-08","progressRate":60,"bufferRate":91,"memo":"画面B/Cの手戻りが重なり、FEテスト待ち"},{"date":"2025-09-18","progressRate":63,"bufferRate":99,"memo":"画面実装完了マイルストーン目前。PBの余裕がほぼ無い"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-27","remains":0,"finished":true,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-08-28","end":"2025-09-03","remains":0,"finished":true,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日\n\n状況メモ: 画面Bで仕様齟齬が見つかり、手戻り対応中。","estimate":"3日","owner":"山田","statuses":["progress","trouble"],"start":"2025-09-04","end":"","remains":5,"finished":false,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日\n\n状況メモ: 共通コンポーネントの修正影響で再実装中。","estimate":"4日","owner":"佐藤","statuses":["progress","trouble"],"start":"2025-09-08","end":"","remains":5,"finished":false,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-25","remains":0,"finished":true,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日\n\n状況メモ: API仕様とDB制約の不整合により再設計が発生。","estimate":"6日","owner":"伊藤","statuses":["progress","trouble"],"start":"2025-08-26","end":"","remains":7,"finished":false,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-08-22","end":"2025-08-26","remains":0,"finished":true,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-08-22","end":"2025-08-25","remains":0,"finished":true,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日","estimate":"1日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-08-12","end":"2025-08-18","remains":0,"finished":true,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}],"ccpmPanelTab":"fever"}},{"id":"ccpm-original-like-late","label":"CCPM: 元ツール相当（終盤・持ち直し）","path":"sample/sample_ccpm_original_like_late.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-10-24","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"},{"date":"2025-09-18","progressRate":63,"bufferRate":99,"memo":"手戻りでPBの余裕がほぼ無い"},{"date":"2025-10-03","progressRate":79,"bufferRate":104,"memo":"結合テスト後半で一時的にPBを超過"},{"date":"2025-10-17","progressRate":92,"bufferRate":92,"memo":"UAT完了。終盤の並行化で持ち直し"},{"date":"2025-10-24","progressRate":97,"bufferRate":87,"memo":"リリース作業を残すのみ"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-27","remains":0,"finished":true,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-08-28","end":"2025-09-03","remains":0,"finished":true,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":["done"],"start":"2025-09-04","end":"2025-09-12","remains":0,"finished":true,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-09-08","end":"2025-09-17","remains":0,"finished":true,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-25","remains":0,"finished":true,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日","estimate":"6日","owner":"伊藤","statuses":["done"],"start":"2025-08-26","end":"2025-09-11","remains":0,"finished":true,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-08-22","end":"2025-08-26","remains":0,"finished":true,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-08-22","end":"2025-08-25","remains":0,"finished":true,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":["done"],"start":"2025-09-24","end":"2025-09-26","remains":0,"finished":true,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-09-16","end":"2025-09-18","remains":0,"finished":true,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-09-29","end":"2025-10-03","remains":0,"finished":true,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-10-06","end":"2025-10-10","remains":0,"finished":true,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-10-06","end":"2025-10-07","remains":0,"finished":true,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-10-14","end":"2025-10-17","remains":0,"finished":true,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-10-20","end":"2025-10-21","remains":0,"finished":true,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-10-20","end":"2025-10-22","remains":0,"finished":true,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日\n\n状況メモ: 残りはリリース当日のチェックのみ。","estimate":"1日","owner":"渡辺","statuses":["progress"],"start":"2025-10-24","end":"","remains":1,"finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-08-12","end":"2025-08-18","remains":0,"finished":true,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":["done"],"start":"2025-09-18","end":"2025-09-19","remains":0,"finished":true,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}],"ccpmPanelTab":"fever"}},{"id":"ccpm-resource-priority","label":"CCPM: 担当制約確認","path":"sample/sample_ccpm_resource_priority.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":320,"project":{"start":"2026-05-11","end":"2026-05-29","today":"2026-05-11","holidays":["2026-05-18"],"resources":["Akira","Mika","Sato"],"baseline":null},"nodes":[{"id":"task-a","type":"ccpm","text":"A: 短い後続の設計","detail":"Akira担当の並行候補です。単体の後続パスは 4日 + 4日 = 8日です。","estimate":"4日","owner":"Akira","statuses":[],"x":0,"y":-95,"gridX":0,"gridY":-0.6,"end":"","remains":"","finished":false},{"id":"task-b","type":"ccpm","text":"B: 長い後続の調査","detail":"Akira担当の並行候補です。単体の後続パスは 3日 + 6日 = 9日なので、Aより優先されます。","estimate":"3日","owner":"Akira","statuses":["progress"],"x":0,"y":95,"gridX":0,"gridY":0.6,"start":"2026-05-11","end":"","remains":3,"finished":false},{"id":"task-a-next","type":"ccpm","text":"A後続: 確認","detail":"Aの後続作業です。Bが先に直列化されるため、クリティカルチェーン上では B -> A -> A後続 になります。","estimate":"4日","owner":"Mika","statuses":[],"x":310,"y":-95,"gridX":1,"gridY":-0.6,"end":"","remains":"","finished":false},{"id":"task-b-next","type":"ccpm","text":"B後続: 実装","detail":"依存関係だけで見ると B -> B後続 が9日でクリティカルパスになります。","estimate":"6日","owner":"Sato","statuses":[],"x":310,"y":95,"gridX":1,"gridY":0.6,"end":"","remains":"","finished":false}],"edges":[{"id":"edge-a-next","from":"task-a","to":"task-a-next","fromSide":"right","toSide":"left"},{"id":"edge-b-next","from":"task-b","to":"task-b-next","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-warnings","label":"CCPM: 警告確認","path":"sample/sample_ccpm_warnings.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":300,"nodes":[{"id":"loop-a","type":"ccpm","text":"ループA","detail":"警告確認用のタスクです。","estimate":"","owner":"Akira","statuses":[],"x":0,"y":0,"gridX":0,"gridY":0},{"id":"loop-b","type":"ccpm","text":"ループB","detail":"見積もりが不正なタスクです。","estimate":"abc","owner":"Akira","statuses":[],"x":290,"y":0,"gridX":1,"gridY":0},{"id":"loop-c","type":"ccpm","text":"ループC","detail":"Aへ戻る依存でループを作ります。","estimate":"2日","owner":"Mika","statuses":[],"x":580,"y":0,"gridX":2,"gridY":0}],"edges":[{"id":"loop-edge-a-b","from":"loop-a","to":"loop-b","fromSide":"right","toSide":"left"},{"id":"loop-edge-b-c","from":"loop-b","to":"loop-c","fromSide":"right","toSide":"left"},{"id":"loop-edge-c-a","from":"loop-c","to":"loop-a","fromSide":"right","toSide":"left"}]}}];
 
+      SAMPLE_GRAPHS.push({
+        id: "goal-navi-sample",
+        label: "Goal Navi: フェーズ進捗",
+        data: makeGoalNaviSampleGraph()
+      });
+
+      SAMPLE_GRAPHS.push({
+        id: "goal-navi-late-scenario",
+        label: "Goal Navi: 終盤シナリオ",
+        data: makeGoalNaviLateScenarioGraph()
+      });
+
       const viewport = document.getElementById("viewport");
       const stage = document.getElementById("stage");
       const nodeLayer = document.getElementById("nodeLayer");
@@ -4405,6 +5132,7 @@
       const ccpmCriticalProgressValue = document.getElementById("ccpmCriticalProgressValue");
       const ccpmBufferConsumptionValue = document.getElementById("ccpmBufferConsumptionValue");
       const sampleSelect = document.getElementById("sampleSelect");
+      const goalNaviPanel = document.getElementById("goalNaviPanel");
       const ganttPanel = document.getElementById("ganttPanel");
       const projectDialog = document.getElementById("projectDialog");
       const projectStartEditor = document.getElementById("projectStartEditor");
@@ -4456,6 +5184,7 @@
         ganttHeight: DEFAULT_GANTT_HEIGHT,
         ccpmPanelTab: "gantt",
         project: makeDefaultProjectSettings(),
+        goalNavi: null,
         selectedFeverDate: "",
         pan: { x: 0, y: 0 },
         zoom: 1
@@ -4717,10 +5446,638 @@
         };
       }
 
+      function makeDefaultGoalNavi() {
+        return normalizeGoalNavi({
+          project: {
+            start: "2026-05-01",
+            end: "2026-12-31",
+            holidays: ["2026-05-03", "2026-05-04", "2026-05-05", "2026-05-06"]
+          },
+          targetRatio: 2 / 3,
+          phases: [
+            { id: "goal-phase-1", name: "フェーズ1", plannedDays: 20 },
+            { id: "goal-phase-2", name: "フェーズ2", plannedDays: 20 },
+            { id: "goal-phase-3", name: "フェーズ3", plannedDays: 20 },
+            { id: "goal-phase-4", name: "フェーズ4", plannedDays: 20 },
+            { id: "goal-phase-5", name: "フェーズ5", plannedDays: 35 }
+          ],
+          records: [
+            {
+              id: "goal-record-1",
+              date: "2026-05-01",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-2": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-3": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            },
+            {
+              id: "goal-record-2",
+              date: "2026-05-08",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 15, totalEstimate: 9, doneEstimate: 4, remainingEstimate: 5 },
+                "goal-phase-2": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-3": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            },
+            {
+              id: "goal-record-3",
+              date: "2026-05-15",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 8, totalEstimate: 16, doneEstimate: 10, remainingEstimate: 6 },
+                "goal-phase-2": { remainingPlanDays: 19, totalEstimate: 2, doneEstimate: 0, remainingEstimate: 2 },
+                "goal-phase-3": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            },
+            {
+              id: "goal-record-4",
+              date: "2026-05-22",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 2, totalEstimate: 22, doneEstimate: 17, remainingEstimate: 5 },
+                "goal-phase-2": { remainingPlanDays: 14, totalEstimate: 8, doneEstimate: 3, remainingEstimate: 5 },
+                "goal-phase-3": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            },
+            {
+              id: "goal-record-5",
+              date: "2026-05-29",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 0, totalEstimate: 24, doneEstimate: 23, remainingEstimate: 1 },
+                "goal-phase-2": { remainingPlanDays: 8, totalEstimate: 15, doneEstimate: 9, remainingEstimate: 6 },
+                "goal-phase-3": { remainingPlanDays: 19, totalEstimate: 3, doneEstimate: 0, remainingEstimate: 3 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            },
+            {
+              id: "goal-record-6",
+              date: "2026-06-05",
+              phases: {
+                "goal-phase-1": { remainingPlanDays: 0, totalEstimate: 24, doneEstimate: 24, remainingEstimate: 0 },
+                "goal-phase-2": { remainingPlanDays: 2, totalEstimate: 22, doneEstimate: 17, remainingEstimate: 5 },
+                "goal-phase-3": { remainingPlanDays: 14, totalEstimate: 9, doneEstimate: 3, remainingEstimate: 6 },
+                "goal-phase-4": { remainingPlanDays: 20, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 },
+                "goal-phase-5": { remainingPlanDays: 35, totalEstimate: 0, doneEstimate: 0, remainingEstimate: 0 }
+              }
+            }
+          ]
+        });
+      }
+
+      function makeGoalNaviSampleGraph() {
+        return {
+          diagramType: "goal",
+          nodes: [],
+          edges: [],
+          goalNavi: makeDefaultGoalNavi()
+        };
+      }
+
+      function makeGoalNaviLateScenarioGraph() {
+        const phases = [
+          { id: "goal-phase-1", name: "要件定義～基本設計", plannedDays: 15 },
+          { id: "goal-phase-2", name: "詳細設計～実装～単体テスト", plannedDays: 30 },
+          { id: "goal-phase-3", name: "結合テスト～受け入れテスト", plannedDays: 20 }
+        ];
+        const records = [
+          {
+            id: "goal-record-1",
+            date: "2026-05-01",
+            note: "プロジェクト開始",
+            showNoteOnChart: false,
+            phaseData: [[15, 0, 0], [30, 0, 0], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-2",
+            date: "2026-05-08",
+            note: "初期検討を開始",
+            showNoteOnChart: false,
+            phaseData: [[10, 6, 2], [30, 0, 0], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-3",
+            date: "2026-05-15",
+            note: "初期検討は安全圏で進行",
+            showNoteOnChart: false,
+            phaseData: [[5, 10, 6], [30, 0, 0], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-4",
+            date: "2026-05-22",
+            note: "要件の粒度がそろい注意域へ",
+            showNoteOnChart: false,
+            phaseData: [[2, 13, 10], [30, 2, 0], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-5",
+            date: "2026-05-29",
+            note: "フェーズ1の見積が固まり注意域へ",
+            showNoteOnChart: true,
+            phaseData: [[0, 15, 13], [30, 5, 0], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-6",
+            date: "2026-06-05",
+            note: "基本設計完了、安全域へ戻る",
+            showNoteOnChart: false,
+            phaseData: [[0, 15, 15], [24, 10, 2], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-7",
+            date: "2026-06-12",
+            note: "検証結果が良く安全域へ戻る",
+            showNoteOnChart: false,
+            phaseData: [[0, 15, 15], [16, 15, 6], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-8",
+            date: "2026-06-19",
+            note: "実装計画の詳細化で注意",
+            showNoteOnChart: false,
+            phaseData: [[0, 15, 15], [12, 20, 10], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-9",
+            date: "2026-06-26",
+            note: "フェーズ2の詳細化で再び注意",
+            showNoteOnChart: true,
+            phaseData: [[0, 15, 15], [8, 25, 13], [20, 0, 0]]
+          },
+          {
+            id: "goal-record-10",
+            date: "2026-07-03",
+            note: "追加要件を取り込み速度低下",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 15], [6, 29, 15], [20, 2, 0]]
+          },
+          {
+            id: "goal-record-11",
+            date: "2026-07-10",
+            velocityOverride: 0.85,
+            note: "手戻り発生、危険域へ突入",
+            showNoteOnChart: true,
+            phaseData: [[0, 16, 15], [6, 30, 11], [20, 4, 0]]
+          },
+          {
+            id: "goal-record-12",
+            date: "2026-07-17",
+            note: "再計画して立て直し開始",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [2, 32, 15], [20, 7, 0]]
+          },
+          {
+            id: "goal-record-13",
+            date: "2026-07-24",
+            note: "危険域で踏みとどまる",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 34, 20], [18, 10, 0]]
+          },
+          {
+            id: "goal-record-14",
+            date: "2026-07-31",
+            note: "対策の効果が出始める",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 36, 24], [15, 13, 1]]
+          },
+          {
+            id: "goal-record-15",
+            date: "2026-08-07",
+            note: "対策完了、遅れの底を確認",
+            showNoteOnChart: true,
+            phaseData: [[0, 16, 16], [0, 36, 28], [12, 16, 2]]
+          },
+          {
+            id: "goal-record-16",
+            date: "2026-08-14",
+            note: "結合テストへ移行",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 36, 32], [10, 17, 4]]
+          },
+          {
+            id: "goal-record-17",
+            date: "2026-08-21",
+            note: "フェーズ2完了、バッファ回復傾向",
+            showNoteOnChart: true,
+            phaseData: [[0, 16, 16], [0, 36, 36], [6, 18, 6]]
+          },
+          {
+            id: "goal-record-18",
+            date: "2026-08-28",
+            note: "テスト消化が安定",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 36, 36], [4, 19, 10]]
+          },
+          {
+            id: "goal-record-19",
+            date: "2026-09-04",
+            note: "展開作業が安定し注意域を維持",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 36, 36], [2, 19, 14]]
+          },
+          {
+            id: "goal-record-20",
+            date: "2026-09-11",
+            note: "受け入れ確認がほぼ完了",
+            showNoteOnChart: false,
+            phaseData: [[0, 16, 16], [0, 36, 36], [0, 20, 18]]
+          },
+          {
+            id: "goal-record-21",
+            date: "2026-09-18",
+            note: "完了目前、9月末には間に合う見込み",
+            showNoteOnChart: true,
+            phaseData: [[0, 16, 16], [0, 36, 36], [0, 20, 19.9]]
+          }
+        ].map(record => ({
+          id: record.id,
+          date: record.date,
+          velocityOverride: record.velocityOverride ?? "",
+          note: record.note,
+          showNoteOnChart: record.showNoteOnChart,
+          phases: Object.fromEntries(phases.map((phase, index) => {
+            const [remainingPlanDays, totalEstimate, doneEstimate] = record.phaseData[index];
+            return [phase.id, { remainingPlanDays, totalEstimate, doneEstimate }];
+          }))
+        }));
+        return {
+          diagramType: "goal",
+          nodes: [],
+          edges: [],
+          goalNavi: normalizeGoalNavi({
+            project: {
+              start: "2026-05-01",
+              end: "2026-09-30",
+              holidays: [
+                "2026-05-03",
+                "2026-05-04",
+                "2026-05-05",
+                "2026-05-06",
+                "2026-07-20",
+                "2026-08-11",
+                "2026-09-21",
+                "2026-09-22",
+                "2026-09-23"
+              ]
+            },
+            targetRatio: 0.667,
+            phases,
+            records
+          })
+        };
+      }
+
+      function normalizeGoalNumber(value, fallback = 0) {
+        const raw = String(value ?? "").trim();
+        if (!raw) return fallback;
+        const normalized = raw
+          .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
+          .replace(/[．]/g, ".")
+          .replace(/,/g, "");
+        const number = Number(normalized);
+        return Number.isFinite(number) ? Math.max(0, number) : fallback;
+      }
+
+      function normalizeGoalOptionalNumber(value) {
+        const raw = String(value ?? "").trim();
+        if (!raw) return "";
+        const normalized = raw
+          .replace(/[０-９]/g, char => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
+          .replace(/[．]/g, ".")
+          .replace(/,/g, "");
+        const number = Number(normalized);
+        return Number.isFinite(number) ? Math.max(0, number) : "";
+      }
+
+      function normalizeGoalBoolean(value, fallback = false) {
+        if (typeof value === "boolean") return value;
+        if (value === 1 || value === 0) return Boolean(value);
+        const raw = String(value ?? "").trim().toLowerCase();
+        if (!raw) return fallback;
+        if (["true", "1", "yes", "on"].includes(raw)) return true;
+        if (["false", "0", "no", "off"].includes(raw)) return false;
+        return fallback;
+      }
+
+      function normalizeGoalPhaseData(value = {}, phase = {}) {
+        const source = value && typeof value === "object" ? value : {};
+        const totalEstimate = normalizeGoalNumber(source.totalEstimate ?? source.estimate ?? source.total, 0);
+        const doneEstimate = normalizeGoalNumber(source.doneEstimate ?? source.done ?? source.complete, 0);
+        const remainingEstimate = Math.max(0, totalEstimate - doneEstimate);
+        return {
+          remainingPlanDays: normalizeGoalNumber(source.remainingPlanDays ?? source.planRemaining, normalizeGoalNumber(phase.plannedDays, 0)),
+          totalEstimate,
+          doneEstimate,
+          remainingEstimate
+        };
+      }
+
+      function normalizeGoalNavi(value = {}) {
+        const source = value && typeof value === "object" ? value : {};
+        const rawProject = source.project && typeof source.project === "object" ? source.project : source;
+        const rawPhases = Array.isArray(source.phases) && source.phases.length
+          ? source.phases
+          : [
+            { id: "goal-phase-1", name: "フェーズ1", plannedDays: 20 },
+            { id: "goal-phase-2", name: "フェーズ2", plannedDays: 20 },
+            { id: "goal-phase-3", name: "フェーズ3", plannedDays: 20 }
+          ];
+        const usedPhaseIds = new Set();
+        const phases = rawPhases.map((phase, index) => {
+          const baseId = String(phase?.id || `goal-phase-${index + 1}`).trim() || `goal-phase-${index + 1}`;
+          let id = baseId;
+          let suffix = 2;
+          while (usedPhaseIds.has(id)) {
+            id = `${baseId}-${suffix}`;
+            suffix += 1;
+          }
+          usedPhaseIds.add(id);
+          return {
+            id,
+            name: String(phase?.name || phase?.title || `フェーズ${index + 1}`),
+            plannedDays: normalizeGoalNumber(phase?.plannedDays ?? phase?.planDays ?? phase?.days, 0)
+          };
+        });
+        const rawRecords = Array.isArray(source.records) ? source.records : [];
+        const usedRecordIds = new Set();
+        const records = rawRecords.map((record, index) => {
+          const baseId = String(record?.id || `goal-record-${index + 1}`).trim() || `goal-record-${index + 1}`;
+          let id = baseId;
+          let suffix = 2;
+          while (usedRecordIds.has(id)) {
+            id = `${baseId}-${suffix}`;
+            suffix += 1;
+          }
+          usedRecordIds.add(id);
+          const rawPhaseData = record?.phases || record?.phaseData || {};
+          const phaseDataArray = Array.isArray(rawPhaseData) ? rawPhaseData : null;
+          const normalizedPhases = {};
+          phases.forEach((phase, phaseIndex) => {
+            const sourceValue = phaseDataArray
+              ? phaseDataArray[phaseIndex]
+              : (rawPhaseData[phase.id] || rawPhaseData[phase.name] || {});
+            normalizedPhases[phase.id] = normalizeGoalPhaseData(sourceValue, phase);
+          });
+          return {
+            id,
+            date: normalizeProjectDate(record?.date) || normalizeProjectDate(rawProject.start) || localTodayIso(),
+            velocityOverride: normalizeGoalOptionalNumber(record?.velocityOverride ?? record?.manualVelocity ?? record?.teamVelocityOverride),
+            note: String(record?.note ?? record?.memo ?? ""),
+            showNoteOnChart: normalizeGoalBoolean(record?.showNoteOnChart ?? record?.noteOnChart ?? record?.showMemoOnChart, false),
+            phases: normalizedPhases
+          };
+        }).sort((left, right) => left.date.localeCompare(right.date));
+        if (!records.length) {
+          const phasesById = Object.fromEntries(phases.map(phase => [phase.id, normalizeGoalPhaseData({}, phase)]));
+          records.push({
+            id: "goal-record-1",
+            date: normalizeProjectDate(rawProject.start) || localTodayIso(),
+            velocityOverride: "",
+            note: "",
+            showNoteOnChart: false,
+            phases: phasesById
+          });
+        }
+        const targetRatioRaw = source.targetRatio ?? source.goalRatio ?? source.target_ratio;
+        const targetRatioNumber = normalizeGoalNumber(targetRatioRaw, 2 / 3);
+        return {
+          project: {
+            start: normalizeProjectDate(rawProject.start),
+            end: normalizeProjectDate(rawProject.end),
+            holidays: normalizeProjectList(rawProject.holidays).map(normalizeProjectDate).filter(Boolean)
+          },
+          targetRatio: Math.min(.95, Math.max(.05, targetRatioNumber > 1 ? targetRatioNumber / 100 : targetRatioNumber)),
+          phases,
+          records
+        };
+      }
+
+      function cloneGoalNavi(goalNavi = state.goalNavi) {
+        const normalized = normalizeGoalNavi(goalNavi || makeDefaultGoalNavi());
+        return {
+          project: {
+            ...normalized.project,
+            holidays: normalized.project.holidays.slice()
+          },
+          targetRatio: normalized.targetRatio,
+          phases: normalized.phases.map(phase => ({ ...phase })),
+          records: normalized.records.map(record => ({
+            ...record,
+            phases: Object.fromEntries(Object.entries(record.phases).map(([phaseId, data]) => [phaseId, { ...data }]))
+          }))
+        };
+      }
+
+      function goalNaviProjectSettings(navi = state.goalNavi) {
+        const normalized = normalizeGoalNavi(navi || makeDefaultGoalNavi());
+        return normalizeProjectSettings({
+          start: normalized.project.start,
+          end: normalized.project.end,
+          holidays: normalized.project.holidays
+        });
+      }
+
+      function goalNaviRecordTotals(record, phases) {
+        return phases.reduce((totals, phase) => {
+          const data = normalizeGoalPhaseData(record.phases?.[phase.id], phase);
+          totals.remainingPlanDays += data.remainingPlanDays;
+          totals.totalEstimate += data.totalEstimate;
+          totals.doneEstimate += data.doneEstimate;
+          totals.remainingEstimate += data.remainingEstimate;
+          return totals;
+        }, {
+          remainingPlanDays: 0,
+          totalEstimate: 0,
+          doneEstimate: 0,
+          remainingEstimate: 0
+        });
+      }
+
+      function goalNaviEvaluation(progressRate, bufferRate) {
+        if (!Number.isFinite(bufferRate)) return { id: "none", label: "未計算" };
+        if (bufferRate > 100) return { id: "late", label: "遅延リスク大" };
+        if (bufferRate <= progressRate * .6 + 10) return { id: "safe", label: "安全" };
+        if (bufferRate <= progressRate * .6 + 25) return { id: "watch", label: "注意" };
+        return { id: "danger", label: "危険" };
+      }
+
+      function formatGoalPercent(value) {
+        return Number.isFinite(value) ? `${formatNumber(value)}%` : "-";
+      }
+
+      function formatGoalVelocity(value) {
+        return Number.isFinite(value) ? `${formatNumber(value)}人日/日` : "-";
+      }
+
+      function goalVelocitySourceLabel(source) {
+        if (source === "actual") return "実績";
+        if (source === "manual") return "仮置き";
+        return "未計算";
+      }
+
+      function goalVelocityTitle(row) {
+        const actual = Number.isFinite(row?.actualVelocity) ? formatGoalVelocity(row.actualVelocity) : "-";
+        const effective = Number.isFinite(row?.effectiveVelocity) ? formatGoalVelocity(row.effectiveVelocity) : "-";
+        return `実績ベロシティ: ${actual} / 計算用: ${effective} (${goalVelocitySourceLabel(row?.velocitySource)})`;
+      }
+
+      function goalVelocityAnomalyInfo(actualVelocity, referenceVelocity) {
+        if (!Number.isFinite(actualVelocity)) {
+          return { anomaly: true, level: "danger", reason: "計算不能", blocksActual: true };
+        }
+        if (actualVelocity <= 0) {
+          return { anomaly: true, level: "danger", reason: "0以下", blocksActual: true };
+        }
+        if (Number.isFinite(referenceVelocity) && referenceVelocity > 0) {
+          const changeRate = Math.abs(actualVelocity - referenceVelocity) / referenceVelocity;
+          if (changeRate >= .3) {
+            return {
+              anomaly: true,
+              level: "warning",
+              blocksActual: false,
+              reason: `前回比 ${formatNumber(changeRate * 100)}%変動`
+            };
+          }
+        }
+        return { anomaly: false, level: "", reason: "", blocksActual: false };
+      }
+
+      function renderGoalVelocityBadge(row) {
+        const className = row?.velocityAlertLevel === "danger"
+          ? "goal-velocity-anomaly"
+          : (row?.velocityAlertLevel === "warning" ? "goal-velocity-warning" : "");
+        const alertLabel = row?.velocityAlertLevel === "danger" ? "計算不能" : "警告";
+        const reason = row?.velocityAnomaly ? ` / ${alertLabel}: ${row.velocityAnomalyReason}` : "";
+        const source = row?.velocitySource === "manual" ? " / 仮置き使用" : "";
+        return `<span class="${className}" title="${escapeAttribute(`${GOAL_HELP.velocity} ${goalVelocityTitle(row)}${reason}${source}`)}">チームベロシティ ${formatGoalVelocity(row?.actualVelocity)}</span>`;
+      }
+
+      function goalFinishInvalid(row) {
+        return !row?.estimatedFinishDate || !Number.isFinite(row?.effectiveVelocity) || row.effectiveVelocity <= 0;
+      }
+
+      function renderGoalFinishValue(row) {
+        if (goalFinishInvalid(row)) {
+          return `<span class="goal-finish-invalid" title="チームベロシティが0または計算不能のため、推定完了日を計算できません">計算不能</span>`;
+        }
+        return `<span title="${goalHelp("estimatedFinishDate")}">${escapeHtml(row.estimatedFinishDate)}</span>`;
+      }
+
+      function renderGoalFinishChip(row) {
+        const invalid = goalFinishInvalid(row);
+        return `<span class="${invalid ? "goal-finish-invalid" : ""}" title="${invalid ? "チームベロシティが0または計算不能のため、推定完了日を計算できません" : goalHelp("estimatedFinishDate")}">推定完了 ${invalid ? "計算不能" : escapeHtml(row.estimatedFinishDate)}</span>`;
+      }
+
+      function goalNaviInfo(navi = state.goalNavi) {
+        const normalized = normalizeGoalNavi(navi || makeDefaultGoalNavi());
+        const project = goalNaviProjectSettings(normalized);
+        const totalWorkdays = project.start && project.end ? projectWorkdaysBetween(project.start, project.end, project) : 0;
+        const targetOffset = totalWorkdays > 0 ? Math.max(0, Math.round(totalWorkdays * normalized.targetRatio) - 1) : 0;
+        const bufferDays = Math.max(0, totalWorkdays - targetOffset);
+        const targetFinishDate = project.start ? projectWorkdayIsoFromOffset(targetOffset, project) : "";
+        const plannedDays = normalized.phases.reduce((sum, phase) => sum + normalizeGoalNumber(phase.plannedDays, 0), 0);
+        const plannedOffset = project.start && plannedDays > 0 ? Math.max(0, Math.round(plannedDays) - 1) : 0;
+        const plannedFinishDate = project.start && plannedDays > 0 ? projectWorkdayIsoFromOffset(plannedOffset, project) : "";
+        let previous = null;
+        let previousEffectiveVelocity = NaN;
+        const rows = normalized.records.map(record => {
+          const totals = goalNaviRecordTotals(record, normalized.phases);
+          const workdaysSincePrevious = previous
+            ? Math.max(0, projectWorkdaysBetween(previous.date, record.date, project) - 1)
+            : 0;
+          const doneDelta = previous ? totals.doneEstimate - previous.totals.doneEstimate : 0;
+          const actualVelocity = workdaysSincePrevious > 0 ? doneDelta / workdaysSincePrevious : NaN;
+          const manualVelocity = Number(record.velocityOverride);
+          const anomalyInfo = previous
+            ? goalVelocityAnomalyInfo(actualVelocity, previousEffectiveVelocity)
+            : { anomaly: false, level: "", reason: "", blocksActual: false };
+          let effectiveVelocity = NaN;
+          let velocitySource = "missing";
+          if (Number.isFinite(manualVelocity) && manualVelocity > 0) {
+            effectiveVelocity = manualVelocity;
+            velocitySource = "manual";
+          } else if (Number.isFinite(actualVelocity) && actualVelocity > 0) {
+            effectiveVelocity = actualVelocity;
+            velocitySource = "actual";
+          }
+          const progressDenominator = totals.remainingPlanDays + totals.totalEstimate;
+          const progressRate = progressDenominator > 0 ? Math.min(100, Math.max(0, totals.doneEstimate / progressDenominator * 100)) : 0;
+          const estimatedRemainingDays = Number.isFinite(effectiveVelocity) && effectiveVelocity > 0
+            ? totals.remainingPlanDays + totals.remainingEstimate / effectiveVelocity
+            : NaN;
+          const recordOffset = project.start ? projectWorkdayOffsetAfterDate(record.date, project) : null;
+          const estimatedFinishDate = Number.isFinite(estimatedRemainingDays) && recordOffset !== null
+            ? projectWorkdayIsoFromOffset(recordOffset + Math.max(0, Math.ceil(estimatedRemainingDays)), project)
+            : "";
+          const consumedBuffer = targetFinishDate && estimatedFinishDate
+            ? Math.max(0, projectWorkdaysBetween(targetFinishDate, estimatedFinishDate, project) - 1)
+            : NaN;
+          const bufferRate = bufferDays > 0 && Number.isFinite(consumedBuffer) ? consumedBuffer / bufferDays * 100 : NaN;
+          const evaluation = goalNaviEvaluation(progressRate, bufferRate);
+          const row = {
+            record,
+            totals,
+            workdaysSincePrevious,
+            doneDelta,
+            actualVelocity,
+            manualVelocity,
+            velocity: effectiveVelocity,
+            effectiveVelocity,
+            velocitySource,
+            velocityAnomaly: anomalyInfo.anomaly,
+            velocityAlertLevel: anomalyInfo.level,
+            velocityAnomalyReason: anomalyInfo.reason,
+            velocityBlocksActual: anomalyInfo.blocksActual,
+            velocityReference: previousEffectiveVelocity,
+            progressRate,
+            estimatedRemainingDays,
+            estimatedFinishDate,
+            consumedBuffer,
+            bufferRate,
+            evaluation
+          };
+          previous = { date: record.date, totals };
+          if (Number.isFinite(effectiveVelocity) && effectiveVelocity > 0) previousEffectiveVelocity = effectiveVelocity;
+          return row;
+        });
+        return {
+          navi: normalized,
+          project,
+          totalWorkdays,
+          targetOffset,
+          bufferDays,
+          targetFinishDate,
+          plannedDays,
+          plannedFinishDate,
+          rows,
+          latest: rows[rows.length - 1] || null
+        };
+      }
+
       function makeInitialState(diagramType = state.diagramType || "pfd") {
         state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         state.project = makeDefaultProjectSettings();
+        state.goalNavi = makeDefaultGoalNavi();
         state.selectedFeverDate = "";
+        if (state.diagramType === "goal") {
+          state.nodes = [];
+          state.edges = [];
+          state.selected = null;
+          state.pendingPort = null;
+          state.editingNodeField = null;
+          state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
+          state.detailVisible = false;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          return;
+        }
         if (state.diagramType === "ec") {
           state.nodes = makeInitialEcNodes();
           state.edges = makeEcEdges();
@@ -4787,6 +6144,19 @@
       }
 
       function normalizeGraphData(parsed) {
+        if (parsed && (parsed.diagramType === "goal" || parsed.goalNavi)) {
+          return {
+            nodes: [],
+            edges: [],
+            diagramType: "goal",
+            viewMode: parsed.viewMode === "detail" ? "detail" : null,
+            nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
+            ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
+            ccpmPanelTab: normalizeCcpmPanelTab(parsed.ccpmPanelTab),
+            project: normalizeProjectSettings(parsed.project),
+            goalNavi: normalizeGoalNavi(parsed.goalNavi || parsed)
+          };
+        }
         if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges) || !parsed.nodes.length) {
           throw new Error("JSONとして読み込めませんでした。");
         }
@@ -4959,6 +6329,10 @@
         return state.diagramType === "ccpm";
       }
 
+      function isGoalNaviDiagram() {
+        return state.diagramType === "goal";
+      }
+
       function isUpwardDiagram() {
         return isSttDiagram() || isCrtDiagram();
       }
@@ -5019,7 +6393,7 @@
       }
 
       function supportsPorts() {
-        return !isEcDiagram();
+        return !isEcDiagram() && !isGoalNaviDiagram();
       }
 
       function cloneNodeData(node) {
@@ -5053,6 +6427,7 @@
           ccpmPanelTab: state.ccpmPanelTab
         };
         if (isCcpmDiagram()) payload.project = cloneProjectSettings();
+        if (isGoalNaviDiagram()) payload.goalNavi = cloneGoalNavi();
         return payload;
       }
 
@@ -5099,6 +6474,7 @@
         state.ganttHeight = normalizeGanttHeight(graph.ganttHeight);
         state.ccpmPanelTab = normalizeCcpmPanelTab(graph.ccpmPanelTab);
         state.project = normalizeProjectSettings(graph.project);
+        state.goalNavi = graph.diagramType === "goal" ? cloneGoalNavi(graph.goalNavi) : makeDefaultGoalNavi();
         state.selectedFeverDate = "";
         state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
         state.pendingPort = null;
@@ -5136,9 +6512,10 @@
           state.ganttHeight = normalizeGanttHeight(graph.ganttHeight);
           state.ccpmPanelTab = normalizeCcpmPanelTab(graph.ccpmPanelTab);
           state.project = normalizeProjectSettings(graph.project);
+          state.goalNavi = graph.diagramType === "goal" ? cloneGoalNavi(graph.goalNavi) : makeDefaultGoalNavi();
           state.selectedFeverDate = "";
           nextId = computeNextIdFromGraph();
-          state.selected = { type: "node", id: state.nodes[0].id };
+          state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
           state.editingNodeField = null;
         } catch {
           makeInitialState();
@@ -5157,6 +6534,7 @@
           selected: state.selected ? { ...state.selected } : null,
           ganttHeight: state.ganttHeight,
           project: cloneProjectSettings(),
+          goalNavi: cloneGoalNavi(),
           selectedFeverDate: state.selectedFeverDate,
           nextId
         };
@@ -5167,9 +6545,11 @@
       }
 
       function computeNextIdFromGraph() {
+        const goal = normalizeGoalNavi(state.goalNavi || makeDefaultGoalNavi());
+        const items = state.nodes.concat(state.edges, goal.phases, goal.records);
         return Math.max(
           1,
-          ...state.nodes.concat(state.edges).map(item => {
+          ...items.map(item => {
             const match = String(item.id).match(/-(\d+)$/);
             return match ? Number(match[1]) + 1 : 1;
           })
@@ -5193,6 +6573,7 @@
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
         state.ganttHeight = normalizeGanttHeight(snapshot.ganttHeight);
         state.project = normalizeProjectSettings(snapshot.project);
+        state.goalNavi = cloneGoalNavi(snapshot.goalNavi);
         state.selectedFeverDate = snapshot.selectedFeverDate || "";
         state.pendingPort = null;
         state.editingNodeId = null;
@@ -5265,7 +6646,8 @@
       function setDiagramType(diagramType) {
         const nextType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         if (state.diagramType === nextType) return;
-        const hasWork = state.nodes.length > 1 || state.edges.length > 0 || (state.nodes[0] && state.nodes[0].text !== DIAGRAM_TYPES[state.diagramType].rootText);
+        const hasGoalWork = isGoalNaviDiagram() && JSON.stringify(normalizeGoalNavi(state.goalNavi)) !== JSON.stringify(makeDefaultGoalNavi());
+        const hasWork = hasGoalWork || state.nodes.length > 1 || state.edges.length > 0 || (state.nodes[0] && state.nodes[0].text !== DIAGRAM_TYPES[state.diagramType].rootText);
         if (hasWork && !confirm("図の種類を切り替えると、新しい図として開始します。切り替えますか？")) {
           updateDiagramControls();
           return;
@@ -5287,7 +6669,7 @@
             ? "CRTを開始しました"
             : (nextType === "ccpm"
               ? "CCPMを開始しました"
-              : (nextType === "ec" ? "ECを開始しました" : "PFDを開始しました"))));
+              : (nextType === "ec" ? "ECを開始しました" : (nextType === "goal" ? "Goal Naviを開始しました" : "PFDを開始しました")))));
       }
 
       function updateDiagramControls() {
@@ -5297,6 +6679,11 @@
         diagramTypeSelect.value = state.diagramType;
         addToolbarGroup.hidden = !(isPfdDiagram() || isCcpmDiagram());
         projectSettingsToolbar.hidden = !isCcpmDiagram();
+        document.querySelector(".mode-group").hidden = isGoalNaviDiagram();
+        document.querySelector(".text-size-toolbar").hidden = isGoalNaviDiagram();
+        document.querySelectorAll('[data-command="layout"], [data-command="fit"], [data-command="delete"]').forEach(button => {
+          button.hidden = isGoalNaviDiagram();
+        });
         document.querySelectorAll("[data-diagram-tool]").forEach(button => {
           button.hidden = button.dataset.diagramTool !== state.diagramType;
         });
@@ -8292,7 +9679,7 @@
             ? "新しいCRTを開始"
             : (isCcpmDiagram()
               ? "新しいCCPMを開始"
-              : (isEcDiagram() ? "新しいECを開始" : "新しいPFDを開始"))));
+              : (isEcDiagram() ? "新しいECを開始" : (isGoalNaviDiagram() ? "新しいGoal Naviを開始" : "新しいPFDを開始")))));
       }
 
       function autoLayout() {
@@ -8711,6 +10098,7 @@
         renderEdges();
         renderNodes();
         renderGhostEdge();
+        renderGoalNavi();
         renderGantt();
         renderDetailPanel();
         updateTransform();
@@ -9331,6 +10719,433 @@
           <div class="gantt-horizontal-scroll" data-gantt-scrollbar aria-hidden="true">
             <div class="gantt-horizontal-scroll-inner" style="width:${GANTT_LABEL_WIDTH + timeline.timelineWidth}px"></div>
           </div>
+        `;
+      }
+
+      function renderGoalNavi() {
+        const visible = isGoalNaviDiagram();
+        goalNaviPanel.hidden = !visible;
+        viewport.hidden = visible;
+        if (!visible) return;
+
+        state.goalNavi = normalizeGoalNavi(state.goalNavi || makeDefaultGoalNavi());
+        const info = goalNaviInfo(state.goalNavi);
+        goalNaviPanel.innerHTML = `
+          <div class="goal-navi-shell">
+            <div class="goal-section">
+              ${renderGoalProjectSettings(info)}
+              ${renderGoalPhaseEditor(info)}
+              ${renderGoalRecordEditor(info)}
+            </div>
+            <div class="goal-section">
+              ${renderGoalSummary(info)}
+              ${renderGoalFeverPanel(info)}
+              ${renderGoalRecordSummary(info)}
+            </div>
+          </div>
+        `;
+      }
+
+      const GOAL_HELP = {
+        projectStart: "プロジェクトの開始日です。",
+        projectEnd: "最終的な納品・検収日など、プロジェクトを完了しなければならない日です。",
+        holidays: "総稼働日数や推定完了日の計算から除外する土日以外の休日です。1行に1日ずつ入力します。",
+        targetRatio: "全プロジェクト期間の何%地点を、挑戦的な目標完了日にするかを指定します。",
+        workdays: "プロジェクト開始日から終了日までのうち、土日祝日・休日を除いた稼働日数です。",
+        bufferDays: "挑戦的な目標完了日からプロジェクト終了日までの余裕日数です。",
+        targetFinishDate: "プロジェクト開始から、最速で完了を目指す挑戦的な目標日です。",
+        phasePlan: "フェーズ単位で置いた大まかな計画日数です。詳細な見積に分解される前の粗い計画として使います。",
+        plannedFinishDate: "フェーズ計画日数を稼働日に割り当てた場合の参考完了日です。",
+        recordDate: "この進捗を記録した日です。前回記録との差分からチームベロシティを計算します。",
+        remainingPlanDays: "フェーズごとにおおよその日数をあてた未見積の計画です。タスクにばらして見積できると、最終的にゼロへ近づきます。",
+        totalEstimate: "見積もり済みタスクの合計人日です。残計画日数が詳細な見積に置き換わるほど増えます。",
+        doneEstimate: "完了した見積もり済みタスクの見積人日合計です。3人日の作業に5日かかっても、3人日分完了として扱います。",
+        remainingEstimate: "合計見積から完了分を引いた残りです。フェーズ内の見積済み作業がすべて完了するとゼロになります。",
+        totalDone: "全フェーズの完了済み見積人日の合計です。",
+        velocity: "総完了変化を前回からの稼働日数で割った、1稼働日あたりの完了ペースです。",
+        manualVelocity: "入力すると、実績ベロシティより優先して推定完了日の計算に使います。フィーバーチャートでは菱形の点で表示されます。",
+        progressRate: "日数ベースの進捗率です。総完了 / (総残計画日数 + 総合計見積) で計算します。",
+        estimatedRemainingDays: "残り日数の推測値です。総残計画日数 + (総見積残 / チームベロシティ) で計算します。",
+        estimatedFinishDate: "記録日に推定残日数を稼働日に割り当てて算出した完了見込み日です。",
+        bufferRate: "推定完了日が当初想定したバッファにどの程度食い込んでいるかを表します。立て直しがどれほど難しいかを見る指標です。",
+        evaluation: "安全: PB消費率 <= 0.6×進捗率+10。注意: <= 0.6×進捗率+25。危険: それ以上100%まで。100%以上は遅延リスク大です。",
+        note: "フェーズ完了や手戻りなど、チャート上で振り返りたい出来事を書きます。",
+        noteOnChart: "チェックすると、この記録のメモをフィーバーチャート上の点の近くに表示します。",
+        feverChart: "横軸が進捗率、縦軸がバッファ消費率です。右下へ進むほど、進捗しながらバッファを守れている状態です。",
+        feverManualPoint: "菱形の点は、仮置きベロシティを使って推定完了日を計算した記録です。"
+      };
+
+      function goalHelp(key) {
+        return escapeAttribute(GOAL_HELP[key] || "");
+      }
+
+      function renderGoalProjectSettings(info) {
+        const navi = info.navi;
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title">プロジェクト設定<span>期間と休日から目標完了日とバッファを決めます</span></div>
+            </div>
+            <div class="goal-band-body">
+              <div class="goal-field-grid">
+                <label class="goal-field" title="${goalHelp("projectStart")}">
+                  開始日
+                  <input class="goal-input" type="date" data-goal-field="start" value="${escapeAttribute(navi.project.start)}">
+                </label>
+                <label class="goal-field" title="${goalHelp("projectEnd")}">
+                  終了日
+                  <input class="goal-input" type="date" data-goal-field="end" value="${escapeAttribute(navi.project.end)}">
+                </label>
+                <label class="goal-field" title="${goalHelp("targetRatio")}">
+                  目標完了日までの割合(%)
+                  <input class="goal-input" type="number" min="5" max="95" step=".1" data-goal-field="targetRatio" value="${formatNumber(navi.targetRatio * 100)}">
+                </label>
+                <label class="goal-field wide" title="${goalHelp("holidays")}">
+                  休日
+                  <textarea class="goal-textarea" data-goal-field="holidays" spellcheck="false">${escapeHtml(navi.project.holidays.join("\n"))}</textarea>
+                </label>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGoalSummary(info) {
+        const latest = info.latest;
+        const evaluation = latest?.evaluation || { id: "none", label: "未計算" };
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title">Goal Navi<span>フェーズ単位の進捗とバッファ消費を追跡します</span></div>
+            </div>
+            <div class="goal-band-body">
+              <div class="goal-summary-grid">
+                <div class="goal-metric" title="${goalHelp("workdays")} ${goalHelp("bufferDays")}">
+                  <div class="goal-metric-label">稼働日</div>
+                  <div class="goal-metric-value">${formatNumber(info.totalWorkdays)}日</div>
+                  <small>PB ${formatNumber(info.bufferDays)}日</small>
+                </div>
+                <div class="goal-metric" title="${goalHelp("targetFinishDate")} ${goalHelp("plannedFinishDate")}">
+                  <div class="goal-metric-label">目標完了日</div>
+                  <div class="goal-metric-value">${info.targetFinishDate || "-"}</div>
+                  <small>割合 ${formatNumber(info.navi.targetRatio * 100)}% / フェーズ計画 ${info.plannedFinishDate || "-"}</small>
+                </div>
+                <div class="goal-metric" title="${goalHelp("estimatedFinishDate")} ${goalHelp("estimatedRemainingDays")}">
+                  <div class="goal-metric-label">推定完了日</div>
+                  <div class="goal-metric-value">${renderGoalFinishValue(latest)}</div>
+                  <small>最新記録 ${latest ? escapeHtml(latest.record.date) : "-"}</small>
+                </div>
+                <div class="goal-metric" title="${goalHelp("progressRate")}">
+                  <div class="goal-metric-label">進捗率</div>
+                  <div class="goal-metric-value">${formatNumber(latest?.progressRate || 0)}%</div>
+                  <small>完了 ${formatNumber(latest?.totals.doneEstimate || 0)}人日</small>
+                </div>
+                <div class="goal-metric" title="${goalHelp("bufferRate")}">
+                  <div class="goal-metric-label">バッファ消費率</div>
+                  <div class="goal-metric-value">${formatGoalPercent(latest?.bufferRate)}</div>
+                  <small>${Number.isFinite(latest?.consumedBuffer) ? formatNumber(latest.consumedBuffer) : "-"} / ${formatNumber(info.bufferDays)}日</small>
+                </div>
+                <div class="goal-metric" title="${goalHelp("evaluation")}">
+                  <div class="goal-metric-label">評価</div>
+                  <div class="goal-metric-value"><span class="goal-eval ${escapeAttribute(evaluation.id)}">${escapeHtml(evaluation.label)}</span></div>
+                  <small>y = 0.6x + 10 / 25</small>
+                </div>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGoalPhaseEditor(info) {
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title">フェーズ<span>フェーズ数は任意に増やせます</span></div>
+              <div class="goal-actions">
+                <button class="goal-button primary" type="button" data-command="goal-add-phase">フェーズ追加</button>
+              </div>
+            </div>
+            <div class="goal-band-body">
+              <div class="goal-phase-table">
+                <div class="goal-phase-row header">
+                  <div class="goal-cell">フェーズ名</div>
+                  <div class="goal-cell" title="${goalHelp("phasePlan")}">計画日数</div>
+                  <div class="goal-cell"></div>
+                </div>
+                ${info.navi.phases.map(phase => `
+                  <div class="goal-phase-row">
+                    <div class="goal-cell">
+                      <input class="goal-input" data-goal-phase-field="name" data-goal-phase-id="${escapeAttribute(phase.id)}" value="${escapeAttribute(phase.name)}">
+                    </div>
+                    <div class="goal-cell">
+                      <input class="goal-input" type="number" min="0" step=".1" data-goal-phase-field="plannedDays" data-goal-phase-id="${escapeAttribute(phase.id)}" value="${formatNumber(phase.plannedDays)}" title="${goalHelp("phasePlan")}">
+                    </div>
+                    <div class="goal-cell">
+                      <button class="goal-button danger" type="button" data-command="goal-delete-phase" data-goal-phase-id="${escapeAttribute(phase.id)}" title="フェーズを削除">削除</button>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGoalRecordEditor(info) {
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title">進捗記録<span>週次など任意のタイミングで記録します</span></div>
+              <div class="goal-actions">
+                <button class="goal-button primary" type="button" data-command="goal-add-record">記録追加</button>
+              </div>
+            </div>
+            <div class="goal-band-body">
+              <div class="goal-record-list">
+                ${info.rows.slice().reverse().map(row => renderGoalRecord(row, info.navi.phases)).join("")}
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGoalRecord(row, phases) {
+        const record = row.record;
+        return `
+          <article class="goal-record">
+            <div class="goal-record-head">
+              <input class="goal-input" type="date" data-goal-record-field="date" data-goal-record-id="${escapeAttribute(record.id)}" value="${escapeAttribute(record.date)}" title="${goalHelp("recordDate")}">
+              <div class="goal-record-metrics">
+                <span title="${goalHelp("progressRate")}">進捗 ${formatNumber(row.progressRate)}%</span>
+                <span title="${goalHelp("bufferRate")}">PB ${formatGoalPercent(row.bufferRate)}</span>
+                ${renderGoalVelocityBadge(row)}
+                <span title="${goalHelp("evaluation")}">${escapeHtml(row.evaluation.label)}</span>
+              </div>
+              <label class="goal-velocity-field" title="${goalHelp("manualVelocity")}">
+                仮置き速度
+                <input class="goal-input" type="number" min="0" step=".1" data-goal-record-field="velocityOverride" data-goal-record-id="${escapeAttribute(record.id)}" value="${Number.isFinite(record.velocityOverride) ? formatNumber(record.velocityOverride) : ""}" placeholder="任意">
+                <span class="goal-velocity-prompt">${row.velocityBlocksActual ? "0以下/計算不能時は入力推奨" : "任意入力・入力時は優先使用"}</span>
+              </label>
+              <button class="goal-button danger" type="button" data-command="goal-delete-record" data-goal-record-id="${escapeAttribute(record.id)}">削除</button>
+            </div>
+            <div class="goal-record-note-row">
+              <label class="goal-field" title="${goalHelp("note")}">
+                メモ
+                <textarea class="goal-textarea" data-goal-record-field="note" data-goal-record-id="${escapeAttribute(record.id)}" placeholder="例: フェーズ2完了">${escapeHtml(record.note || "")}</textarea>
+              </label>
+              <label class="goal-note-toggle" title="${goalHelp("noteOnChart")}">
+                <input type="checkbox" data-goal-record-field="showNoteOnChart" data-goal-record-id="${escapeAttribute(record.id)}"${record.showNoteOnChart ? " checked" : ""}>
+                チャート表示
+              </label>
+            </div>
+            <div class="goal-record-phases">
+              <div class="goal-record-phase-row group">
+                <div class="goal-cell">フェーズ</div>
+                <div class="goal-cell goal-plan-cell" title="${goalHelp("remainingPlanDays")}">未見積の計画（日）</div>
+                <div class="goal-cell goal-estimate-cell" title="${goalHelp("totalEstimate")}">→ 見積化済み（人日）</div>
+              </div>
+              <div class="goal-record-phase-row header">
+                <div class="goal-cell"><span class="goal-column-head">フェーズ</span></div>
+                <div class="goal-cell goal-plan-cell" title="${goalHelp("remainingPlanDays")}"><span class="goal-column-head">残計画日数<small>日・未見積</small></span></div>
+                <div class="goal-cell goal-estimate-cell" title="${goalHelp("totalEstimate")}"><span class="goal-column-head">合計見積<small>人日・見積化済み</small></span></div>
+                <div class="goal-cell goal-estimate-cell" title="${goalHelp("doneEstimate")}"><span class="goal-column-head">完了<small>人日</small></span></div>
+                <div class="goal-cell goal-estimate-cell" title="${goalHelp("remainingEstimate")}"><span class="goal-column-head">見積残<small>人日・自動</small></span></div>
+              </div>
+              ${phases.map(phase => {
+                const data = normalizeGoalPhaseData(record.phases?.[phase.id], phase);
+                const fieldMeta = [
+                  { field: "remainingPlanDays", className: "goal-plan-cell" },
+                  { field: "totalEstimate", className: "goal-estimate-cell" },
+                  { field: "doneEstimate", className: "goal-estimate-cell" }
+                ];
+                return `
+                  <div class="goal-record-phase-row">
+                    <div class="goal-cell"><span class="goal-phase-name" title="${escapeAttribute(phase.name)}">${escapeHtml(phase.name)}</span></div>
+                    ${fieldMeta.map(({ field, className }) => `
+                      <div class="goal-cell ${className}">
+                        <input class="goal-input" type="number" min="0" step=".1" data-goal-record-field="${field}" data-goal-record-id="${escapeAttribute(record.id)}" data-goal-phase-id="${escapeAttribute(phase.id)}" value="${formatNumber(data[field])}" title="${goalHelp(field)}">
+                      </div>
+                    `).join("")}
+                    <div class="goal-cell goal-estimate-cell">
+                      <span class="goal-readonly-value" title="${goalHelp("remainingEstimate")}">${formatNumber(data.remainingEstimate)}</span>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </article>
+        `;
+      }
+
+      function renderGoalFeverPanel(info) {
+        const latest = info.latest;
+        const evaluation = latest?.evaluation || { id: "none", label: "未計算" };
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title" title="${goalHelp("feverChart")}">Fever Chart<span>計算結果の進捗率とバッファ消費率をプロットします</span></div>
+            </div>
+            <div class="goal-band-body goal-chart-wrap">
+              <div class="goal-chart-summary">
+                <span title="${goalHelp("recordDate")}">最新 ${latest ? escapeHtml(latest.record.date) : "-"}</span>
+                <span title="${goalHelp("progressRate")}">進捗 ${formatNumber(latest?.progressRate || 0)}%</span>
+                <span title="${goalHelp("bufferRate")}">PB消費 ${formatGoalPercent(latest?.bufferRate)}</span>
+                ${renderGoalVelocityBadge(latest)}
+                ${renderGoalFinishChip(latest)}
+                <span class="goal-eval ${escapeAttribute(evaluation.id)}" title="${goalHelp("evaluation")}">${escapeHtml(evaluation.label)}</span>
+              </div>
+              ${renderGoalFeverChart(info)}
+              <div class="goal-chart-legend" aria-label="Fever Chart判定">
+                <span class="safe" title="${goalHelp("evaluation")}"><i></i>安全: y <= 0.6x + 10</span>
+                <span class="watch" title="${goalHelp("evaluation")}"><i></i>注意: y <= 0.6x + 25</span>
+                <span class="danger" title="${goalHelp("evaluation")}"><i></i>危険</span>
+                <span class="late" title="${goalHelp("evaluation")}"><i></i>100%以上</span>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGoalFeverChart(info) {
+        const points = info.rows
+          .filter(row => Number.isFinite(row.progressRate) && Number.isFinite(row.bufferRate))
+          .map(row => ({ ...row, progressRate: row.progressRate || 0, bufferRate: row.bufferRate || 0 }));
+        if (!points.length) {
+          return `<div class="gantt-empty">進捗記録を追加するとチャートを表示します</div>`;
+        }
+        const width = 760;
+        const height = 430;
+        const left = 58;
+        const right = 24;
+        const top = 24;
+        const bottom = 46;
+        const plotWidth = width - left - right;
+        const plotHeight = height - top - bottom;
+        const maxBufferRate = Math.max(100, ...points.map(point => point.bufferRate || 0));
+        const yMax = Math.max(120, Math.ceil(maxBufferRate / 20) * 20);
+        const px = value => left + clampNumber(value, 0, 100) / 100 * plotWidth;
+        const py = value => top + (1 - clampNumber(value, 0, yMax) / yMax) * plotHeight;
+        const xs = Array.from({ length: 11 }, (_, index) => index * 10);
+        const greenLine = x => Math.min(100, x * .6 + 10);
+        const yellowLine = x => Math.min(100, x * .6 + 25);
+        const zonePoints = (lower, upper) => xs
+          .map(x => `${formatNumber(px(x))},${formatNumber(py(upper(x)))}`)
+          .concat(xs.slice().reverse().map(x => `${formatNumber(px(x))},${formatNumber(py(lower(x)))}`))
+          .join(" ");
+        const linePath = line => xs.map((x, index) => `${index ? "L" : "M"} ${formatNumber(px(x))} ${formatNumber(py(line(x)))}`).join(" ");
+        const plotted = points.map((point, index) => ({
+          ...point,
+          x: px(point.progressRate),
+          y: py(point.bufferRate),
+          latest: point.record.id === info.latest?.record.id
+        }));
+        const noteLabels = plotted
+          .filter(point => point.record.showNoteOnChart && String(point.record.note || "").trim())
+          .map((point, index) => {
+            const rawLabel = String(point.record.note || "").trim().replace(/\s+/g, " ");
+            const chars = Array.from(rawLabel);
+            const label = chars.length > 18 ? `${chars.slice(0, 18).join("")}...` : rawLabel;
+            const textWidth = Math.min(224, Math.max(72, Array.from(label).reduce((sum, char) => sum + (char.charCodeAt(0) < 128 ? 7 : 12), 0) + 18));
+            const textHeight = 26;
+            const canPlaceRight = point.x + textWidth + 16 <= left + plotWidth;
+            const boxX = canPlaceRight
+              ? point.x + 10
+              : Math.max(left + 4, point.x - textWidth - 10);
+            const verticalOffset = (index % 3) * 12;
+            const boxY = clampNumber(point.y - textHeight - 10 + verticalOffset, top + 4, top + plotHeight - textHeight - 4);
+            return {
+              point,
+              label,
+              fullLabel: rawLabel,
+              boxX,
+              boxY,
+              textWidth,
+              textHeight,
+              lineX: canPlaceRight ? boxX : boxX + textWidth,
+              lineY: boxY + textHeight / 2
+            };
+        });
+        const polyline = plotted.length >= 2
+          ? `<polyline class="goal-fever-history" points="${plotted.map(point => `${formatNumber(point.x)},${formatNumber(point.y)}`).join(" ")}"></polyline>`
+          : "";
+        const renderFeverPoint = point => {
+          const isManual = point.velocitySource === "manual";
+          const classes = `goal-fever-point${isManual ? " manual" : ""}${point.latest ? " latest" : ""}`;
+          const title = `${escapeHtml(point.record.date)} 進捗 ${formatNumber(point.progressRate)}% / PB ${formatNumber(point.bufferRate)}%${isManual ? " / 仮置き速度使用" : ""}${point.record.note ? ` / ${escapeHtml(point.record.note)}` : ""}`;
+          if (isManual) {
+            const size = point.latest ? 10 : 8;
+            return `
+              <rect class="${classes}" x="${formatNumber(point.x - size / 2)}" y="${formatNumber(point.y - size / 2)}" width="${size}" height="${size}" transform="rotate(45 ${formatNumber(point.x)} ${formatNumber(point.y)})">
+                <title>${title} / ${goalHelp("feverManualPoint")}</title>
+              </rect>
+            `;
+          }
+          return `
+            <circle class="${classes}" cx="${formatNumber(point.x)}" cy="${formatNumber(point.y)}" r="${point.latest ? "6" : "4"}">
+              <title>${title}</title>
+            </circle>
+          `;
+        };
+        return `
+          <svg class="goal-fever-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Goal Navi Fever Chart">
+            <polygon class="goal-fever-zone-gray" points="${zonePoints(() => 100, () => yMax)}"></polygon>
+            <polygon class="goal-fever-zone-red" points="${zonePoints(yellowLine, () => 100)}"></polygon>
+            <polygon class="goal-fever-zone-yellow" points="${zonePoints(greenLine, yellowLine)}"></polygon>
+            <polygon class="goal-fever-zone-green" points="${zonePoints(() => 0, greenLine)}"></polygon>
+            ${[0, 25, 50, 75, 100].map(x => `<line class="goal-fever-grid" x1="${formatNumber(px(x))}" y1="${top}" x2="${formatNumber(px(x))}" y2="${formatNumber(top + plotHeight)}"></line>`).join("")}
+            ${[0, 50, 100, yMax].filter((value, index, values) => values.indexOf(value) === index && value <= yMax).map(y => `<line class="goal-fever-grid" x1="${left}" y1="${formatNumber(py(y))}" x2="${formatNumber(left + plotWidth)}" y2="${formatNumber(py(y))}"></line>`).join("")}
+            <path class="goal-fever-line" d="${linePath(greenLine)}"></path>
+            <path class="goal-fever-line" d="${linePath(yellowLine)}"></path>
+            <path class="goal-fever-line" d="M ${left} ${formatNumber(py(100))} H ${left + plotWidth}"></path>
+            ${polyline}
+            ${plotted.map(renderFeverPoint).join("")}
+            ${noteLabels.map(note => `
+              <g class="goal-fever-note">
+                <line class="goal-fever-note-line" x1="${formatNumber(note.point.x)}" y1="${formatNumber(note.point.y)}" x2="${formatNumber(note.lineX)}" y2="${formatNumber(note.lineY)}"></line>
+                <rect class="goal-fever-note-box" x="${formatNumber(note.boxX)}" y="${formatNumber(note.boxY)}" width="${formatNumber(note.textWidth)}" height="${note.textHeight}" rx="6"></rect>
+                <text class="goal-fever-note-text" x="${formatNumber(note.boxX + 9)}" y="${formatNumber(note.boxY + 17)}">
+                  <title>${escapeHtml(note.fullLabel)}</title>
+                  ${escapeHtml(note.label)}
+                </text>
+              </g>
+            `).join("")}
+            <path class="goal-fever-axis" d="M ${left} ${top} V ${top + plotHeight} H ${left + plotWidth}"></path>
+            <text class="goal-fever-label" x="${left}" y="${height - 10}">進捗率</text>
+            <text class="goal-fever-label" x="6" y="${top + 8}">PB消費率</text>
+            <text class="goal-fever-label" x="${formatNumber(left + plotWidth - 30)}" y="${height - 10}">100%</text>
+            <text class="goal-fever-label" x="18" y="${formatNumber(py(100) + 4)}">100%</text>
+            <text class="goal-fever-label" x="22" y="${formatNumber(py(0) + 4)}">0%</text>
+          </svg>
+        `;
+      }
+
+      function renderGoalRecordSummary(info) {
+        return `
+          <section class="goal-band">
+            <div class="goal-band-head">
+              <div class="goal-band-title">履歴<span>最新の記録を上に表示します</span></div>
+            </div>
+            <div class="goal-band-body">
+              <div class="goal-record-summary">
+                <div class="goal-record-summary-row header">
+                  <span title="${goalHelp("recordDate")}">記録日</span>
+                  <span title="${goalHelp("estimatedFinishDate")}">推定完了日</span>
+                  <span title="${goalHelp("progressRate")}">進捗率</span>
+                  <span title="${goalHelp("bufferRate")}">バッファ消費率</span>
+                  <span title="${goalHelp("evaluation")}">評価</span>
+                </div>
+                ${info.rows.slice().reverse().map(row => `
+                  <div class="goal-record-summary-row${row === info.latest ? " latest" : ""}">
+                    <span>${escapeHtml(row.record.date)}</span>
+                    <span>${renderGoalFinishValue(row)}</span>
+                    <span>${formatNumber(row.progressRate)}%</span>
+                    <span>PB ${formatGoalPercent(row.bufferRate)}</span>
+                    <span><span class="goal-eval ${escapeAttribute(row.evaluation.id)}">${escapeHtml(row.evaluation.label)}</span></span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </section>
         `;
       }
 
@@ -11825,6 +13640,137 @@
         `;
       }
 
+      function setGoalNaviData(nextGoalNavi, message) {
+        const current = normalizeGoalNavi(state.goalNavi || makeDefaultGoalNavi());
+        const next = normalizeGoalNavi(nextGoalNavi);
+        if (JSON.stringify(current) === JSON.stringify(next)) return;
+        recordHistory();
+        state.goalNavi = next;
+        render();
+        saveState();
+        if (message) setStatus(message);
+      }
+
+      function updateGoalProjectField(field, value) {
+        const navi = cloneGoalNavi();
+        if (field === "start" || field === "end") {
+          navi.project[field] = normalizeProjectDate(value);
+        } else if (field === "holidays") {
+          navi.project.holidays = normalizeProjectList(value).map(normalizeProjectDate).filter(Boolean);
+        } else if (field === "targetRatio") {
+          navi.targetRatio = normalizeGoalNumber(value, navi.targetRatio * 100) / 100;
+        }
+        setGoalNaviData(navi, "Goal Naviのプロジェクト設定を更新しました");
+      }
+
+      function updateGoalPhaseField(phaseId, field, value) {
+        const navi = cloneGoalNavi();
+        const phase = navi.phases.find(item => item.id === phaseId);
+        if (!phase) return;
+        if (field === "name") phase.name = String(value || "").trim() || "フェーズ";
+        if (field === "plannedDays") phase.plannedDays = normalizeGoalNumber(value, phase.plannedDays);
+        setGoalNaviData(navi, "フェーズを更新しました");
+      }
+
+      function addGoalPhase() {
+        const navi = cloneGoalNavi();
+        recordHistory();
+        const phase = {
+          id: freshId("goal-phase"),
+          name: `フェーズ${navi.phases.length + 1}`,
+          plannedDays: 0
+        };
+        navi.phases.push(phase);
+        navi.records.forEach(record => {
+          record.phases[phase.id] = normalizeGoalPhaseData({}, phase);
+        });
+        state.goalNavi = normalizeGoalNavi(navi);
+        render();
+        saveState();
+        setStatus("フェーズを追加しました");
+      }
+
+      function deleteGoalPhase(phaseId) {
+        const navi = cloneGoalNavi();
+        if (navi.phases.length <= 1) {
+          setStatus("フェーズは1つ以上必要です");
+          return;
+        }
+        if (!navi.phases.some(phase => phase.id === phaseId)) return;
+        recordHistory();
+        navi.phases = navi.phases.filter(phase => phase.id !== phaseId);
+        navi.records.forEach(record => {
+          delete record.phases[phaseId];
+        });
+        state.goalNavi = normalizeGoalNavi(navi);
+        render();
+        saveState();
+        setStatus("フェーズを削除しました");
+      }
+
+      function updateGoalRecordField(recordId, phaseId, field, value) {
+        const navi = cloneGoalNavi();
+        const record = navi.records.find(item => item.id === recordId);
+        if (!record) return;
+        if (field === "date") {
+          record.date = normalizeProjectDate(value) || record.date;
+        } else if (field === "velocityOverride") {
+          record.velocityOverride = normalizeGoalOptionalNumber(value);
+        } else if (field === "note") {
+          record.note = String(value ?? "");
+        } else if (field === "showNoteOnChart") {
+          record.showNoteOnChart = Boolean(value);
+        } else if (field === "remainingEstimate") {
+          return;
+        } else {
+          const phase = navi.phases.find(item => item.id === phaseId);
+          if (!phase) return;
+          const current = normalizeGoalPhaseData(record.phases[phase.id], phase);
+          current[field] = normalizeGoalNumber(value, current[field]);
+          record.phases[phase.id] = current;
+        }
+        setGoalNaviData(navi, "進捗記録を更新しました");
+      }
+
+      function addGoalRecord() {
+        const navi = cloneGoalNavi();
+        const last = navi.records[navi.records.length - 1] || null;
+        const lastDate = parseProjectDate(last?.date || navi.project.start || localTodayIso());
+        const nextDate = lastDate ? projectDateIso(addProjectCalendarDays(lastDate, 7)) : localTodayIso();
+        const phaseData = {};
+        navi.phases.forEach(phase => {
+          phaseData[phase.id] = normalizeGoalPhaseData(last?.phases?.[phase.id], phase);
+        });
+        recordHistory();
+        navi.records.push({
+          id: freshId("goal-record"),
+          date: nextDate,
+          velocityOverride: "",
+          note: "",
+          showNoteOnChart: false,
+          phases: phaseData
+        });
+        state.goalNavi = normalizeGoalNavi(navi);
+        render();
+        saveState();
+        setStatus("進捗記録を追加しました");
+      }
+
+      function deleteGoalRecord(recordId) {
+        const navi = cloneGoalNavi();
+        if (navi.records.length <= 1) {
+          setStatus("進捗記録は1つ以上必要です");
+          return;
+        }
+        if (!navi.records.some(record => record.id === recordId)) return;
+        recordHistory();
+        navi.records = navi.records.filter(record => record.id !== recordId);
+        state.goalNavi = normalizeGoalNavi(navi);
+        render();
+        saveState();
+        setStatus("進捗記録を削除しました");
+      }
+
       function updateHint() {
         if (state.pendingPort) {
           const node = findNode(state.pendingPort.nodeId);
@@ -11855,7 +13801,9 @@
           );
           return;
         }
-        if (isEcDiagram()) {
+        if (isGoalNaviDiagram()) {
+          setHint("フェーズと進捗記録を編集すると、推定完了日とバッファ消費率を再計算します。");
+        } else if (isEcDiagram()) {
           setHint("中央クリックで内容を編集、ダブルクリックで詳細欄を開きます。ECの構造は固定です。");
         } else if (isCcpmDiagram()) {
           setHint("中央クリックでタスク名を編集、ダブルクリックで期間・担当・詳細を編集できます。下部にガントチャートを表示します。");
@@ -11957,6 +13905,14 @@
           deleteCcpmFeverHistory(source?.dataset.feverDate || "");
         } else if (command === "select-check-node") {
           selectCcpmCheckNode(source?.dataset.nodeId || "");
+        } else if (command === "goal-add-phase") {
+          addGoalPhase();
+        } else if (command === "goal-delete-phase") {
+          deleteGoalPhase(source?.dataset.goalPhaseId || "");
+        } else if (command === "goal-add-record") {
+          addGoalRecord();
+        } else if (command === "goal-delete-record") {
+          deleteGoalRecord(source?.dataset.goalRecordId || "");
         } else if (command === "reset") {
           clearAll();
         } else if (command === "zoom-in") {
@@ -12175,6 +14131,23 @@
       });
 
       document.addEventListener("change", event => {
+        if (event.target.matches("[data-goal-field]")) {
+          updateGoalProjectField(event.target.dataset.goalField, event.target.value || "");
+          return;
+        }
+        if (event.target.matches("[data-goal-phase-field]")) {
+          updateGoalPhaseField(event.target.dataset.goalPhaseId || "", event.target.dataset.goalPhaseField || "", event.target.value || "");
+          return;
+        }
+        if (event.target.matches("[data-goal-record-field]")) {
+          updateGoalRecordField(
+            event.target.dataset.goalRecordId || "",
+            event.target.dataset.goalPhaseId || "",
+            event.target.dataset.goalRecordField || "",
+            event.target.type === "checkbox" ? event.target.checked : event.target.value || ""
+          );
+          return;
+        }
         if (event.target.matches("[data-fever-memo]")) {
           saveCcpmFeverMemo(event.target.dataset.feverDate || "", event.target.value || "");
           return;

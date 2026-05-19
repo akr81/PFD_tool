@@ -345,6 +345,13 @@
       box-shadow: 0 5px 18px rgba(22, 31, 40, .12);
     }
 
+    .icon-button.active {
+      border-color: var(--accent);
+      background: #e9f7f7;
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(23, 123, 132, .18);
+    }
+
     .icon-button:not(:disabled):active,
     .shape-button:not(:disabled):active,
     .mini-button:not(:disabled):active,
@@ -4612,6 +4619,14 @@
           <path d="M10 9h4M17 10v4"></path>
         </svg>
       </button>
+      <button class="icon-button" id="pfdOrientationButton" data-command="pfd-orientation" title="PFDの向きを切り替え" aria-label="PFDの向きを切り替え" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h10"></path>
+          <path d="m11 4 3 3-3 3"></path>
+          <path d="M7 10v8"></path>
+          <path d="m4 15 3 3 3-3"></path>
+        </svg>
+      </button>
       <button class="icon-button" data-command="fit" title="全体表示">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M21 16v3a2 2 0 0 1-2 2h-3"></path>
@@ -5129,6 +5144,7 @@
       const addToolbarGroup = document.getElementById("addToolbarGroup");
       const detailTools = document.getElementById("detailTools");
       const projectSettingsToolbar = document.getElementById("projectSettingsToolbar");
+      const pfdOrientationButton = document.getElementById("pfdOrientationButton");
       const totalEstimateValue = document.getElementById("totalEstimateValue");
       const doneEstimateValue = document.getElementById("doneEstimateValue");
       const progressRateValue = document.getElementById("progressRateValue");
@@ -5187,6 +5203,7 @@
         detailEditing: false,
         detailEditingNodeId: null,
         diagramType: "pfd",
+        pfdOrientation: "horizontal",
         viewMode: "simple",
         nodeTextSize: DEFAULT_NODE_TEXT_SIZE,
         ganttHeight: DEFAULT_GANTT_HEIGHT,
@@ -6132,6 +6149,7 @@
 
       function makeInitialState(diagramType = state.diagramType || "pfd") {
         state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
+        state.pfdOrientation = normalizePfdOrientation(state.pfdOrientation);
         state.project = makeDefaultProjectSettings();
         state.goalNavi = makeDefaultGoalNavi();
         state.selectedFeverDate = "";
@@ -6218,6 +6236,7 @@
             nodes: [],
             edges: [],
             diagramType: "goal",
+            pfdOrientation: graphPfdOrientation(parsed),
             viewMode: parsed.viewMode === "detail" ? "detail" : null,
             nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
             ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6313,6 +6332,7 @@
           nodes,
           edges,
           diagramType,
+          pfdOrientation: graphPfdOrientation(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6344,6 +6364,7 @@
           nodes,
           edges: makeEcEdges(),
           diagramType: "ec",
+          pfdOrientation: graphPfdOrientation(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6386,6 +6407,25 @@
         return state.diagramType === "pfd";
       }
 
+      function normalizePfdOrientation(value, legacyHorizontal = undefined) {
+        if (value === "vertical" || value === "top-bottom" || value === "topToBottom" || value === "portrait") return "vertical";
+        if (value === "horizontal" || value === "left-right" || value === "leftToRight" || value === "landscape") return "horizontal";
+        if (typeof value === "boolean") return value ? "horizontal" : "vertical";
+        if (typeof legacyHorizontal === "boolean") return legacyHorizontal ? "horizontal" : "vertical";
+        return "horizontal";
+      }
+
+      function graphPfdOrientation(graph = {}) {
+        return normalizePfdOrientation(
+          graph.pfdOrientation ?? graph.orientation ?? graph.pfdDirection,
+          graph.pfdHorizontal ?? graph.horizontal ?? graph.isHorizontal ?? graph.is_horizontal
+        );
+      }
+
+      function isPfdVertical() {
+        return isPfdDiagram() && state.pfdOrientation === "vertical";
+      }
+
       function isSttDiagram() {
         return state.diagramType === "stt";
       }
@@ -6404,6 +6444,18 @@
 
       function isUpwardDiagram() {
         return isSttDiagram() || isCrtDiagram();
+      }
+
+      function layoutDownstreamSide() {
+        if (isUpwardDiagram()) return "top";
+        if (isPfdVertical()) return "bottom";
+        return "right";
+      }
+
+      function layoutUpstreamSide() {
+        if (isUpwardDiagram()) return "bottom";
+        if (isPfdVertical()) return "top";
+        return "left";
       }
 
       function isEcDiagram() {
@@ -6488,6 +6540,7 @@
       function graphPayload() {
         const payload = {
           diagramType: state.diagramType,
+          pfdOrientation: state.pfdOrientation,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           viewMode: state.viewMode,
@@ -6536,6 +6589,7 @@
 
       function applyGraphData(graph) {
         state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
+        state.pfdOrientation = normalizePfdOrientation(graph.pfdOrientation);
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
         if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -6574,6 +6628,7 @@
           const parsed = JSON.parse(saved);
           const graph = normalizeGraphData(parsed);
           state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
+          state.pfdOrientation = normalizePfdOrientation(graph.pfdOrientation);
           state.nodes = graph.nodes.map(cloneNodeData);
           state.edges = graph.edges;
           if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -6598,6 +6653,7 @@
       function cloneSnapshot() {
         return {
           diagramType: state.diagramType,
+          pfdOrientation: state.pfdOrientation,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           selected: state.selected ? { ...state.selected } : null,
@@ -6638,6 +6694,7 @@
 
       function restoreSnapshot(snapshot) {
         state.diagramType = DIAGRAM_TYPES[snapshot.diagramType] ? snapshot.diagramType : "pfd";
+        state.pfdOrientation = normalizePfdOrientation(snapshot.pfdOrientation);
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
         state.ganttHeight = normalizeGanttHeight(snapshot.ganttHeight);
@@ -6748,6 +6805,10 @@
         diagramTypeSelect.value = state.diagramType;
         addToolbarGroup.hidden = !(isPfdDiagram() || isCcpmDiagram());
         projectSettingsToolbar.hidden = !isCcpmDiagram();
+        if (pfdOrientationButton) {
+          pfdOrientationButton.hidden = !isPfdDiagram();
+          updatePfdOrientationButton();
+        }
         document.querySelector(".mode-group").hidden = isGoalNaviDiagram();
         document.querySelector(".text-size-toolbar").hidden = isGoalNaviDiagram();
         document.querySelectorAll('[data-command="layout"], [data-command="fit"], [data-command="delete"]').forEach(button => {
@@ -6809,6 +6870,16 @@
         nodeTextSizeValue.textContent = `${size}px`;
       }
 
+      function updatePfdOrientationButton() {
+        if (!pfdOrientationButton) return;
+        const vertical = isPfdVertical();
+        const title = vertical ? "PFDを横向き（左→右）に切り替え" : "PFDを縦向き（上→下）に切り替え";
+        pfdOrientationButton.classList.toggle("active", vertical);
+        pfdOrientationButton.setAttribute("aria-pressed", vertical ? "true" : "false");
+        pfdOrientationButton.setAttribute("aria-label", title);
+        pfdOrientationButton.title = title;
+      }
+
       function setNodeTextSize(value, persist = false) {
         const nextSize = normalizeNodeTextSize(value);
         if (state.nodeTextSize === nextSize && !persist) return;
@@ -6816,6 +6887,22 @@
         autoLayout();
         render();
         if (persist) saveState();
+      }
+
+      function togglePfdOrientation() {
+        if (!isPfdDiagram()) return;
+        recordHistory();
+        state.pfdOrientation = isPfdVertical() ? "horizontal" : "vertical";
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        closePalette();
+        autoLayout();
+        render();
+        saveState();
+        centerOnGraph();
+        setStatus(isPfdVertical()
+          ? "PFDを上から下へ流す表示にしました"
+          : "PFDを左から右へ流す表示にしました");
       }
 
       function applyNodeDisplayScale(el) {
@@ -7112,22 +7199,25 @@
           });
         });
 
-        const endId = [...distance.entries()]
-          .sort((a, b) => b[1] - a[1] || compareGraphOrder(nodeMap.get(b[0]), nodeMap.get(a[0])))
-          [0]?.[0];
+        const endId = criticalPathEndId(distance, nodeMap, outgoing);
         if (!endId || (distance.get(endId) || 0) <= 0) return emptyCriticalPathInfo();
 
-        const criticalEdges = new Set();
-        const criticalNodes = new Set([endId]);
+        const pathEdges = [];
+        const pathNodeIds = [endId];
         const seenNodes = new Set();
         let currentId = endId;
         while (predecessor.has(currentId) && !seenNodes.has(currentId)) {
           seenNodes.add(currentId);
           const edge = predecessor.get(currentId);
-          criticalEdges.add(edge.id);
+          pathEdges.push(edge);
           currentId = edge.from;
-          criticalNodes.add(currentId);
+          pathNodeIds.push(currentId);
         }
+        pathEdges.reverse();
+        pathNodeIds.reverse();
+        const trimmedPath = trimPfdCriticalPathStart(pathNodeIds, pathEdges, nodeMap);
+        const criticalEdges = new Set(trimmedPath.edges.map(edge => edge.id));
+        const criticalNodes = new Set(trimmedPath.nodeIds);
         const totalDays = distance.get(endId) || 0;
         const doneDays = [...criticalNodes].reduce((sum, nodeId) => {
           const node = nodeMap.get(nodeId);
@@ -7140,6 +7230,32 @@
           totalDays,
           doneDays,
           progress: totalDays > 0 ? Math.min(1, doneDays / totalDays) : 0
+        };
+      }
+
+      function criticalPathEndId(distance, nodeMap, outgoing) {
+        const pfdTerminalArtifacts = isPfdDiagram()
+          ? state.nodes.filter(node => node.type === "artifact" && !(outgoing.get(node.id) || []).length)
+          : [];
+        const pfdArtifacts = isPfdDiagram()
+          ? state.nodes.filter(node => node.type === "artifact")
+          : [];
+        const candidates = pfdTerminalArtifacts.length
+          ? pfdTerminalArtifacts
+          : (pfdArtifacts.length ? pfdArtifacts : state.nodes);
+        return candidates
+          .map(node => [node.id, distance.get(node.id) || 0])
+          .sort((a, b) => b[1] - a[1] || compareGraphOrder(nodeMap.get(b[0]), nodeMap.get(a[0])))
+          [0]?.[0];
+      }
+
+      function trimPfdCriticalPathStart(pathNodeIds, pathEdges, nodeMap) {
+        if (!isPfdDiagram()) return { nodeIds: pathNodeIds, edges: pathEdges };
+        const firstProcessIndex = pathNodeIds.findIndex(nodeId => nodeMap.get(nodeId)?.type === "process");
+        if (firstProcessIndex <= 0) return { nodeIds: pathNodeIds, edges: pathEdges };
+        return {
+          nodeIds: pathNodeIds.slice(firstProcessIndex),
+          edges: pathEdges.slice(firstProcessIndex)
         };
       }
 
@@ -9249,7 +9365,8 @@
 
       function primaryOutgoingEdge(nodeId) {
         const edges = state.edges.filter(edge => edge.from === nodeId && findNode(edge.to));
-        return edges.find(edge => edge.fromSide === "right") || edges[0] || null;
+        const downstreamSide = layoutDownstreamSide();
+        return edges.find(edge => edge.fromSide === downstreamSide) || edges[0] || null;
       }
 
       function portPlan(node, side) {
@@ -9401,6 +9518,46 @@
             title: `${displayText(target)}を参照する同階層のS&T項目を追加`
           };
         }
+        if (isPfdVertical()) {
+          if (side === "bottom") {
+            return {
+              enabled: true,
+              validType: oppositeType(node.type),
+              mode: "downstream",
+              connectable: true,
+              title: "下に接続先を追加"
+            };
+          }
+          if (side === "top") {
+            return {
+              enabled: true,
+              validType: oppositeType(node.type),
+              mode: "upstream",
+              connectable: true,
+              title: "上に接続元を追加"
+            };
+          }
+          const edge = primaryOutgoingEdge(node.id);
+          const target = edge ? findNode(edge.to) : null;
+          if (!target) {
+            return {
+              enabled: false,
+              validType: null,
+              mode: "parallel",
+              connectable: false,
+              target: null,
+              title: "接続先があるときだけ並列入力を追加できます"
+            };
+          }
+          return {
+            enabled: true,
+            validType: node.type,
+            mode: "parallel",
+            connectable: false,
+            target,
+            title: `${displayText(target)}への並列入力を追加`
+          };
+        }
         if (side === "right") {
           return {
             enabled: true,
@@ -9446,16 +9603,10 @@
         if (!pending || !node) return false;
         const anchor = findNode(pending.nodeId);
         if (!anchor || anchor.id === node.id) return false;
-        if (isUpwardDiagram()) {
-          if (pending.mode === "source") {
-            return side === "bottom" && isValidConnection(anchor.id, node.id);
-          }
-          return side === "top" && isValidConnection(node.id, anchor.id);
-        }
         if (pending.mode === "source") {
-          return side === "left" && isValidConnection(anchor.id, node.id);
+          return side === layoutUpstreamSide() && isValidConnection(anchor.id, node.id);
         }
-        return side === "right" && isValidConnection(node.id, anchor.id);
+        return side === layoutDownstreamSide() && isValidConnection(node.id, anchor.id);
       }
 
       function isPortEnabled(node, side) {
@@ -9466,13 +9617,8 @@
       function createEdge(from, to, fromSide = "right", toSide = "left") {
         if (from === to) return null;
         if (!isValidConnection(from, to)) return null;
-        if (isUpwardDiagram()) {
-          fromSide = "top";
-          toSide = "bottom";
-        } else {
-          fromSide = "right";
-          toSide = "left";
-        }
+        fromSide = layoutDownstreamSide();
+        toSide = layoutUpstreamSide();
         const exists = state.edges.some(edge =>
           edge.from === from &&
           edge.to === to
@@ -9539,12 +9685,12 @@
         recordHistory();
         if (plan.mode === "downstream") {
           const siblingIndex = state.edges.filter(existing => existing.from === anchorId).length;
-          const spot = nextFreeGridNear(anchor, isUpwardDiagram() ? "top" : "right", siblingIndex);
+          const spot = nextFreeGridNear(anchor, layoutDownstreamSide(), siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(anchor.id, node.id);
         } else if (plan.mode === "upstream") {
           const siblingIndex = state.edges.filter(existing => existing.to === anchorId).length;
-          const spot = nextFreeGridNear(anchor, isUpwardDiagram() ? "bottom" : "left", siblingIndex);
+          const spot = nextFreeGridNear(anchor, layoutUpstreamSide(), siblingIndex);
           node = createNode(type, spot.gridX, spot.gridY);
           edge = createEdge(node.id, anchor.id);
         } else {
@@ -9602,9 +9748,9 @@
         const selected = selectedNode();
         let spot;
         if (selected) {
-          spot = nextFreeGridNear(selected, "right");
+          spot = nextFreeGridNear(selected, layoutDownstreamSide());
         } else {
-          spot = nextFreeGridNear({ gridX: 0, gridY: 0 }, "right");
+          spot = nextFreeGridNear({ gridX: 0, gridY: 0 }, layoutDownstreamSide());
         }
         recordHistory();
         const node = createNode(type, spot.gridX, spot.gridY);
@@ -9630,9 +9776,7 @@
         state.pendingPort = {
           nodeId: anchorId,
           side,
-          mode: isUpwardDiagram()
-            ? (side === "top" ? "source" : "target")
-            : (side === "right" ? "source" : "target")
+          mode: side === layoutDownstreamSide() ? "source" : "target"
         };
         closePalette();
         render();
@@ -9652,7 +9796,7 @@
             : `${displayText(node)} の参照元を選択中`
           );
         } else {
-          setStatus(side === "right"
+          setStatus(side === layoutDownstreamSide()
             ? `${displayText(node)} の接続先を選択中`
             : `${displayText(node)} の接続元を選択中`
           );
@@ -9763,12 +9907,15 @@
         }
 
         const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        const verticalFlow = isPfdVertical();
+        const fromSide = verticalFlow ? "bottom" : "right";
+        const toSide = verticalFlow ? "top" : "left";
         state.edges = state.edges.filter(edge => {
           const source = nodeMap.get(edge.from);
           const target = nodeMap.get(edge.to);
           if (!source || !target || source.id === target.id || !isValidConnection(source.id, target.id)) return false;
-          edge.fromSide = "right";
-          edge.toSide = "left";
+          edge.fromSide = fromSide;
+          edge.toSide = toSide;
           return true;
         });
 
@@ -9786,7 +9933,9 @@
         const layer = new Map(state.nodes.map(node => [node.id, 0]));
         const queue = state.nodes
           .filter(node => (indegree.get(node.id) || 0) === 0)
-          .sort((a, b) => a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id))
+          .sort((a, b) => verticalFlow
+            ? a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id)
+            : a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id))
           .map(node => node.id);
         if (!queue.length && state.nodes[0]) queue.push(state.nodes[0].id);
 
@@ -9805,7 +9954,8 @@
 
         state.nodes.forEach((node, index) => {
           if (!visited.has(node.id)) {
-            layer.set(node.id, Math.max(0, Number.isFinite(node.gridX) ? node.gridX : index));
+            const manualLayer = verticalFlow ? node.gridY : node.gridX;
+            layer.set(node.id, Math.max(0, Number.isFinite(manualLayer) ? manualLayer : index));
           }
         });
 
@@ -9820,28 +9970,36 @@
         });
 
         const layerKeys = [...groups.keys()].sort((a, b) => a - b);
-        const yPosition = new Map();
+        const crossPosition = new Map();
         layerKeys.forEach(nodeLayerIndex => {
           const group = groups.get(nodeLayerIndex)
-            .sort((a, b) => a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
+            .sort((a, b) => verticalFlow
+              ? a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id)
+              : a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
           const offsets = centeredOffsets(group.length);
-          group.forEach((node, index) => yPosition.set(node.id, offsets[index]));
+          group.forEach((node, index) => crossPosition.set(node.id, offsets[index]));
         });
 
         for (let pass = 0; pass < 7; pass += 1) {
           layerKeys.forEach(nodeLayerIndex => {
-            placeLayerNearNeighbors(groups.get(nodeLayerIndex), incoming, edge => edge.from, yPosition);
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), incoming, edge => edge.from, crossPosition);
           });
           [...layerKeys].reverse().forEach(nodeLayerIndex => {
-            placeLayerNearNeighbors(groups.get(nodeLayerIndex), outgoing, edge => edge.to, yPosition);
+            placeLayerNearNeighbors(groups.get(nodeLayerIndex), outgoing, edge => edge.to, crossPosition);
           });
         }
 
-        const averageY = Array.from(yPosition.values()).reduce((sum, value) => sum + value, 0) / Math.max(1, yPosition.size);
+        const averageCross = Array.from(crossPosition.values()).reduce((sum, value) => sum + value, 0) / Math.max(1, crossPosition.size);
         layerKeys.forEach(nodeLayerIndex => {
           groups.get(nodeLayerIndex).forEach(node => {
-            node.gridX = nodeLayerIndex;
-            node.gridY = Math.round((yPosition.get(node.id) - averageY) * 4) / 4;
+            const cross = Math.round((crossPosition.get(node.id) - averageCross) * 4) / 4;
+            if (verticalFlow) {
+              node.gridX = cross;
+              node.gridY = nodeLayerIndex;
+            } else {
+              node.gridX = nodeLayerIndex;
+              node.gridY = cross;
+            }
           });
         });
 
@@ -13247,6 +13405,21 @@
           }
           return [];
         }
+        if (isPfdVertical()) {
+          if (direction === "down") {
+            return state.edges
+              .filter(edge => edge.from === current.id)
+              .map(edge => findNode(edge.to))
+              .filter(node => node && isNodeVisibleInCurrentMode(node));
+          }
+          if (direction === "up") {
+            return state.edges
+              .filter(edge => edge.to === current.id)
+              .map(edge => findNode(edge.from))
+              .filter(node => node && isNodeVisibleInCurrentMode(node));
+          }
+          return [];
+        }
         if (direction === "right") {
           return state.edges
             .filter(edge => edge.from === current.id)
@@ -14369,6 +14542,13 @@
             );
             return;
           }
+          if (isPfdVertical()) {
+            setHint(state.pendingPort.mode === "source"
+              ? `${displayText(node)} の接続先を選択中。候補は上ポートだけです。`
+              : `${displayText(node)} の接続元を選択中。候補は下ポートだけです。`
+            );
+            return;
+          }
           setHint(state.pendingPort.mode === "source"
             ? `${displayText(node)} の接続先を選択中。候補は左ポートだけです。`
             : `${displayText(node)} の接続元を選択中。候補は右ポートだけです。`
@@ -14454,6 +14634,8 @@
           render();
           saveState();
           setStatus("自動配列しました");
+        } else if (command === "pfd-orientation") {
+          togglePfdOrientation();
         } else if (command === "fit") {
           centerOnGraph();
           setStatus("全体を表示");

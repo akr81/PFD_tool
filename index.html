@@ -3698,6 +3698,12 @@
       font-size: 13px;
     }
 
+    .detail-textarea.markdown.drag-over {
+      border-color: var(--accent);
+      background: #f0fbfa;
+      box-shadow: 0 0 0 3px rgba(23, 123, 132, .16);
+    }
+
     .detail-input:focus,
     .detail-textarea:focus {
       outline: 3px solid rgba(23, 123, 132, .18);
@@ -4023,6 +4029,17 @@
     .markdown-body pre code {
       padding: 0;
       background: transparent;
+    }
+
+    .markdown-body img {
+      display: block;
+      max-width: 100%;
+      max-height: 360px;
+      margin: 12px 0;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      background: #f6f8fa;
+      object-fit: contain;
     }
 
     .markdown-empty {
@@ -7094,6 +7111,10 @@
         return text && text !== "None" ? text : "None";
       }
 
+      function crtAndGroupKey(andId, targetId) {
+        return `${targetId}::${andId}`;
+      }
+
       function hasCrtAnd(edge) {
         return isCrtDiagram() && normalizeCrtAnd(edge?.and) !== "None";
       }
@@ -9202,9 +9223,70 @@
         return left.length === right.length && left.every((value, index) => value === right[index]);
       }
 
+      function isImageFile(file) {
+        if (!file) return false;
+        if (String(file.type || "").startsWith("image/")) return true;
+        return /\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i.test(file.name || "");
+      }
+
+      function markdownAltFromFileName(fileName) {
+        return String(fileName || "image")
+          .replace(/\.[^.]+$/, "")
+          .replace(/[\[\]\r\n]+/g, " ")
+          .trim() || "image";
+      }
+
+      function markdownImageReferenceFromFile(file) {
+        const fileName = String(file?.name || "image.png").trim();
+        const encodedName = encodeURIComponent(fileName).replace(/%2F/gi, "/");
+        return `![${markdownAltFromFileName(fileName)}](images/${encodedName})`;
+      }
+
+      function insertTextAtTextareaCursor(textarea, text) {
+        if (!textarea || !text) return;
+        const start = Number.isFinite(textarea.selectionStart) ? textarea.selectionStart : textarea.value.length;
+        const end = Number.isFinite(textarea.selectionEnd) ? textarea.selectionEnd : start;
+        const before = textarea.value.slice(0, start);
+        const after = textarea.value.slice(end);
+        const prefix = before && !before.endsWith("\n") ? "\n" : "";
+        const suffix = after && !after.startsWith("\n") ? "\n" : "";
+        const inserted = `${prefix}${text}${suffix}`;
+        textarea.value = `${before}${inserted}${after}`;
+        const cursor = before.length + inserted.length;
+        textarea.focus();
+        textarea.setSelectionRange(cursor, cursor);
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+
+      function insertDroppedImagesIntoMarkdown(event) {
+        const files = Array.from(event.dataTransfer?.files || []).filter(isImageFile);
+        if (!files.length) return false;
+        event.preventDefault();
+        event.stopPropagation();
+        const markdown = files.map(markdownImageReferenceFromFile).join("\n");
+        insertTextAtTextareaCursor(detailMarkdownEditor, markdown);
+        detailMarkdownEditor.classList.remove("drag-over");
+        setStatus(`${files.length}件の画像参照を挿入しました。画像ファイルは images フォルダに置いてください`);
+        return true;
+      }
+
+      function markdownImageSrc(value) {
+        const src = String(value || "").trim();
+        if (!src) return "";
+        if (/^https?:\/\//i.test(src)) return src;
+        if (/^[a-z][a-z0-9+.-]*:/i.test(src)) return "";
+        if (src.startsWith("//")) return "";
+        return src;
+      }
+
       function renderInlineMarkdown(value) {
         let html = escapeHtml(value);
         html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+        html = html.replace(/!\[([^\]]*)]\(([^)\s]+)\)/g, (_, alt, src) => {
+          const safeSrc = markdownImageSrc(src);
+          if (!safeSrc) return `!&#91;${alt}&#93;(${src})`;
+          return `<img src="${escapeAttribute(safeSrc)}" alt="${escapeAttribute(alt)}" loading="lazy">`;
+        });
         html = html.replace(/\[([^\]]+)]\(([^)\s]+)\)/g, (_, label, href) => {
           const safeHref = /^https?:\/\//i.test(href) || href.startsWith("#") || href.startsWith("mailto:")
             ? href
@@ -10348,15 +10430,18 @@
         layoutEdges.forEach(item => {
           const andId = normalizeCrtAnd(item.edge.and);
           if (andId === "None") return;
-          if (!groups.has(andId)) {
-            groups.set(andId, {
-              id: andId,
+          const key = crtAndGroupKey(andId, item.edge.to);
+          if (!groups.has(key)) {
+            groups.set(key, {
+              id: key,
+              andId,
+              targetId: item.edge.to,
               edges: [],
               sourceIds: new Set(),
               targetIds: new Set()
             });
           }
-          const group = groups.get(andId);
+          const group = groups.get(key);
           group.edges.push(item.edge);
           group.sourceIds.add(item.edge.from);
           group.targetIds.add(item.edge.to);
@@ -12287,7 +12372,7 @@
         editor.style.top = `${midpoint.y}px`;
         editor.innerHTML = `
           <select class="crt-and-select" data-crt-and-edge="${escapeAttribute(edge.id)}" aria-label="AND条件">
-            ${crtAndOptions(edge.and).map(option => `<option value="${escapeAttribute(option.value)}"${option.selected ? " selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
+            ${crtAndOptions(edge).map(option => `<option value="${escapeAttribute(option.value)}"${option.selected ? " selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}
           </select>
           <button class="crt-edge-delete" type="button" data-crt-edge-delete="${escapeAttribute(edge.id)}" title="接続を削除" aria-label="接続を削除">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"></path></svg>
@@ -12313,13 +12398,14 @@
           const source = findNode(edge.from);
           const target = findNode(edge.to);
           if (!source || !target || !isCrtNode(source) || !isCrtNode(target)) return;
-          const key = andId;
+          const key = crtAndGroupKey(andId, target.id);
           if (!groups.has(key)) {
             groups.set(key, {
-              id: `crt-and-${andId}`,
+              id: `crt-and-${target.id}-${andId}`,
               type: "crtAnd",
               key,
               andId,
+              targetId: target.id,
               targets: new Map(),
               edges: [],
               x: 0,
@@ -12437,6 +12523,19 @@
           });
       }
 
+      function crtAndIdsForTarget(targetId) {
+        return [...new Set(state.edges
+          .filter(edge => edge.to === targetId)
+          .map(edge => normalizeCrtAnd(edge.and))
+          .filter(id => id !== "None"))]
+          .sort((left, right) => {
+            const leftNumber = Number(left);
+            const rightNumber = Number(right);
+            if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber)) return leftNumber - rightNumber;
+            return left.localeCompare(right, "ja");
+          });
+      }
+
       function nextCrtAndId() {
         const existing = new Set(crtAndIds());
         for (let index = 1; index < 100; index += 1) {
@@ -12446,9 +12545,9 @@
         return String(existing.size + 1);
       }
 
-      function crtAndOptions(currentValue) {
-        const current = normalizeCrtAnd(currentValue);
-        const ids = crtAndIds();
+      function crtAndOptions(edge) {
+        const current = normalizeCrtAnd(edge?.and);
+        const ids = crtAndIdsForTarget(edge?.to);
         if (current !== "None" && !ids.includes(current)) ids.push(current);
         return [
           { value: "None", label: "ANDなし", selected: current === "None" },
@@ -14876,6 +14975,24 @@
 
       nodeTextSizeSlider.addEventListener("change", event => {
         setNodeTextSize(event.target.value, true);
+      });
+
+      detailMarkdownEditor.addEventListener("dragover", event => {
+        if (!Array.from(event.dataTransfer?.types || []).includes("Files")) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        detailMarkdownEditor.classList.add("drag-over");
+      });
+
+      detailMarkdownEditor.addEventListener("dragleave", event => {
+        if (event.relatedTarget && detailMarkdownEditor.contains(event.relatedTarget)) return;
+        detailMarkdownEditor.classList.remove("drag-over");
+      });
+
+      detailMarkdownEditor.addEventListener("drop", event => {
+        if (!insertDroppedImagesIntoMarkdown(event)) {
+          detailMarkdownEditor.classList.remove("drag-over");
+        }
       });
 
       document.addEventListener("change", event => {

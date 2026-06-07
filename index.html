@@ -1850,6 +1850,34 @@
       color: var(--accent-2);
     }
 
+    .node-doc-indicator {
+      position: absolute;
+      top: 7px;
+      right: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--node-status-icon-size, 18px);
+      height: var(--node-status-icon-size, 18px);
+      border: 1px solid rgba(74, 101, 128, .32);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .94);
+      color: #4a6580;
+      box-shadow: 0 3px 8px rgba(22, 31, 40, .1);
+      z-index: 4;
+    }
+
+    .node.process .node-doc-indicator {
+      top: 9px;
+      right: 24px;
+    }
+
+    .node-doc-indicator svg {
+      width: var(--node-status-svg-size, 12px);
+      height: var(--node-status-svg-size, 12px);
+      stroke-width: 2.2;
+    }
+
     .node-meta-row {
       position: absolute;
       left: 11px;
@@ -4686,7 +4714,7 @@
     <div class="toolbar-group text-size-toolbar" aria-label="文字サイズ">
       <label class="text-size-control">
         文字
-        <input id="nodeTextSizeSlider" type="range" min="10" max="18" step="1" value="13" aria-label="エンティティ内文字サイズ">
+        <input id="nodeTextSizeSlider" type="range" min="10" max="24" step="1" value="13" aria-label="エンティティ内文字サイズ">
         <span class="text-size-value" id="nodeTextSizeValue">13px</span>
       </label>
     </div>
@@ -6556,7 +6584,7 @@
       function normalizeNodeTextSize(value) {
         const number = Number(value);
         return Number.isFinite(number)
-          ? Math.min(18, Math.max(10, Math.round(number)))
+          ? Math.min(24, Math.max(10, Math.round(number)))
           : DEFAULT_NODE_TEXT_SIZE;
       }
 
@@ -8831,6 +8859,22 @@
         return `<span class="status-icon ${safeId}" title="${label}" aria-label="${label}">${statusIcon(id)}</span>`;
       }
 
+      function hasNodeDocumentDetail(node) {
+        return (node?.type === "artifact" || node?.type === "process")
+          && typeof node.detail === "string"
+          && node.detail.trim().length > 0;
+      }
+
+      function renderNodeDocumentIndicator(el, node) {
+        if (!hasNodeDocumentDetail(node)) return;
+        const indicator = document.createElement("span");
+        indicator.className = "node-doc-indicator";
+        indicator.title = "ドキュメントあり";
+        indicator.setAttribute("aria-label", "ドキュメントあり");
+        indicator.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h6"></path></svg>';
+        el.append(indicator);
+      }
+
       function renderStatusPill(id) {
         return `<span class="detail-status-pill">${renderStatusIcon(id)}${escapeHtml(statusLabel(id))}</span>`;
       }
@@ -10667,6 +10711,7 @@
               renderNodeDetailBadges(el, node);
             }
           }
+          renderNodeDocumentIndicator(el, node);
 
           if (supportsPorts()) SIDES.forEach(side => {
             const plan = portPlan(node, side);
@@ -12448,7 +12493,7 @@
         const dir = DIRS[state.pendingPort.side];
         const end = { x: start.x + dir.x * 120, y: start.y + dir.y * 120 };
         if (!dir.x && !dir.y) return;
-        const d = cubicPath(start, end, state.pendingPort.side, OPPOSITE[state.pendingPort.side]);
+        const d = polylinePath([start, end]);
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("class", "edge ghost");
         path.setAttribute("d", d);
@@ -12569,9 +12614,7 @@
       }
 
       function edgePath(from, to, fromSide, toSide) {
-        const escaped = escapedRoutePoints(from, to, fromSide, toSide);
-        if (escaped) return roundedPolylinePath(escaped, 24);
-        return cubicPath(portPoint(from, fromSide), portPoint(to, toSide), fromSide, toSide);
+        return roundedPolylinePath(orthogonalRoutePoints(from, to, fromSide, toSide), 24);
       }
 
       function conflictPath(from, to, fromSide, toSide) {
@@ -12593,12 +12636,7 @@
       }
 
       function edgeMidpoint(from, to, fromSide, toSide) {
-        const escaped = escapedRoutePoints(from, to, fromSide, toSide);
-        if (escaped) return polylineMidpoint(escaped);
-        const start = portPoint(from, fromSide);
-        const end = portPoint(to, toSide);
-        const { c1, c2 } = cubicControlPoints(start, end, fromSide, toSide);
-        return cubicPoint(start, c1, c2, end, .5);
+        return polylineMidpoint(dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide)));
       }
 
       function crtAutoRoute(from, to, preferredFromSide = "top", preferredToSide = "bottom", renderedRoutes = []) {
@@ -12751,22 +12789,6 @@
       function pointsAlmostEqual(first, second) {
         return Math.abs((first?.x || 0) - (second?.x || 0)) < .1
           && Math.abs((first?.y || 0) - (second?.y || 0)) < .1;
-      }
-
-      function escapedRoutePoints(from, to, fromSide, toSide) {
-        const start = portPoint(from, fromSide);
-        const end = portPoint(to, toSide);
-        if (!shouldEscapeRoute(from, to, fromSide, toSide, start, end)) return null;
-        return orthogonalRoutePoints(from, to, fromSide, toSide);
-      }
-
-      function shouldEscapeRoute(from, to, fromSide, toSide, start, end) {
-        const verticalBacktrack = fromSide === "top" && toSide === "bottom" && start.y <= end.y;
-        const horizontalBacktrack = fromSide === "right" && toSide === "left" && start.x >= end.x;
-        if (verticalBacktrack || horizontalBacktrack) return true;
-        return routeObstacles(from, to)
-          .filter(rect => rect.role === "obstacle")
-          .some(rect => segmentIntersectsRect(start, end, rect));
       }
 
       function orthogonalRoutePoints(from, to, fromSide, toSide) {
@@ -13061,36 +13083,6 @@
           distance += segmentLength;
         }
         return points[points.length - 1] || { x: 0, y: 0 };
-      }
-
-      function cubicPoint(p0, p1, p2, p3, t) {
-        const i = 1 - t;
-        return {
-          x: i ** 3 * p0.x + 3 * i ** 2 * t * p1.x + 3 * i * t ** 2 * p2.x + t ** 3 * p3.x,
-          y: i ** 3 * p0.y + 3 * i ** 2 * t * p1.y + 3 * i * t ** 2 * p2.y + t ** 3 * p3.y
-        };
-      }
-
-      function cubicPath(start, end, fromSide, toSide) {
-        const { c1, c2 } = cubicControlPoints(start, end, fromSide, toSide);
-        return `M ${start.x} ${start.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${end.x} ${end.y}`;
-      }
-
-      function cubicControlPoints(start, end, fromSide, toSide) {
-        const sourceDir = DIRS[fromSide] || { x: 0, y: 0 };
-        const targetDir = DIRS[toSide] || { x: 0, y: 0 };
-        const dx = Math.abs(end.x - start.x);
-        const dy = Math.abs(end.y - start.y);
-        const distance = Math.max(26, Math.min(82, Math.max(dx, dy) * .22));
-        const c1 = {
-          x: start.x + sourceDir.x * distance,
-          y: start.y + sourceDir.y * distance
-        };
-        const c2 = {
-          x: end.x + targetDir.x * distance,
-          y: end.y + targetDir.y * distance
-        };
-        return { c1, c2 };
       }
 
       function showPalette(nodeId, side) {

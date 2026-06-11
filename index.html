@@ -6946,9 +6946,12 @@
 
       function setNodeTextSize(value, persist = false) {
         const nextSize = normalizeNodeTextSize(value);
-        if (state.nodeTextSize === nextSize && !persist) return;
+        if (state.nodeTextSize === nextSize) {
+          if (persist) saveState();
+          return;
+        }
         state.nodeTextSize = nextSize;
-        autoLayout();
+        // Text size is a display preference; keep the user's layout stable while resizing labels.
         render();
         if (persist) saveState();
       }
@@ -10421,6 +10424,7 @@
 
       function autoLayoutStt() {
         const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
+        const stableNodeOrder = new Map(state.nodes.map((node, index) => [node.id, index]));
         state.edges = state.edges.filter(edge => {
           const source = nodeMap.get(edge.from);
           const target = nodeMap.get(edge.to);
@@ -10445,7 +10449,9 @@
         const layer = new Map(state.nodes.map(node => [node.id, 0]));
         const roots = state.nodes
           .filter(node => !(outgoing.get(node.id) || []).length)
-          .sort((a, b) => a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
+          .sort((a, b) => isCrtDiagram()
+            ? (stableNodeOrder.get(a.id) || 0) - (stableNodeOrder.get(b.id) || 0) || a.id.localeCompare(b.id)
+            : a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
         const queue = (roots.length ? roots : state.nodes.slice(0, 1)).map(node => node.id);
         const queued = new Set(queue);
         for (let index = 0; index < queue.length; index += 1) {
@@ -10478,7 +10484,9 @@
         const xPosition = new Map();
         layerKeys.forEach(nodeLayerIndex => {
           const group = groups.get(nodeLayerIndex)
-            .sort((a, b) => a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id));
+            .sort((a, b) => isCrtDiagram()
+              ? (stableNodeOrder.get(a.id) || 0) - (stableNodeOrder.get(b.id) || 0) || a.id.localeCompare(b.id)
+              : a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id));
           const offsets = centeredOffsets(group.length);
           group.forEach((node, index) => xPosition.set(node.id, offsets[index]));
         });

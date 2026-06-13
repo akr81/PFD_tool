@@ -4737,7 +4737,7 @@
     </div>
     <div class="status" id="status" aria-live="polite"></div>
     <div class="toolbar-group" aria-label="ファイル">
-      <input id="jsonFileInput" type="file" accept="application/json,.json" hidden>
+      <input id="jsonFileInput" type="file" accept="application/json,.json,image/png,.png,image/svg+xml,.svg" hidden>
       <select class="diagram-select sample-select" id="sampleSelect" title="サンプル読込" aria-label="サンプル読込">
         <option value="">サンプル</option>
         <option value="pfd-curry">PFD: カレー</option>
@@ -4754,7 +4754,7 @@
         <option value="ccpm-resource-priority">CCPM: 担当制約確認</option>
         <option value="ccpm-warnings">CCPM: 警告確認</option>
       </select>
-      <button class="icon-button" data-command="upload" title="JSON読込">
+      <button class="icon-button" data-command="upload" title="JSON/画像読込">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M12 21V9"></path>
           <path d="m7 14 5-5 5 5"></path>
@@ -5159,6 +5159,12 @@
         { id: "trouble", label: "トラブル" }
       ];
       const STATUS_IDS = new Set(STATUS_OPTIONS.map(status => status.id));
+      const EXPORT_METADATA_APP = "PFD_tool";
+      const EXPORT_METADATA_TYPE = "pfd-tool-graph";
+      const EXPORT_METADATA_VERSION = 1;
+      const EXPORT_METADATA_SVG_ID = "pfd-tool-json";
+      const EXPORT_METADATA_SVG_ATTR = "data-pfd-tool-json";
+      const EXPORT_METADATA_PNG_KEYWORD = "pfd-tool-json";
       const SIDES = ["top", "right", "bottom", "left"];
       const DIRS = {
         top: { x: 0, y: -1 },
@@ -14925,6 +14931,268 @@
         return `${prefix}-${downloadDateStamp()}.${extension}`;
       }
 
+      function embeddedGraphJson() {
+        return JSON.stringify({
+          app: EXPORT_METADATA_APP,
+          type: EXPORT_METADATA_TYPE,
+          version: EXPORT_METADATA_VERSION,
+          graph: graphPayload()
+        });
+      }
+
+      function unwrapEmbeddedGraphData(parsed) {
+        if (parsed && typeof parsed === "object") {
+          if (parsed.type === EXPORT_METADATA_TYPE && parsed.graph) return parsed.graph;
+          if (parsed.app === EXPORT_METADATA_APP && parsed.graph) return parsed.graph;
+          if (parsed.graph && (Array.isArray(parsed.graph.nodes) || parsed.graph.goalNavi)) return parsed.graph;
+          if (parsed.payload && (Array.isArray(parsed.payload.nodes) || parsed.payload.goalNavi)) return parsed.payload;
+        }
+        return parsed;
+      }
+
+      function parseGraphJson(text) {
+        return normalizeGraphData(unwrapEmbeddedGraphData(JSON.parse(String(text || ""))));
+      }
+
+      function bytesToBinaryString(bytes) {
+        let result = "";
+        const chunkSize = 0x8000;
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          result += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+        }
+        return result;
+      }
+
+      function bytesToBase64(bytes) {
+        return btoa(bytesToBinaryString(bytes));
+      }
+
+      function base64ToBytes(value) {
+        const binary = atob(String(value || "").replace(/\s+/g, ""));
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) {
+          bytes[index] = binary.charCodeAt(index);
+        }
+        return bytes;
+      }
+
+      function utf8ToBase64(value) {
+        return bytesToBase64(new TextEncoder().encode(String(value || "")));
+      }
+
+      function base64ToUtf8(value) {
+        return new TextDecoder("utf-8").decode(base64ToBytes(value));
+      }
+
+      function asciiBytes(value) {
+        const text = String(value || "");
+        const bytes = new Uint8Array(text.length);
+        for (let index = 0; index < text.length; index += 1) {
+          bytes[index] = text.charCodeAt(index) & 0xff;
+        }
+        return bytes;
+      }
+
+      function asciiFromBytes(bytes) {
+        return bytesToBinaryString(bytes);
+      }
+
+      function readPngUint32(bytes, offset) {
+        return (
+          (bytes[offset] << 24) |
+          (bytes[offset + 1] << 16) |
+          (bytes[offset + 2] << 8) |
+          bytes[offset + 3]
+        ) >>> 0;
+      }
+
+      function writePngUint32(bytes, offset, value) {
+        bytes[offset] = (value >>> 24) & 0xff;
+        bytes[offset + 1] = (value >>> 16) & 0xff;
+        bytes[offset + 2] = (value >>> 8) & 0xff;
+        bytes[offset + 3] = value & 0xff;
+      }
+
+      function pngCrcTable() {
+        if (pngCrcTable.cache) return pngCrcTable.cache;
+        const table = new Uint32Array(256);
+        for (let n = 0; n < 256; n += 1) {
+          let c = n;
+          for (let k = 0; k < 8; k += 1) {
+            c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+          }
+          table[n] = c >>> 0;
+        }
+        pngCrcTable.cache = table;
+        return table;
+      }
+
+      function pngCrc32(bytes) {
+        const table = pngCrcTable();
+        let crc = 0xffffffff;
+        for (let index = 0; index < bytes.length; index += 1) {
+          crc = table[(crc ^ bytes[index]) & 0xff] ^ (crc >>> 8);
+        }
+        return (crc ^ 0xffffffff) >>> 0;
+      }
+
+      function makePngChunk(type, data) {
+        const typeBytes = asciiBytes(type);
+        const chunk = new Uint8Array(12 + data.length);
+        const crcSource = new Uint8Array(typeBytes.length + data.length);
+        writePngUint32(chunk, 0, data.length);
+        chunk.set(typeBytes, 4);
+        chunk.set(data, 8);
+        crcSource.set(typeBytes);
+        crcSource.set(data, typeBytes.length);
+        writePngUint32(chunk, 8 + data.length, pngCrc32(crcSource));
+        return chunk;
+      }
+
+      function hasPngSignature(bytes) {
+        return bytes.length >= 8 &&
+          bytes[0] === 0x89 &&
+          bytes[1] === 0x50 &&
+          bytes[2] === 0x4e &&
+          bytes[3] === 0x47 &&
+          bytes[4] === 0x0d &&
+          bytes[5] === 0x0a &&
+          bytes[6] === 0x1a &&
+          bytes[7] === 0x0a;
+      }
+
+      function appendPngTextChunk(bytes, keyword, value) {
+        if (!hasPngSignature(bytes)) throw new Error("PNGとして読み込めませんでした");
+        let offset = 8;
+        while (offset + 12 <= bytes.length) {
+          const chunkStart = offset;
+          const length = readPngUint32(bytes, offset);
+          const type = asciiFromBytes(bytes.subarray(offset + 4, offset + 8));
+          const chunkEnd = offset + 12 + length;
+          if (chunkEnd > bytes.length) throw new Error("PNGとして読み込めませんでした");
+          if (type === "IEND") {
+            const textChunk = makePngChunk("tEXt", asciiBytes(`${keyword}\0${value}`));
+            const result = new Uint8Array(bytes.length + textChunk.length);
+            result.set(bytes.subarray(0, chunkStart));
+            result.set(textChunk, chunkStart);
+            result.set(bytes.subarray(chunkStart), chunkStart + textChunk.length);
+            return result;
+          }
+          offset = chunkEnd;
+        }
+        throw new Error("PNGとして読み込めませんでした");
+      }
+
+      async function embedPngGraphMetadata(blob, metadataJson) {
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const embedded = appendPngTextChunk(bytes, EXPORT_METADATA_PNG_KEYWORD, utf8ToBase64(metadataJson));
+        return new Blob([embedded], { type: "image/png" });
+      }
+
+      function decodePngMetadataText(text) {
+        const value = String(text || "").trim();
+        return value.startsWith("{") ? value : base64ToUtf8(value);
+      }
+
+      function extractPngTextMetadata(data) {
+        const separator = data.indexOf(0);
+        if (separator < 0) return "";
+        const keyword = asciiFromBytes(data.subarray(0, separator));
+        if (keyword !== EXPORT_METADATA_PNG_KEYWORD) return "";
+        return decodePngMetadataText(asciiFromBytes(data.subarray(separator + 1)));
+      }
+
+      function extractPngItxtMetadata(data) {
+        let offset = 0;
+        let separator = data.indexOf(0, offset);
+        if (separator < 0) return "";
+        const keyword = asciiFromBytes(data.subarray(offset, separator));
+        offset = separator + 1;
+        const compressionFlag = data[offset];
+        offset += 2;
+        if (keyword !== EXPORT_METADATA_PNG_KEYWORD || compressionFlag !== 0) return "";
+        separator = data.indexOf(0, offset);
+        if (separator < 0) return "";
+        offset = separator + 1;
+        separator = data.indexOf(0, offset);
+        if (separator < 0) return "";
+        offset = separator + 1;
+        return decodePngMetadataText(new TextDecoder("utf-8").decode(data.subarray(offset)));
+      }
+
+      function extractEmbeddedGraphJsonFromPng(buffer) {
+        const bytes = new Uint8Array(buffer);
+        if (!hasPngSignature(bytes)) throw new Error("PNGとして読み込めませんでした");
+        let offset = 8;
+        while (offset + 12 <= bytes.length) {
+          const length = readPngUint32(bytes, offset);
+          const type = asciiFromBytes(bytes.subarray(offset + 4, offset + 8));
+          const dataStart = offset + 8;
+          const chunkEnd = offset + 12 + length;
+          if (chunkEnd > bytes.length) throw new Error("PNGとして読み込めませんでした");
+          const data = bytes.subarray(dataStart, dataStart + length);
+          if (type === "tEXt") {
+            const json = extractPngTextMetadata(data);
+            if (json) return json;
+          } else if (type === "iTXt") {
+            const json = extractPngItxtMetadata(data);
+            if (json) return json;
+          }
+          offset = chunkEnd;
+        }
+        return "";
+      }
+
+      function extractEmbeddedGraphJsonFromSvg(text) {
+        const doc = new DOMParser().parseFromString(String(text || ""), "image/svg+xml");
+        if (doc.querySelector("parsererror")) throw new Error("SVGとして読み込めませんでした");
+        const encoded = doc.documentElement?.getAttribute(EXPORT_METADATA_SVG_ATTR);
+        if (encoded) return base64ToUtf8(encoded);
+        const metadata = doc.getElementById(EXPORT_METADATA_SVG_ID);
+        return (metadata?.textContent || "").trim();
+      }
+
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("ファイルを読み込めませんでした"));
+          reader.readAsText(file);
+        });
+      }
+
+      function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("ファイルを読み込めませんでした"));
+          reader.readAsArrayBuffer(file);
+        });
+      }
+
+      function importFileFormat(file) {
+        const type = String(file?.type || "").toLowerCase();
+        const name = String(file?.name || "").toLowerCase();
+        if (type === "image/png" || name.endsWith(".png")) return "png";
+        if (type === "image/svg+xml" || name.endsWith(".svg")) return "svg";
+        return "json";
+      }
+
+      async function graphFromImportFile(file) {
+        const format = importFileFormat(file);
+        if (format === "png") {
+          const json = extractEmbeddedGraphJsonFromPng(await readFileAsArrayBuffer(file));
+          if (!json) throw new Error("編集データが埋め込まれていないPNGです");
+          return parseGraphJson(json);
+        }
+        if (format === "svg") {
+          const json = extractEmbeddedGraphJsonFromSvg(await readFileAsText(file));
+          if (!json) throw new Error("編集データが埋め込まれていないSVGです");
+          return parseGraphJson(json);
+        }
+        return parseGraphJson(await readFileAsText(file));
+      }
+
       function exportSvgEl(tagName, attrs = {}, text = null) {
         const el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
         Object.entries(attrs).forEach(([name, value]) => {
@@ -15611,7 +15879,7 @@
         return crtAnd.groups;
       }
 
-      function buildDiagramExport() {
+      function buildDiagramExport(options = {}) {
         const padding = 64;
         const bounds = graphBounds();
         const width = Math.ceil(bounds.width + padding * 2);
@@ -15620,6 +15888,7 @@
         const offsetY = padding - bounds.minY;
         const colors = exportPalette();
         const schedule = isCcpmDiagram() ? ccpmScheduleInfo() : null;
+        const metadataJson = embeddedGraphJson();
         const svg = exportSvgEl("svg");
         svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
         svg.setAttribute("width", String(width));
@@ -15627,6 +15896,15 @@
         svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
         svg.setAttribute("role", "img");
         svg.setAttribute("aria-label", `${DIAGRAM_TYPES[state.diagramType]?.title || "PFD Sketch"} export`);
+        if (options.includeMetadata !== false) {
+          svg.append(exportSvgEl("metadata", {
+            id: EXPORT_METADATA_SVG_ID,
+            "data-app": EXPORT_METADATA_APP,
+            "data-type": EXPORT_METADATA_TYPE,
+            "data-version": EXPORT_METADATA_VERSION,
+            "data-format": "application/json"
+          }, metadataJson));
+        }
         appendDiagramExportDefs(svg, colors);
         appendDiagramExportStyle(svg, colors);
 
@@ -15647,7 +15925,7 @@
         svg.append(graph);
 
         const svgText = `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(svg)}`;
-        return { svgText, width, height };
+        return { svgText, width, height, metadataJson };
       }
 
       function downloadDiagramSvg() {
@@ -15671,7 +15949,7 @@
 
       async function downloadDiagramPng() {
         setStatus("PNGを作成しています");
-        const { svgText, width, height } = buildDiagramExport();
+        const { svgText, width, height, metadataJson } = buildDiagramExport({ includeMetadata: false });
         const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
         try {
           const image = await imageFromUrl(url);
@@ -15684,7 +15962,8 @@
           context.drawImage(image, 0, 0, width, height);
           const blob = await canvasBlob(canvas, "image/png");
           if (!blob) throw new Error("PNGを作成できませんでした");
-          downloadBlob(blob, diagramDownloadFileName("png"));
+          const embeddedBlob = await embedPngGraphMetadata(blob, metadataJson);
+          downloadBlob(embeddedBlob, diagramDownloadFileName("png"));
           setStatus("PNGを保存しました");
         } catch (error) {
           console.warn(error);
@@ -15703,24 +15982,16 @@
         jsonFileInput.click();
       }
 
-      function importJsonFile(file) {
+      async function importGraphFile(file) {
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const parsed = JSON.parse(String(reader.result || ""));
-            const graph = normalizeGraphData(parsed);
-            recordHistory();
-            applyGraphData(graph);
-            setStatus(`${file.name} を読み込みました`);
-          } catch (error) {
-            setStatus(error.message || "JSONを読み込めませんでした");
-          }
-        };
-        reader.onerror = () => {
-          setStatus("JSONファイルを読み込めませんでした");
-        };
-        reader.readAsText(file);
+        try {
+          const graph = await graphFromImportFile(file);
+          recordHistory();
+          applyGraphData(graph);
+          setStatus(`${file.name} を読み込みました`);
+        } catch (error) {
+          setStatus(error.message || "ファイルを読み込めませんでした");
+        }
       }
 
       function loadSampleGraph(sampleId) {
@@ -15985,7 +16256,7 @@
       });
 
       jsonFileInput.addEventListener("change", event => {
-        importJsonFile(event.target.files?.[0]);
+        importGraphFile(event.target.files?.[0]);
       });
 
       sampleSelect.addEventListener("change", event => {

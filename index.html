@@ -1634,25 +1634,6 @@
       pointer-events: none;
     }
 
-    .crt-card-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #566370;
-      font-size: calc(var(--node-text-size, 16px) * .72);
-      font-weight: 760;
-      line-height: 1.15;
-    }
-
-    .crt-card-swatch {
-      width: calc(var(--node-text-size, 16px) * .92);
-      height: calc(var(--node-text-size, 16px) * .92);
-      border: 1px solid var(--crt-border, #71808d);
-      border-radius: 999px;
-      background: var(--crt-accent, #fff);
-      flex: 0 0 auto;
-    }
-
     .crt-card-value {
       color: #253145;
       font-size: var(--node-text-size, 16px);
@@ -4095,6 +4076,20 @@
       flex-direction: column;
     }
 
+    .dialog.search-dialog {
+      width: min(680px, calc(100vw - 28px));
+      max-height: min(720px, calc(100vh - 28px));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dialog.shortcut-dialog {
+      width: min(620px, calc(100vw - 28px));
+      max-height: min(720px, calc(100vh - 28px));
+      display: flex;
+      flex-direction: column;
+    }
+
     .dialog-head {
       display: flex;
       align-items: center;
@@ -4156,6 +4151,147 @@
       flex: 1 1 auto;
       min-height: 0;
       overflow: auto;
+    }
+
+    .search-dialog .dialog-body {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .search-input {
+      width: 100%;
+    }
+
+    .search-summary {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .search-results {
+      min-height: 180px;
+      max-height: 430px;
+      overflow: auto;
+      border: 1px solid #d7dee4;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .search-result {
+      display: grid;
+      width: 100%;
+      gap: 4px;
+      padding: 10px 12px;
+      border: 0;
+      border-bottom: 1px solid #e2e8ed;
+      border-radius: 0;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .search-result:last-child {
+      border-bottom: 0;
+    }
+
+    .search-result:hover,
+    .search-result:focus-visible,
+    .search-result.selected {
+      background: #eef7f7;
+      outline: none;
+    }
+
+    .search-result-title {
+      overflow: hidden;
+      color: #22303c;
+      font-size: 13px;
+      font-weight: 820;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .search-result-meta,
+    .search-result-snippet,
+    .search-empty {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .search-result-snippet {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .search-empty {
+      padding: 16px;
+    }
+
+    .shortcut-dialog .dialog-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .shortcut-list {
+      display: grid;
+      gap: 1px;
+      overflow: hidden;
+      border: 1px solid #d7dee4;
+      border-radius: 8px;
+      background: #dfe7ed;
+    }
+
+    .shortcut-row {
+      display: grid;
+      grid-template-columns: minmax(170px, .42fr) minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .shortcut-keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .shortcut-key {
+      min-width: 26px;
+      padding: 3px 7px;
+      border: 1px solid #c7d1da;
+      border-bottom-color: #aebac4;
+      border-radius: 6px;
+      background: #f7fafc;
+      color: #1f2a35;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .shortcut-desc {
+      min-width: 0;
+      color: #2a3743;
+      font-size: 13px;
+      font-weight: 680;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 560px) {
+      .shortcut-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
     }
 
     .progress-toolbar {
@@ -5056,11 +5192,103 @@
     </div>
   </div>
 
+  <div class="dialog-backdrop" id="searchDialog" role="dialog" aria-modal="true" aria-labelledby="searchDialogTitle">
+    <div class="dialog search-dialog">
+      <div class="dialog-head">
+        <span id="searchDialogTitle">ノード検索</span>
+        <button class="icon-button" data-search="close" title="閉じる">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <input class="detail-input search-input" id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="タイトル、担当者、本文、IDで検索">
+        <div class="search-summary" id="searchSummary"></div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-backdrop" id="shortcutDialog" role="dialog" aria-modal="true" aria-labelledby="shortcutDialogTitle">
+    <div class="dialog shortcut-dialog">
+      <div class="dialog-head">
+        <span id="shortcutDialogTitle">ショートカット</span>
+        <button class="icon-button" data-shortcuts="close" title="閉じる">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <div class="shortcut-list">
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">↑</kbd><kbd class="shortcut-key">k</kbd></div>
+            <div class="shortcut-desc">上のノードを選択</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">↓</kbd><kbd class="shortcut-key">j</kbd></div>
+            <div class="shortcut-desc">下のノードを選択</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">←</kbd><kbd class="shortcut-key">h</kbd></div>
+            <div class="shortcut-desc">左のノードを選択</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">→</kbd><kbd class="shortcut-key">l</kbd></div>
+            <div class="shortcut-desc">右のノードを選択</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">i</kbd></div>
+            <div class="shortcut-desc">選択ノードの詳細編集を開始</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">a</kbd></div>
+            <div class="shortcut-desc">接続なしでノードを追加（5列に整列）</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">F2</kbd><kbd class="shortcut-key">Space</kbd></div>
+            <div class="shortcut-desc">選択ノードのタイトル編集を開始</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">d</kbd></div>
+            <div class="shortcut-desc">詳細パネルを開く/閉じる</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">/</kbd></div>
+            <div class="shortcut-desc">ノード検索を開く</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">?</kbd></div>
+            <div class="shortcut-desc">この一覧を表示</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">Enter</kbd><kbd class="shortcut-key">Shift Enter</kbd></div>
+            <div class="shortcut-desc">下/上方向に追加</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">Tab</kbd><kbd class="shortcut-key">Shift Tab</kbd></div>
+            <div class="shortcut-desc">右/左方向に追加</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">Delete</kbd><kbd class="shortcut-key">Backspace</kbd></div>
+            <div class="shortcut-desc">選択中のノードまたはエッジを削除</div>
+          </div>
+          <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">Ctrl Z</kbd><kbd class="shortcut-key">Ctrl Y</kbd></div>
+            <div class="shortcut-desc">Undo / Redo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     (() => {
       const GRID_X = 250;
       const GRID_Y = 170;
       const LAYOUT_ROW_GAP = 1;
+      const LOOSE_NODE_COLUMNS = 5;
       const GANTT_LABEL_WIDTH = 214;
       const GANTT_HEADER_HEIGHT = 48;
       const GANTT_ROW_HEIGHT = 60;
@@ -5172,6 +5400,7 @@
         bottom: { x: 0, y: 1 },
         left: { x: -1, y: 0 }
       };
+      const ROUTE_EPS = .1;
       const OPPOSITE = { top: "bottom", right: "left", bottom: "top", left: "right" };
       const JAPANESE_SIDE = { top: "上", right: "右", bottom: "下", left: "左" };
       const SAMPLE_GRAPHS = [{"id":"pfd-curry","label":"PFD: カレー","path":"sample/sample_curry.json","data":{"nodes":[{"id":"node-29","type":"artifact","text":"カレーライス","detail":"[リンク](https://google.com)","estimate":"","owner":"","statuses":[],"x":1500,"y":42.5,"gridX":6,"gridY":0.25},{"id":"node-30","type":"process","text":"盛り付け","detail":"","estimate":"5","owner":"Cさん","statuses":[],"x":1250,"y":42.5,"gridX":5,"gridY":0.25},{"id":"node-32","type":"artifact","text":"ご飯","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":297.5,"gridX":4,"gridY":1.75},{"id":"node-34","type":"artifact","text":"カレー","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":-212.5,"gridX":4,"gridY":-1.25},{"id":"node-36","type":"process","text":"ご飯を炊く","detail":"","estimate":"30","owner":"Bさん","statuses":[],"x":750,"y":297.5,"gridX":3,"gridY":1.75},{"id":"node-38","type":"artifact","text":"お米","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":510,"gridX":2,"gridY":3},{"id":"node-40","type":"artifact","text":"水","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":340,"gridX":2,"gridY":2},{"id":"node-42","type":"artifact","text":"炊飯器","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":170,"gridX":2,"gridY":1},{"id":"node-44","type":"process","text":"煮込む","detail":"","estimate":"30","owner":"Aさん","statuses":[],"x":750,"y":-212.5,"gridX":3,"gridY":-1.25},{"id":"node-46","type":"artifact","text":"鍋","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-340,"gridX":2,"gridY":-2},{"id":"node-48","type":"artifact","text":"切った肉","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":0,"gridX":2,"gridY":0},{"id":"node-50","type":"artifact","text":"切った野菜","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-170,"gridX":2,"gridY":-1},{"id":"node-54","type":"artifact","text":"お皿","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":-42.5,"gridX":4,"gridY":-0.25},{"id":"node-56","type":"artifact","text":"スプーン","detail":"","estimate":"","owner":"","statuses":[],"x":1000,"y":127.5,"gridX":4,"gridY":0.75},{"id":"node-60","type":"process","text":"肉を切る","detail":"","estimate":"5","owner":"Bさん","statuses":[],"x":250,"y":0,"gridX":1,"gridY":0},{"id":"node-62","type":"artifact","text":"生の肉","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":85,"gridX":0,"gridY":0.5},{"id":"node-64","type":"artifact","text":"包丁","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":-85,"gridX":0,"gridY":-0.5},{"id":"node-66","type":"process","text":"野菜を切る","detail":"","estimate":"3","owner":"Aさん","statuses":[],"x":250,"y":-170,"gridX":1,"gridY":-1},{"id":"node-68","type":"artifact","text":"野菜","detail":"","estimate":"","owner":"","statuses":[],"x":0,"y":-255,"gridX":0,"gridY":-1.5},{"id":"node-71","type":"artifact","text":"カレールウ","detail":"","estimate":"","owner":"","statuses":[],"x":500,"y":-510,"gridX":2,"gridY":-3}],"edges":[{"id":"edge-31","from":"node-30","to":"node-29","fromSide":"right","toSide":"left"},{"id":"edge-33","from":"node-32","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-35","from":"node-34","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-37","from":"node-36","to":"node-32","fromSide":"right","toSide":"left"},{"id":"edge-39","from":"node-38","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-41","from":"node-40","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-43","from":"node-42","to":"node-36","fromSide":"right","toSide":"left"},{"id":"edge-45","from":"node-44","to":"node-34","fromSide":"right","toSide":"left"},{"id":"edge-47","from":"node-46","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-49","from":"node-48","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-51","from":"node-50","to":"node-44","fromSide":"right","toSide":"left"},{"id":"edge-55","from":"node-54","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-57","from":"node-56","to":"node-30","fromSide":"right","toSide":"left"},{"id":"edge-61","from":"node-60","to":"node-48","fromSide":"right","toSide":"left"},{"id":"edge-63","from":"node-62","to":"node-60","fromSide":"right","toSide":"left"},{"id":"edge-65","from":"node-64","to":"node-60","fromSide":"right","toSide":"left"},{"id":"edge-67","from":"node-66","to":"node-50","fromSide":"right","toSide":"left"},{"id":"edge-69","from":"node-68","to":"node-66","fromSide":"right","toSide":"left"},{"id":"edge-70","from":"node-64","to":"node-66","fromSide":"right","toSide":"left"},{"id":"edge-72","from":"node-71","to":"node-44","fromSide":"right","toSide":"left"}],"viewMode":"detail","nodeTextSize":18}},{"id":"stt-home","label":"S&T: マイホーム","path":"sample/sample_stt.json","data":{"diagramType":"stt","viewMode":"detail","nodeTextSize":13,"nodes":[{"id":"stt_root_home_purchase","type":"stt","text":"1","stt":{"id":"1","necessaryAssumption":"今の家賃を払い続けるより、資産になるマイホームを持ちたい","strategy":"理想のマイホームを購入して家族のQOLを上げる","parallelAssumption":"購入には物件価格の約2割の頭金と諸費用が必要となる","tactics":"頭金500万円と諸費用200万円、合計700万円を3年で貯める","sufficientAssumption":"目標額が貯まれば、無理のない住宅ローン審査に通る可能性が高い"},"gridX":0,"gridY":0},{"id":"stt_sub_expense_review","type":"stt","text":"2.1","stt":{"id":"2.1","necessaryAssumption":"現在の支出ペースでは3年で700万円は貯まらない","strategy":"家計の無駄を徹底的に見直して貯蓄に回す資金を増やす","parallelAssumption":"固定費と変動費の両方を見直すことで効果が最大化する","tactics":"格安SIMへの乗り換えと、サブスクの解約、外食ルールの設定（月1回まで）を行う","sufficientAssumption":"支出が月5万円減れば、3年間で180万円の追加貯蓄が可能になる"},"gridX":-0.5,"gridY":1},{"id":"stt_sub_income_increase","type":"stt","text":"2.2","stt":{"id":"2.2","necessaryAssumption":"支出削減だけでは目標額に届かない","strategy":"世帯の収入（キャッシュイン）を増やす仕組みを作る","parallelAssumption":"本業の手取り額が急激に増えることは見込めない","tactics":"夫婦での副業開始（フリマアプリ活用やスキル販売）と継続的な積立NISAの運用","sufficientAssumption":"これらで月5万円の利益を生み出せれば、複利も含めて目標到達が現実的になる"},"gridX":0.5,"gridY":1}],"edges":[{"id":"edge-stt-expense-root","from":"stt_sub_expense_review","to":"stt_root_home_purchase","fromSide":"top","toSide":"bottom"},{"id":"edge-stt-income-root","from":"stt_sub_income_increase","to":"stt_root_home_purchase","fromSide":"top","toSide":"bottom"}]}},{"id":"crt-project","label":"CRT: 休日の自己嫌悪","path":"sample/sample_crt.json","data":{"diagramType":"crt","viewMode":"simple","nodeTextSize":13,"nodes":[{"id":"ude_self_hatred","type":"crt","text":"休日に何もせずダラダラ過ごして自己嫌悪になる","color":"Red"},{"id":"node_give_up_going_out","type":"crt","text":"今から出かけても遅いと\n諦めてしまう","color":"Yellow"},{"id":"node_already_evening","type":"crt","text":"気づけば夕方になっている","color":"Yellow"},{"id":"node_sleep_in","type":"crt","text":"土曜の昼過ぎまで寝てしまう","color":"Blue"},{"id":"node_watch_smartphone","type":"crt","text":"とりあえずスマホや動画を見てしまう","color":"Blue"},{"id":"node_wonder_what_to_do","type":"crt","text":"起きてから何をしようか迷う","color":"Green"},{"id":"root_no_plan","type":"crt","text":"休日の明確な予定を立てていない","color":"Orange"},{"id":"root_stay_up_late","type":"crt","text":"金曜の夜に夜更かししてしまう","color":"Orange"}],"edges":[{"id":"edge-1","from":"node_already_evening","to":"node_give_up_going_out"},{"id":"edge-2","from":"node_give_up_going_out","to":"ude_self_hatred"},{"id":"edge-3","from":"node_sleep_in","to":"node_already_evening","and":"1"},{"id":"edge-4","from":"node_watch_smartphone","to":"node_already_evening","and":"1"},{"id":"edge-5","from":"node_wonder_what_to_do","to":"node_watch_smartphone"},{"id":"edge-6","from":"root_no_plan","to":"node_wonder_what_to_do"},{"id":"edge-7","from":"root_stay_up_late","to":"node_sleep_in"}]}},{"id":"ec-conflict","label":"EC: ケーキの葛藤","path":"sample/sample_ec.json","data":{"diagramType":"ec","viewMode":"simple","nodeTextSize":13,"nodes":[{"id":"head","type":"ec","text":"健康で楽しく過ごす"},{"id":"left_shoulder","type":"ec","text":"痩せて綺麗な体型になる"},{"id":"right_shoulder","type":"ec","text":"ストレスを発散する"},{"id":"left_hand","type":"ec","text":"我慢する"},{"id":"right_hand","type":"ec","text":"ケーキを食べる"},{"id":"left_shoulder_to_head","type":"ec","text":"- 健康でいるためには痩せている必要がある\n- 綺麗な体型だと楽しく過ごせる"},{"id":"right_shoulder_to_head","type":"ec","text":"- ストレスが溜まると健康に悪い\n- 楽しく過ごすには気分転換が必要"},{"id":"left_hand_to_shoulder","type":"ec","text":"- ケーキを我慢すれば摂取カロリーを減らせる\n- 摂取カロリーを減らせば痩せられる"},{"id":"right_hand_to_shoulder","type":"ec","text":"- ケーキを食べると気分が上がる\n- 好きなものを食べることがストレス発散になる"}],"edges":[{"id":"edge-left-hand-shoulder","from":"left_hand","to":"left_shoulder"},{"id":"edge-left-shoulder-head","from":"left_shoulder","to":"head"},{"id":"edge-right-hand-shoulder","from":"right_hand","to":"right_shoulder"},{"id":"edge-right-shoulder-head","from":"right_shoulder","to":"head"}]}},{"id":"ccpm-chain","label":"CCPM: CP/CC比較","path":"sample/sample_ccpm.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":320,"project":{"start":"2026-05-11","end":"2026-05-29","today":"2026-05-15","holidays":[],"resources":["PM","Akira","Mika","Sato"],"baseline":{"cc_length":12,"total_buffer":3,"registered_at":"2026-05-11","project_finish":"2026-05-29"}},"nodes":[{"id":"task-1","type":"ccpm","text":"要件整理","detail":"目的、制約、完了条件をそろえる。","estimate":"1日","owner":"PM","statuses":["done"],"x":0,"y":0,"gridX":0,"gridY":0,"start":"2026-05-11","end":"2026-05-11","remains":0,"finished":true},{"id":"task-2","type":"ccpm","text":"画面設計","detail":"主要画面と操作の流れを決める。Akira担当のため、API設計とは同時に進められない想定。","estimate":"4日","owner":"Akira","statuses":["progress"],"x":290,"y":-82.5,"gridX":1,"gridY":-0.5,"start":"2026-05-12","remains":2,"finished":false},{"id":"task-3","type":"ccpm","text":"API設計","detail":"データ構造とAPI境界を整理する。画面設計とは依存関係ではなく、担当者制約で直列化される。","estimate":"4日","owner":"Akira","statuses":[],"x":290,"y":82.5,"gridX":1,"gridY":0.5},{"id":"task-4","type":"ccpm","text":"プロトタイプ実装","detail":"画面設計とAPI設計を受けて、動作する試作を作る。","estimate":"2日","owner":"Mika","statuses":[],"x":580,"y":0,"gridX":2,"gridY":0},{"id":"task-5","type":"ccpm","text":"レビュー","detail":"計画と試作の妥当性を確認する。","estimate":"1日","owner":"Sato","statuses":[],"x":870,"y":0,"gridX":3,"gridY":0},{"id":"task-6","type":"ccpm","text":"ドキュメント整備","detail":"利用手順と運用メモを整える。クリティカルチェーンには乗らない短い並行作業。","estimate":"2日","owner":"Sato","statuses":[],"x":580,"y":170,"gridX":2,"gridY":1}],"edges":[{"id":"edge-1","from":"task-1","to":"task-2","fromSide":"right","toSide":"left"},{"id":"edge-2","from":"task-1","to":"task-3","fromSide":"right","toSide":"left"},{"id":"edge-3","from":"task-2","to":"task-4","fromSide":"right","toSide":"left"},{"id":"edge-4","from":"task-3","to":"task-4","fromSide":"right","toSide":"left"},{"id":"edge-5","from":"task-4","to":"task-5","fromSide":"right","toSide":"left"},{"id":"edge-6","from":"task-1","to":"task-6","fromSide":"right","toSide":"left"},{"id":"edge-7","from":"task-6","to":"task-5","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-original-like","label":"CCPM: 元ツール相当（序盤）","path":"sample/sample_ccpm_original_like.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-08-05","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-07-08","progressRate":7.5,"bufferRate":0,"memo":"要件ヒアリング完了"},{"date":"2025-07-15","progressRate":14,"bufferRate":4,"memo":"要件定義書作成まで完了"},{"date":"2025-07-22","progressRate":20,"bufferRate":8,"memo":"設計系タスクに着手"},{"date":"2025-07-29","progressRate":27,"bufferRate":14,"memo":"UI・DB・APIの先行作業が並行進行"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["progress"],"start":"2025-08-05","end":"","remains":2,"finished":false,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["progress"],"start":"2025-08-05","end":"","remains":3,"finished":false,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日","estimate":"6日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日","estimate":"1日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-original-like-middle","label":"CCPM: 元ツール相当（中盤・トラブル）","path":"sample/sample_ccpm_original_like_middle.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-09-18","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"},{"date":"2025-08-19","progressRate":48,"bufferRate":46,"memo":"設計完了、実装工程へ本格移行"},{"date":"2025-08-28","progressRate":55,"bufferRate":72,"memo":"画面結合で仕様齟齬が発覚"},{"date":"2025-09-08","progressRate":60,"bufferRate":91,"memo":"画面B/Cの手戻りが重なり、FEテスト待ち"},{"date":"2025-09-18","progressRate":63,"bufferRate":99,"memo":"画面実装完了マイルストーン目前。PBの余裕がほぼ無い"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-27","remains":0,"finished":true,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-08-28","end":"2025-09-03","remains":0,"finished":true,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日\n\n状況メモ: 画面Bで仕様齟齬が見つかり、手戻り対応中。","estimate":"3日","owner":"山田","statuses":["progress","trouble"],"start":"2025-09-04","end":"","remains":5,"finished":false,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日\n\n状況メモ: 共通コンポーネントの修正影響で再実装中。","estimate":"4日","owner":"佐藤","statuses":["progress","trouble"],"start":"2025-09-08","end":"","remains":5,"finished":false,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-25","remains":0,"finished":true,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日\n\n状況メモ: API仕様とDB制約の不整合により再設計が発生。","estimate":"6日","owner":"伊藤","statuses":["progress","trouble"],"start":"2025-08-26","end":"","remains":7,"finished":false,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-08-22","end":"2025-08-26","remains":0,"finished":true,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-08-22","end":"2025-08-25","remains":0,"finished":true,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日","estimate":"1日","owner":"渡辺","statuses":[],"start":"","end":"","remains":"","finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-08-12","end":"2025-08-18","remains":0,"finished":true,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":[],"start":"","end":"","remains":"","finished":false,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}],"ccpmPanelTab":"fever"}},{"id":"ccpm-original-like-late","label":"CCPM: 元ツール相当（終盤・持ち直し）","path":"sample/sample_ccpm_original_like_late.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":12,"ganttHeight":420,"project":{"start":"2025-07-01","end":"2025-10-31","today":"2025-10-24","holidays":["2025-07-21","2025-08-11","2025-09-15","2025-09-23","2025-10-13"],"resources":["鈴木","佐藤","高橋","伊藤","山田","渡辺","田中"],"baseline":{"cc_length":60,"total_buffer":24,"registered_at":"2025-07-01","project_finish":"2025-10-31"},"feverHistory":[{"date":"2025-07-01","progressRate":0,"bufferRate":0,"memo":"ベースライン登録"},{"date":"2025-08-05","progressRate":33,"bufferRate":24,"memo":"設計後半。レビューと性能設計が進行中"},{"date":"2025-09-18","progressRate":63,"bufferRate":99,"memo":"手戻りでPBの余裕がほぼ無い"},{"date":"2025-10-03","progressRate":79,"bufferRate":104,"memo":"結合テスト後半で一時的にPBを超過"},{"date":"2025-10-17","progressRate":92,"bufferRate":92,"memo":"UAT完了。終盤の並行化で持ち直し"},{"date":"2025-10-24","progressRate":97,"bufferRate":87,"memo":"リリース作業を残すのみ"}]},"nodes":[{"id":"31a52e5ce46a414aaea9779d449b54f9","type":"ccpm-milestone","text":"画面実装完了","detail":"画面A/B/Cの実装と結合確認が終わったことを示す期限マイルストーンです。旧サンプルの「画面待ちバッファ」2日は、通常タスク「画面結合確認」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":0,"y":0,"gridX":0,"gridY":0,"deadline":"2025-09-17"},{"id":"d01","type":"ccpm-milestone","text":"要件定義完了","detail":"要件定義書の完成を確認する期限マイルストーンです。期間は持たず、後続タスクには接続しません。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":250,"y":0,"gridX":1,"gridY":0,"deadline":"2025-07-16"},{"id":"d02","type":"ccpm-milestone","text":"設計完了","detail":"画面・DB・API設計を統合レビューした完了点を示す期限マイルストーンです。旧サンプルの「設計書一式」5日は、通常タスク「設計書統合レビュー」へ移しました。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":500,"y":0,"gridX":2,"gridY":0,"deadline":"2025-08-19"},{"id":"d03","type":"ccpm-milestone","text":"本番リリース完了","detail":"プロジェクトの最終到達点を示す期限マイルストーンです。","estimate":"","owner":"","statuses":[],"start":"","end":"","remains":"","finished":false,"x":750,"y":0,"gridX":3,"gridY":0,"deadline":"2025-10-31"},{"id":"t01","type":"ccpm","text":"要件ヒアリング","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-07-01","end":"2025-07-07","remains":0,"finished":true,"x":1000,"y":0,"gridX":4,"gridY":0},{"id":"t02","type":"ccpm","text":"業務フロー分析","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 2日","estimate":"2日","owner":"鈴木","statuses":["done"],"start":"2025-07-08","end":"2025-07-09","remains":0,"finished":true,"x":1250,"y":0,"gridX":5,"gridY":0},{"id":"t03","type":"ccpm","text":"要件定義書作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-07-10","end":"2025-07-15","remains":0,"finished":true,"x":1500,"y":0,"gridX":6,"gridY":0},{"id":"t04","type":"ccpm","text":"画面設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 5日","estimate":"5日","owner":"鈴木","statuses":["done"],"start":"2025-07-16","end":"2025-07-24","remains":0,"finished":true,"x":1750,"y":0,"gridX":7,"gridY":0},{"id":"t05","type":"ccpm","text":"UIプロトタイプ作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-07-25","end":"2025-08-04","remains":0,"finished":true,"x":2000,"y":0,"gridX":8,"gridY":0},{"id":"t06","type":"ccpm","text":"ユーザビリティレビュー","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 2日","estimate":"2日","owner":"田中","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":2250,"y":0,"gridX":9,"gridY":0},{"id":"t07","type":"ccpm","text":"データモデル設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 鈴木\n元見積もり: 4日","estimate":"4日","owner":"鈴木","statuses":["done"],"start":"2025-07-25","end":"2025-07-31","remains":0,"finished":true,"x":2500,"y":0,"gridX":10,"gridY":0},{"id":"t08","type":"ccpm","text":"ER図作成","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 2日","estimate":"2日","owner":"高橋","statuses":["done"],"start":"2025-08-01","end":"2025-08-04","remains":0,"finished":true,"x":2750,"y":0,"gridX":11,"gridY":0},{"id":"t09","type":"ccpm","text":"DB性能設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-05","end":"2025-08-08","remains":0,"finished":true,"x":3000,"y":0,"gridX":12,"gridY":0},{"id":"t10","type":"ccpm","text":"API仕様設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-07-16","end":"2025-07-18","remains":0,"finished":true,"x":3250,"y":0,"gridX":13,"gridY":0},{"id":"t11","type":"ccpm","text":"認証設計","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 2日","estimate":"2日","owner":"伊藤","statuses":["done"],"start":"2025-07-22","end":"2025-07-23","remains":0,"finished":true,"x":3500,"y":0,"gridX":14,"gridY":0},{"id":"t12","type":"ccpm","text":"共通コンポーネント実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 5日","estimate":"5日","owner":"佐藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-27","remains":0,"finished":true,"x":3750,"y":0,"gridX":15,"gridY":0},{"id":"t13","type":"ccpm","text":"画面A実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-08-28","end":"2025-09-03","remains":0,"finished":true,"x":4000,"y":0,"gridX":16,"gridY":0},{"id":"t14","type":"ccpm","text":"画面B実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":["done"],"start":"2025-09-04","end":"2025-09-12","remains":0,"finished":true,"x":4250,"y":0,"gridX":17,"gridY":0},{"id":"t15","type":"ccpm","text":"画面C実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 4日","estimate":"4日","owner":"佐藤","statuses":["done"],"start":"2025-09-08","end":"2025-09-17","remains":0,"finished":true,"x":4500,"y":0,"gridX":18,"gridY":0},{"id":"t16","type":"ccpm","text":"DB構築・マイグレーション","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":4750,"y":0,"gridX":19,"gridY":0},{"id":"t17","type":"ccpm","text":"API実装(認証)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 4日","estimate":"4日","owner":"伊藤","statuses":["done"],"start":"2025-08-19","end":"2025-08-25","remains":0,"finished":true,"x":5000,"y":0,"gridX":20,"gridY":0},{"id":"t18","type":"ccpm","text":"API実装(業務ロジック)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 6日","estimate":"6日","owner":"伊藤","statuses":["done"],"start":"2025-08-26","end":"2025-09-11","remains":0,"finished":true,"x":5250,"y":0,"gridX":21,"gridY":0},{"id":"t19","type":"ccpm","text":"バッチ処理実装","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 佐藤\n元見積もり: 3日","estimate":"3日","owner":"佐藤","statuses":["done"],"start":"2025-08-22","end":"2025-08-26","remains":0,"finished":true,"x":5500,"y":0,"gridX":22,"gridY":0},{"id":"t20","type":"ccpm","text":"CI/CDパイプライン構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 3日","estimate":"3日","owner":"渡辺","statuses":["done"],"start":"2025-08-19","end":"2025-08-21","remains":0,"finished":true,"x":5750,"y":0,"gridX":23,"gridY":0},{"id":"t21","type":"ccpm","text":"ステージング環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-08-22","end":"2025-08-25","remains":0,"finished":true,"x":6000,"y":0,"gridX":24,"gridY":0},{"id":"t22","type":"ccpm","text":"単体テスト(FE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 山田\n元見積もり: 3日","estimate":"3日","owner":"山田","statuses":["done"],"start":"2025-09-24","end":"2025-09-26","remains":0,"finished":true,"x":6250,"y":0,"gridX":25,"gridY":0},{"id":"t23","type":"ccpm","text":"単体テスト(BE)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 伊藤\n元見積もり: 3日","estimate":"3日","owner":"伊藤","statuses":["done"],"start":"2025-09-16","end":"2025-09-18","remains":0,"finished":true,"x":6500,"y":0,"gridX":26,"gridY":0},{"id":"t24","type":"ccpm","text":"結合テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-09-29","end":"2025-10-03","remains":0,"finished":true,"x":6750,"y":0,"gridX":27,"gridY":0},{"id":"t25","type":"ccpm","text":"性能テスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 5日","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-10-06","end":"2025-10-10","remains":0,"finished":true,"x":7000,"y":0,"gridX":28,"gridY":0},{"id":"t26","type":"ccpm","text":"セキュリティテスト","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-10-06","end":"2025-10-07","remains":0,"finished":true,"x":7250,"y":0,"gridX":29,"gridY":0},{"id":"t27","type":"ccpm","text":"UAT(ユーザ受入テスト)","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 田中\n元見積もり: 4日","estimate":"4日","owner":"田中","statuses":["done"],"start":"2025-10-14","end":"2025-10-17","remains":0,"finished":true,"x":7500,"y":0,"gridX":30,"gridY":0},{"id":"t28","type":"ccpm","text":"本番環境構築","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 2日","estimate":"2日","owner":"渡辺","statuses":["done"],"start":"2025-10-20","end":"2025-10-21","remains":0,"finished":true,"x":7750,"y":0,"gridX":31,"gridY":0},{"id":"t29","type":"ccpm","text":"データ移行","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 高橋\n元見積もり: 3日","estimate":"3日","owner":"高橋","statuses":["done"],"start":"2025-10-20","end":"2025-10-22","remains":0,"finished":true,"x":8000,"y":0,"gridX":32,"gridY":0},{"id":"t30","type":"ccpm","text":"リリース作業","detail":"元RequirementViewer CCPMサンプルの process ノードです。\n担当: 渡辺\n元見積もり: 1日\n\n状況メモ: 残りはリリース当日のチェックのみ。","estimate":"1日","owner":"渡辺","statuses":["progress"],"start":"2025-10-24","end":"","remains":1,"finished":false,"x":8250,"y":0,"gridX":33,"gridY":0},{"id":"t31","type":"ccpm","text":"設計書統合レビュー","detail":"画面・DB・API設計の整合確認、レビュー指摘反映、設計書一式の承認を行うタスクです。旧サンプルで「設計書一式」に設定されていた5日分を、期間を持つ作業として切り出しました。","estimate":"5日","owner":"田中","statuses":["done"],"start":"2025-08-12","end":"2025-08-18","remains":0,"finished":true,"x":1250,"y":-170,"gridX":5,"gridY":-1},{"id":"t32","type":"ccpm","text":"画面結合確認","detail":"画面A/B/Cの結合確認、軽微な調整、FE単体テストへ渡す準備を行うタスクです。旧サンプルで「画面待ちバッファ」に設定されていた2日分を、期間を持つ作業として切り出しました。","estimate":"2日","owner":"山田","statuses":["done"],"start":"2025-09-18","end":"2025-09-19","remains":0,"finished":true,"x":2000,"y":-170,"gridX":8,"gridY":-1}],"edges":[{"id":"orig-edge-7","from":"t01","to":"t02","fromSide":"right","toSide":"left"},{"id":"orig-edge-8","from":"t02","to":"t03","fromSide":"right","toSide":"left"},{"id":"orig-edge-9","from":"t03","to":"d01","fromSide":"right","toSide":"left"},{"id":"orig-edge-50","from":"t03","to":"t04","fromSide":"right","toSide":"left"},{"id":"orig-edge-51","from":"t03","to":"t07","fromSide":"right","toSide":"left"},{"id":"orig-edge-52","from":"t03","to":"t10","fromSide":"right","toSide":"left"},{"id":"orig-edge-10","from":"t04","to":"t05","fromSide":"right","toSide":"left"},{"id":"orig-edge-13","from":"t05","to":"t06","fromSide":"right","toSide":"left"},{"id":"orig-edge-16","from":"t07","to":"t08","fromSide":"right","toSide":"left"},{"id":"orig-edge-17","from":"t08","to":"t09","fromSide":"right","toSide":"left"},{"id":"orig-edge-21","from":"t10","to":"t11","fromSide":"right","toSide":"left"},{"id":"orig-edge-53","from":"t06","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-54","from":"t09","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-55","from":"t11","to":"t31","fromSide":"right","toSide":"left"},{"id":"orig-edge-57","from":"t31","to":"d02","fromSide":"right","toSide":"left"},{"id":"orig-edge-63","from":"t31","to":"t12","fromSide":"right","toSide":"left"},{"id":"orig-edge-64","from":"t31","to":"t16","fromSide":"right","toSide":"left"},{"id":"orig-edge-65","from":"t31","to":"t17","fromSide":"right","toSide":"left"},{"id":"orig-edge-56","from":"t31","to":"t20","fromSide":"right","toSide":"left"},{"id":"orig-edge-25","from":"t12","to":"t13","fromSide":"right","toSide":"left"},{"id":"orig-edge-26","from":"t12","to":"t14","fromSide":"right","toSide":"left"},{"id":"orig-edge-27","from":"t12","to":"t15","fromSide":"right","toSide":"left"},{"id":"orig-edge-58","from":"t13","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-59","from":"t14","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-60","from":"t15","to":"t32","fromSide":"right","toSide":"left"},{"id":"orig-edge-62","from":"t32","to":"31a52e5ce46a414aaea9779d449b54f9","fromSide":"right","toSide":"left"},{"id":"orig-edge-61","from":"t32","to":"t22","fromSide":"right","toSide":"left"},{"id":"orig-edge-31","from":"t16","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-32","from":"t16","to":"t19","fromSide":"right","toSide":"left"},{"id":"orig-edge-33","from":"t17","to":"t18","fromSide":"right","toSide":"left"},{"id":"orig-edge-34","from":"t18","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-35","from":"t19","to":"t23","fromSide":"right","toSide":"left"},{"id":"orig-edge-36","from":"t20","to":"t21","fromSide":"right","toSide":"left"},{"id":"orig-edge-37","from":"t21","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-38","from":"t21","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-39","from":"t22","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-40","from":"t23","to":"t24","fromSide":"right","toSide":"left"},{"id":"orig-edge-41","from":"t24","to":"t25","fromSide":"right","toSide":"left"},{"id":"orig-edge-42","from":"t24","to":"t26","fromSide":"right","toSide":"left"},{"id":"orig-edge-43","from":"t25","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-44","from":"t26","to":"t27","fromSide":"right","toSide":"left"},{"id":"orig-edge-45","from":"t27","to":"t28","fromSide":"right","toSide":"left"},{"id":"orig-edge-46","from":"t27","to":"t29","fromSide":"right","toSide":"left"},{"id":"orig-edge-47","from":"t28","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-48","from":"t29","to":"t30","fromSide":"right","toSide":"left"},{"id":"orig-edge-49","from":"t30","to":"d03","fromSide":"right","toSide":"left"}],"ccpmPanelTab":"fever"}},{"id":"ccpm-resource-priority","label":"CCPM: 担当制約確認","path":"sample/sample_ccpm_resource_priority.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":320,"project":{"start":"2026-05-11","end":"2026-05-29","today":"2026-05-11","holidays":["2026-05-18"],"resources":["Akira","Mika","Sato"],"baseline":null},"nodes":[{"id":"task-a","type":"ccpm","text":"A: 短い後続の設計","detail":"Akira担当の並行候補です。単体の後続パスは 4日 + 4日 = 8日です。","estimate":"4日","owner":"Akira","statuses":[],"x":0,"y":-95,"gridX":0,"gridY":-0.6,"end":"","remains":"","finished":false},{"id":"task-b","type":"ccpm","text":"B: 長い後続の調査","detail":"Akira担当の並行候補です。単体の後続パスは 3日 + 6日 = 9日なので、Aより優先されます。","estimate":"3日","owner":"Akira","statuses":["progress"],"x":0,"y":95,"gridX":0,"gridY":0.6,"start":"2026-05-11","end":"","remains":3,"finished":false},{"id":"task-a-next","type":"ccpm","text":"A後続: 確認","detail":"Aの後続作業です。Bが先に直列化されるため、クリティカルチェーン上では B -> A -> A後続 になります。","estimate":"4日","owner":"Mika","statuses":[],"x":310,"y":-95,"gridX":1,"gridY":-0.6,"end":"","remains":"","finished":false},{"id":"task-b-next","type":"ccpm","text":"B後続: 実装","detail":"依存関係だけで見ると B -> B後続 が9日でクリティカルパスになります。","estimate":"6日","owner":"Sato","statuses":[],"x":310,"y":95,"gridX":1,"gridY":0.6,"end":"","remains":"","finished":false}],"edges":[{"id":"edge-a-next","from":"task-a","to":"task-a-next","fromSide":"right","toSide":"left"},{"id":"edge-b-next","from":"task-b","to":"task-b-next","fromSide":"right","toSide":"left"}]}},{"id":"ccpm-warnings","label":"CCPM: 警告確認","path":"sample/sample_ccpm_warnings.json","data":{"diagramType":"ccpm","viewMode":"detail","nodeTextSize":13,"ganttHeight":300,"nodes":[{"id":"loop-a","type":"ccpm","text":"ループA","detail":"警告確認用のタスクです。","estimate":"","owner":"Akira","statuses":[],"x":0,"y":0,"gridX":0,"gridY":0},{"id":"loop-b","type":"ccpm","text":"ループB","detail":"見積もりが不正なタスクです。","estimate":"abc","owner":"Akira","statuses":[],"x":290,"y":0,"gridX":1,"gridY":0},{"id":"loop-c","type":"ccpm","text":"ループC","detail":"Aへ戻る依存でループを作ります。","estimate":"2日","owner":"Mika","statuses":[],"x":580,"y":0,"gridX":2,"gridY":0}],"edges":[{"id":"loop-edge-a-b","from":"loop-a","to":"loop-b","fromSide":"right","toSide":"left"},{"id":"loop-edge-b-c","from":"loop-b","to":"loop-c","fromSide":"right","toSide":"left"},{"id":"loop-edge-c-a","from":"loop-c","to":"loop-a","fromSide":"right","toSide":"left"}]}}];
@@ -5241,6 +5470,11 @@
       const checkDialog = document.getElementById("checkDialog");
       const checkSummary = document.getElementById("checkSummary");
       const checkList = document.getElementById("checkList");
+      const searchDialog = document.getElementById("searchDialog");
+      const searchInput = document.getElementById("searchInput");
+      const searchSummary = document.getElementById("searchSummary");
+      const searchResults = document.getElementById("searchResults");
+      const shortcutDialog = document.getElementById("shortcutDialog");
       const nodeTextSizeSlider = document.getElementById("nodeTextSizeSlider");
       const nodeTextSizeValue = document.getElementById("nodeTextSizeValue");
       const detailPanel = document.getElementById("detailPanel");
@@ -6682,6 +6916,8 @@
         closeProjectDialog();
         closeProgressDialog();
         closeCheckDialog();
+        closeSearchDialog();
+        closeShortcutDialog();
         render();
         saveState();
         centerOnGraph();
@@ -9658,6 +9894,14 @@
         updateTransform();
       }
 
+      function centerOnNode(node) {
+        if (!node) return;
+        const rect = viewport.getBoundingClientRect();
+        state.pan.x = rect.width / 2 - node.x * state.zoom;
+        state.pan.y = rect.height / 2 - node.y * state.zoom;
+        updateTransform();
+      }
+
       function graphBounds() {
         const nodes = visibleNodes();
         if (!nodes.length) {
@@ -10133,6 +10377,24 @@
         setStatus(`${displayText(node)} を追加`);
       }
 
+      function shortcutRootType() {
+        if (isGoalNaviDiagram()) return "";
+        if (isPfdDiagram()) {
+          const node = selectedNode();
+          if (node?.type === "artifact" || node?.type === "process") return node.type;
+        }
+        return DIAGRAM_TYPES[state.diagramType]?.rootType || "";
+      }
+
+      function addLooseNodeFromShortcut() {
+        const type = shortcutRootType();
+        if (!type) {
+          setStatus("この画面ではノード追加ショートカットを使えません");
+          return;
+        }
+        addRoot(type);
+      }
+
       function startConnection(anchorId, side) {
         const node = findNode(anchorId);
         const plan = portPlan(node, side);
@@ -10266,6 +10528,45 @@
               : (isEcDiagram() ? "新しいECを開始" : (isGoalNaviDiagram() ? "新しいGoal Naviを開始" : "新しいPFDを開始")))));
       }
 
+      function nodeDegreeMap() {
+        const degree = new Map(state.nodes.map(node => [node.id, 0]));
+        state.edges.forEach(edge => {
+          if (degree.has(edge.from)) degree.set(edge.from, (degree.get(edge.from) || 0) + 1);
+          if (degree.has(edge.to)) degree.set(edge.to, (degree.get(edge.to) || 0) + 1);
+        });
+        return degree;
+      }
+
+      function connectedLayoutNodes() {
+        const degree = nodeDegreeMap();
+        return state.nodes.filter(node => (degree.get(node.id) || 0) > 0);
+      }
+
+      function layoutLooseNodes() {
+        if (isEcDiagram() || isGoalNaviDiagram()) return;
+        const degree = nodeDegreeMap();
+        const looseNodes = state.nodes.filter(node => (degree.get(node.id) || 0) === 0);
+        if (!looseNodes.length) return;
+
+        const connectedNodes = state.nodes.filter(node => (degree.get(node.id) || 0) > 0);
+        const order = new Map(state.nodes.map((node, index) => [node.id, index]));
+        const startGridX = connectedNodes.length
+          ? Math.ceil(Math.max(...connectedNodes.map(node => node.gridX)) + 2)
+          : 0;
+        const startGridY = connectedNodes.length
+          ? Math.floor(Math.min(...connectedNodes.map(node => node.gridY)))
+          : 0;
+
+        looseNodes
+          .sort((a, b) => (order.get(a.id) || 0) - (order.get(b.id) || 0))
+          .forEach((node, index) => {
+            node.gridX = startGridX + (index % LOOSE_NODE_COLUMNS);
+            node.gridY = startGridY + Math.floor(index / LOOSE_NODE_COLUMNS);
+            node.x = node.gridX * gridSpacingX();
+            node.y = node.gridY * gridSpacingY();
+          });
+      }
+
       function autoLayout() {
         if (!state.nodes.length) return;
         if (isEcDiagram()) {
@@ -10290,9 +10591,15 @@
           return true;
         });
 
+        const layoutNodes = connectedLayoutNodes();
+        if (!layoutNodes.length) {
+          layoutLooseNodes();
+          return;
+        }
+
         const outgoing = new Map();
         const incoming = new Map();
-        const indegree = new Map(state.nodes.map(node => [node.id, 0]));
+        const indegree = new Map(layoutNodes.map(node => [node.id, 0]));
         state.edges.forEach(edge => {
           if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
           if (!incoming.has(edge.to)) incoming.set(edge.to, []);
@@ -10301,14 +10608,14 @@
           indegree.set(edge.to, (indegree.get(edge.to) || 0) + 1);
         });
 
-        const layer = new Map(state.nodes.map(node => [node.id, 0]));
-        const queue = state.nodes
+        const layer = new Map(layoutNodes.map(node => [node.id, 0]));
+        const queue = layoutNodes
           .filter(node => (indegree.get(node.id) || 0) === 0)
           .sort((a, b) => verticalFlow
             ? a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id)
             : a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id))
           .map(node => node.id);
-        if (!queue.length && state.nodes[0]) queue.push(state.nodes[0].id);
+        if (!queue.length && layoutNodes[0]) queue.push(layoutNodes[0].id);
 
         const remainingIndegree = new Map(indegree);
         const visited = new Set();
@@ -10323,7 +10630,7 @@
           });
         }
 
-        state.nodes.forEach((node, index) => {
+        layoutNodes.forEach((node, index) => {
           if (!visited.has(node.id)) {
             const manualLayer = verticalFlow ? node.gridY : node.gridX;
             layer.set(node.id, Math.max(0, Number.isFinite(manualLayer) ? manualLayer : index));
@@ -10334,7 +10641,7 @@
 
         const minLayer = Math.min(...Array.from(layer.values()));
         const groups = new Map();
-        state.nodes.forEach(node => {
+        layoutNodes.forEach(node => {
           const nodeLayerIndex = (layer.get(node.id) || 0) - minLayer;
           if (!groups.has(nodeLayerIndex)) groups.set(nodeLayerIndex, []);
           groups.get(nodeLayerIndex).push(node);
@@ -10374,10 +10681,11 @@
           });
         });
 
-        state.nodes.forEach(node => {
+        layoutNodes.forEach(node => {
           node.x = node.gridX * gridSpacingX();
           node.y = node.gridY * gridSpacingY();
         });
+        layoutLooseNodes();
       }
 
       function autoLayoutEc() {
@@ -10441,9 +10749,15 @@
           return true;
         });
 
+        const layoutNodes = connectedLayoutNodes();
+        if (!layoutNodes.length) {
+          layoutLooseNodes();
+          return;
+        }
+
         const outgoing = new Map();
         const incoming = new Map();
-        state.nodes.forEach(node => {
+        layoutNodes.forEach(node => {
           outgoing.set(node.id, []);
           incoming.set(node.id, []);
         });
@@ -10452,13 +10766,13 @@
           incoming.get(edge.to)?.push(edge);
         });
 
-        const layer = new Map(state.nodes.map(node => [node.id, 0]));
-        const roots = state.nodes
+        const layer = new Map(layoutNodes.map(node => [node.id, 0]));
+        const roots = layoutNodes
           .filter(node => !(outgoing.get(node.id) || []).length)
           .sort((a, b) => isCrtDiagram()
             ? (stableNodeOrder.get(a.id) || 0) - (stableNodeOrder.get(b.id) || 0) || a.id.localeCompare(b.id)
             : a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
-        const queue = (roots.length ? roots : state.nodes.slice(0, 1)).map(node => node.id);
+        const queue = (roots.length ? roots : layoutNodes.slice(0, 1)).map(node => node.id);
         const queued = new Set(queue);
         for (let index = 0; index < queue.length; index += 1) {
           const id = queue[index];
@@ -10472,7 +10786,7 @@
           });
         }
 
-        state.nodes.forEach((node, index) => {
+        layoutNodes.forEach((node, index) => {
           if (!queued.has(node.id)) {
             layer.set(node.id, Math.max(0, Number.isFinite(node.gridY) ? node.gridY : index));
           }
@@ -10480,7 +10794,7 @@
 
         const minLayer = Math.min(...Array.from(layer.values()));
         const groups = new Map();
-        state.nodes.forEach(node => {
+        layoutNodes.forEach(node => {
           const nodeLayerIndex = (layer.get(node.id) || 0) - minLayer;
           if (!groups.has(nodeLayerIndex)) groups.set(nodeLayerIndex, []);
           groups.get(nodeLayerIndex).push(node);
@@ -10493,7 +10807,9 @@
             .sort((a, b) => isCrtDiagram()
               ? (stableNodeOrder.get(a.id) || 0) - (stableNodeOrder.get(b.id) || 0) || a.id.localeCompare(b.id)
               : a.gridX - b.gridX || a.gridY - b.gridY || a.id.localeCompare(b.id));
-          const offsets = centeredOffsets(group.length);
+          const offsets = isCrtDiagram()
+            ? crtLayerOffsets(group, incoming, outgoing)
+            : centeredOffsets(group.length);
           group.forEach((node, index) => xPosition.set(node.id, offsets[index]));
         });
 
@@ -10507,6 +10823,7 @@
         }
 
         if (isCrtDiagram()) {
+          reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition);
           optimizeCrtLayerPositions(layerKeys, groups, layer, incoming, outgoing, xPosition);
         }
 
@@ -10519,10 +10836,11 @@
         });
 
         const layerY = sttLayerYPositions(layerKeys, groups);
-        state.nodes.forEach(node => {
+        layoutNodes.forEach(node => {
           node.x = node.gridX * gridSpacingX();
           node.y = layerY.get(node.gridY) || 0;
         });
+        layoutLooseNodes();
       }
 
       function gridSpacingX() {
@@ -10636,6 +10954,46 @@
         });
       }
 
+      function reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition) {
+        let changed = false;
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex) || [];
+          if (group.length < 2) return;
+          const ordered = [...group].sort((a, b) =>
+            crtConnectionSortValue(a, incoming, outgoing, xPosition) - crtConnectionSortValue(b, incoming, outgoing, xPosition) ||
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          );
+          if (ordered.some((node, index) => node.id !== group[index]?.id)) {
+            groups.set(nodeLayerIndex, ordered);
+            changed = true;
+          }
+          const current = ordered
+            .map(node => xPosition.get(node.id))
+            .filter(value => Number.isFinite(value));
+          const center = current.length ? current.reduce((sum, value) => sum + value, 0) / current.length : 0;
+          const offsets = crtLayerOffsets(ordered, incoming, outgoing);
+          ordered.forEach((node, index) => {
+            xPosition.set(node.id, center + offsets[index]);
+          });
+        });
+        return changed;
+      }
+
+      function crtConnectionSortValue(node, incoming, outgoing, xPosition) {
+        const values = [];
+        (outgoing.get(node.id) || []).forEach(edge => {
+          addWeightedValue(values, xPosition.get(edge.to), 3.0);
+        });
+        (incoming.get(node.id) || []).forEach(edge => {
+          addWeightedValue(values, xPosition.get(edge.from), 2.0);
+        });
+        const desired = weightedAverage(values);
+        if (Number.isFinite(desired)) return desired;
+        const current = xPosition.get(node.id);
+        return Number.isFinite(current) ? current : 0;
+      }
+
       function optimizeCrtLayerPositions(layerKeys, groups, layer, incoming, outgoing, xPosition) {
         const layoutEdges = crtLayoutEdges(layer);
         if (!layoutEdges.length) return;
@@ -10645,7 +11003,8 @@
           group.edges.forEach(edge => andByEdgeId.set(edge.id, group));
         });
 
-        layerKeys.forEach(nodeLayerIndex => compactCrtLayer(groups.get(nodeLayerIndex), xPosition));
+        reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition);
+        layerKeys.forEach(nodeLayerIndex => compactCrtLayer(groups.get(nodeLayerIndex), xPosition, incoming, outgoing));
         for (let pass = 0; pass < 5; pass += 1) {
           layerKeys.forEach(nodeLayerIndex => {
             placeCrtLayerNearAndGroups(groups.get(nodeLayerIndex), incoming, outgoing, andByEdgeId, xPosition);
@@ -10653,7 +11012,8 @@
           [...layerKeys].reverse().forEach(nodeLayerIndex => {
             placeCrtLayerNearAndGroups(groups.get(nodeLayerIndex), incoming, outgoing, andByEdgeId, xPosition);
           });
-          layerKeys.forEach(nodeLayerIndex => compactCrtLayer(groups.get(nodeLayerIndex), xPosition));
+          reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition);
+          layerKeys.forEach(nodeLayerIndex => compactCrtLayer(groups.get(nodeLayerIndex), xPosition, incoming, outgoing));
           if (!reduceCrtLayerCrossings(layerKeys, groups, layoutEdges, andGroups, xPosition)) break;
         }
       }
@@ -10795,7 +11155,7 @@
         return values.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight;
       }
 
-      function compactCrtLayer(group, xPosition) {
+      function compactCrtLayer(group, xPosition, incoming = null, outgoing = null) {
         if (!group || !group.length) return;
         const ordered = [...group].sort((a, b) =>
           (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
@@ -10805,10 +11165,37 @@
           .map(node => xPosition.get(node.id))
           .filter(value => Number.isFinite(value));
         const center = current.length ? current.reduce((sum, value) => sum + value, 0) / current.length : 0;
-        const offsets = centeredOffsets(ordered.length);
+        const offsets = crtLayerOffsets(ordered, incoming, outgoing);
         ordered.forEach((node, index) => {
           xPosition.set(node.id, center + offsets[index]);
         });
+      }
+
+      function crtLayerOffsets(nodes, incoming = null, outgoing = null) {
+        if (!nodes.length) return [];
+        if (nodes.length === 1) return [0];
+        const positions = [0];
+        for (let index = 1; index < nodes.length; index += 1) {
+          positions.push(positions[index - 1] + crtLayerGap(nodes[index - 1], nodes[index], incoming, outgoing));
+        }
+        const center = positions.reduce((sum, value) => sum + value, 0) / positions.length;
+        return positions.map(value => value - center);
+      }
+
+      function crtLayerGap(left, right, incoming = null, outgoing = null) {
+        const fan = Math.max(
+          crtLayoutFan(left?.id, incoming, outgoing),
+          crtLayoutFan(right?.id, incoming, outgoing)
+        );
+        return LAYOUT_ROW_GAP + Math.min(.75, Math.max(0, fan - 1) * .16);
+      }
+
+      function crtLayoutFan(nodeId, incoming = null, outgoing = null) {
+        if (!nodeId) return 0;
+        if (incoming && outgoing) {
+          return (incoming.get(nodeId) || []).length + (outgoing.get(nodeId) || []).length;
+        }
+        return state.edges.filter(edge => edge.from === nodeId || edge.to === nodeId).length;
       }
 
       function reduceCrtLayerCrossings(layerKeys, groups, layoutEdges, andGroups, xPosition) {
@@ -11103,10 +11490,6 @@
         wrapper.className = "crt-card";
         const value = (node.text || "").trim();
         wrapper.innerHTML = `
-          <div class="crt-card-label">
-            <span class="crt-card-swatch"></span>
-            <span>CRT</span>
-          </div>
           <div class="crt-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
         `;
         return wrapper;
@@ -12905,7 +13288,7 @@
         const contentHeight = lines * Math.max(17, textSize * 1.3);
         return {
           width,
-          height: Math.ceil(Math.max(minHeight, 48 + contentHeight))
+          height: Math.ceil(Math.max(minHeight, 34 + contentHeight))
         };
       }
 
@@ -12999,15 +13382,17 @@
 
         fromSides.forEach(fromSide => {
           toSides.forEach(toSide => {
-            const points = dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide));
-            const score = routeScore(points, obstacles)
-              + crtRouteSidePenalty(fromSide, preferredFromSide, dx, dy, "from")
-              + crtRouteSidePenalty(toSide, preferredToSide, dx, dy, "to")
-              + crtRouteFlowPenalty(fromSide, toSide, dy)
-              + crtRouteCrossingPenalty(points, renderedRoutes);
-            if (!best || score < best.score) {
-              best = { fromSide, toSide, points, score };
-            }
+            crtRouteOptions(from, to, fromSide, toSide).forEach(option => {
+              const score = routeScore(option.points, obstacles, option.straight ? 18 : 72)
+                + crtRouteSidePenalty(fromSide, preferredFromSide, dx, dy, "from")
+                + crtRouteSidePenalty(toSide, preferredToSide, dx, dy, "to")
+                + crtRouteFlowPenalty(fromSide, toSide, dy)
+                + crtRouteCrossingPenalty(option.points, renderedRoutes)
+                + (option.straight ? -90 : 0);
+              if (!best || score < best.score) {
+                best = { fromSide, toSide, points: option.points, score };
+              }
+            });
           });
         });
 
@@ -13017,6 +13402,38 @@
           d: roundedPolylinePath(best.points, 18),
           midpoint: polylineMidpoint(best.points)
         };
+      }
+
+      function crtRouteOptions(from, to, fromSide, toSide) {
+        const options = [{
+          points: dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide)),
+          straight: false
+        }];
+        const straightPoints = crtStraightRoutePoints(from, to, fromSide, toSide);
+        if (straightPoints) {
+          options.unshift({ points: straightPoints, straight: true });
+        }
+        return options;
+      }
+
+      function crtStraightRoutePoints(from, to, fromSide, toSide) {
+        if (!crtStraightRouteAllowed(from, to, fromSide, toSide)) return null;
+        const points = dedupeRoutePoints([portPoint(from, fromSide), portPoint(to, toSide)]);
+        return points.length === 2 ? points : null;
+      }
+
+      function crtStraightRouteAllowed(from, to, fromSide, toSide) {
+        const fromDir = DIRS[fromSide] || { x: 0, y: 0 };
+        const toDir = DIRS[toSide] || { x: 0, y: 0 };
+        const start = portPoint(from, fromSide);
+        const end = portPoint(to, toSide);
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 40) return false;
+        const fromFacing = (fromDir.x * dx + fromDir.y * dy) / distance;
+        const toFacing = (toDir.x * -dx + toDir.y * -dy) / distance;
+        return fromFacing > .18 && toFacing > .18;
       }
 
       function crtRouteCandidateSides(preferredSide) {
@@ -13102,7 +13519,24 @@
           if (Math.abs(first.start.x - second.start.x) > .1) return "none";
           return routeCollinearInteraction(first.start.y, first.end.y, second.start.y, second.end.y, first, second);
         }
-        return "none";
+        return routeGenericSegmentInteraction(first, second);
+      }
+
+      function routeGenericSegmentInteraction(first, second) {
+        if (!segmentsIntersect(first.start, first.end, second.start, second.end)) return "none";
+        const collinear = segmentOrientation(first.start, first.end, second.start) === 0
+          && segmentOrientation(first.start, first.end, second.end) === 0;
+        if (collinear) return routeGenericCollinearInteraction(first, second);
+
+        const firstEndpointOnSecond = [first.start, first.end]
+          .some(point => pointOnSegment(point, second.start, second.end));
+        const secondEndpointOnFirst = [second.start, second.end]
+          .some(point => pointOnSegment(point, first.start, first.end));
+        if (firstEndpointOnSecond || secondEndpointOnFirst) {
+          const sharedEndpoint = [first.start, first.end].some(point => isRouteEndpoint(point, second));
+          return sharedEndpoint ? "none" : "touch";
+        }
+        return "cross";
       }
 
       function routeOrthogonalInteraction(horizontal, vertical) {
@@ -13131,6 +13565,32 @@
         return "overlap";
       }
 
+      function routeGenericCollinearInteraction(first, second) {
+        const useX = Math.abs(first.end.x - first.start.x) >= Math.abs(first.end.y - first.start.y);
+        const axis = useX ? "x" : "y";
+        const firstStart = first.start[axis];
+        const firstEnd = first.end[axis];
+        const secondStart = second.start[axis];
+        const secondEnd = second.end[axis];
+        const start = Math.max(Math.min(firstStart, firstEnd), Math.min(secondStart, secondEnd));
+        const end = Math.min(Math.max(firstStart, firstEnd), Math.max(secondStart, secondEnd));
+        if (end < start - ROUTE_EPS) return "none";
+        if (Math.abs(end - start) < ROUTE_EPS) {
+          const point = pointAtAxisValue(first.start, first.end, axis, start);
+          return isRouteEndpoint(point, first) && isRouteEndpoint(point, second) ? "none" : "touch";
+        }
+        return "overlap";
+      }
+
+      function pointAtAxisValue(start, end, axis, value) {
+        const delta = end[axis] - start[axis];
+        const ratio = Math.abs(delta) > ROUTE_EPS ? (value - start[axis]) / delta : 0;
+        return {
+          x: start.x + (end.x - start.x) * ratio,
+          y: start.y + (end.y - start.y) * ratio
+        };
+      }
+
       function isRouteEndpoint(point, segment) {
         return pointsAlmostEqual(point, segment.start) || pointsAlmostEqual(point, segment.end);
       }
@@ -13138,6 +13598,40 @@
       function pointsAlmostEqual(first, second) {
         return Math.abs((first?.x || 0) - (second?.x || 0)) < .1
           && Math.abs((first?.y || 0) - (second?.y || 0)) < .1;
+      }
+
+      function segmentOrientation(start, end, point) {
+        const value = segmentCross(start, end, point);
+        if (Math.abs(value) < ROUTE_EPS) return 0;
+        return value > 0 ? 1 : -1;
+      }
+
+      function segmentCross(start, end, point) {
+        return (end.x - start.x) * (point.y - start.y)
+          - (end.y - start.y) * (point.x - start.x);
+      }
+
+      function pointOnSegment(point, start, end) {
+        const length = Math.max(1, Math.hypot(end.x - start.x, end.y - start.y));
+        const distanceFromLine = Math.abs(segmentCross(start, end, point)) / length;
+        return distanceFromLine <= ROUTE_EPS
+          && point.x >= Math.min(start.x, end.x) - ROUTE_EPS
+          && point.x <= Math.max(start.x, end.x) + ROUTE_EPS
+          && point.y >= Math.min(start.y, end.y) - ROUTE_EPS
+          && point.y <= Math.max(start.y, end.y) + ROUTE_EPS;
+      }
+
+      function segmentsIntersect(firstStart, firstEnd, secondStart, secondEnd) {
+        const o1 = segmentOrientation(firstStart, firstEnd, secondStart);
+        const o2 = segmentOrientation(firstStart, firstEnd, secondEnd);
+        const o3 = segmentOrientation(secondStart, secondEnd, firstStart);
+        const o4 = segmentOrientation(secondStart, secondEnd, firstEnd);
+        if (o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0 && o1 !== o2 && o3 !== o4) return true;
+        if (o1 === 0 && pointOnSegment(secondStart, firstStart, firstEnd)) return true;
+        if (o2 === 0 && pointOnSegment(secondEnd, firstStart, firstEnd)) return true;
+        if (o3 === 0 && pointOnSegment(firstStart, secondStart, secondEnd)) return true;
+        if (o4 === 0 && pointOnSegment(firstEnd, secondStart, secondEnd)) return true;
+        return false;
       }
 
       function orthogonalRoutePoints(from, to, fromSide, toSide) {
@@ -13279,14 +13773,14 @@
         };
       }
 
-      function routeScore(points, obstacles) {
+      function routeScore(points, obstacles, bendPenalty = 18) {
         let length = 0;
         let bends = 0;
         let collisions = 0;
         for (let index = 1; index < points.length; index += 1) {
           const previous = points[index - 1];
           const current = points[index];
-          length += Math.abs(current.x - previous.x) + Math.abs(current.y - previous.y);
+          length += Math.hypot(current.x - previous.x, current.y - previous.y);
           collisions += obstacles.filter(rect => {
             if (rect.role === "source" && index === 1) return false;
             if (rect.role === "target" && index === points.length - 1) return false;
@@ -13299,7 +13793,7 @@
             if (firstHorizontal !== secondHorizontal) bends += 1;
           }
         }
-        return length + bends * 18 + collisions * 100000;
+        return length + bends * bendPenalty + collisions * 100000;
       }
 
       function segmentIntersectsRect(start, end, rect) {
@@ -13315,11 +13809,20 @@
           const maxY = Math.max(start.y, end.y);
           return start.x >= rect.left && start.x <= rect.right && intervalsOverlap(minY, maxY, rect.top, rect.bottom);
         }
-        const minX = Math.min(start.x, end.x);
-        const maxX = Math.max(start.x, end.x);
-        const minY = Math.min(start.y, end.y);
-        const maxY = Math.max(start.y, end.y);
-        return intervalsOverlap(minX, maxX, rect.left, rect.right) && intervalsOverlap(minY, maxY, rect.top, rect.bottom);
+        if (pointInsideRect(start, rect) || pointInsideRect(end, rect)) return true;
+        const topLeft = { x: rect.left, y: rect.top };
+        const topRight = { x: rect.right, y: rect.top };
+        const bottomRight = { x: rect.right, y: rect.bottom };
+        const bottomLeft = { x: rect.left, y: rect.bottom };
+        return segmentsIntersect(start, end, topLeft, topRight)
+          || segmentsIntersect(start, end, topRight, bottomRight)
+          || segmentsIntersect(start, end, bottomRight, bottomLeft)
+          || segmentsIntersect(start, end, bottomLeft, topLeft);
+      }
+
+      function pointInsideRect(point, rect) {
+        return point.x >= rect.left && point.x <= rect.right
+          && point.y >= rect.top && point.y <= rect.bottom;
       }
 
       function intervalsOverlap(firstStart, firstEnd, secondStart, secondEnd) {
@@ -13848,6 +14351,202 @@
         state.detailEditing = false;
         state.detailEditingNodeId = null;
         renderDetailPanel();
+      }
+
+      function nodeSearchFields(node) {
+        const fields = [
+          displayText(node),
+          node.id,
+          nodeTypeLabel(node.type),
+          node.detail,
+          node.estimate,
+          node.owner,
+          node.start,
+          node.end,
+          node.deadline,
+          Number.isFinite(node.remains) ? String(node.remains) : "",
+          normalizeStatuses(node.statuses).map(statusLabel).join(" ")
+        ];
+        if (isSttNode(node)) {
+          const stt = normalizeSttFields(node.stt || node);
+          STT_FIELDS.forEach(field => {
+            fields.push(field.label, field.shortLabel, stt[field.key]);
+          });
+        }
+        if (isCrtNode(node)) {
+          fields.push(crtColorDefinition(node.color).label);
+        }
+        if (isEcNode(node)) {
+          const def = ecDefinition(node);
+          fields.push(ecNodeTitle(node), def.code, def.title, def.question);
+        }
+        return fields
+          .filter(value => value !== undefined && value !== null && String(value).trim())
+          .map(value => String(value));
+      }
+
+      function normalizedSearchText(value) {
+        return String(value || "").toLowerCase();
+      }
+
+      function searchNodeMatches(node, tokens) {
+        if (!tokens.length) return true;
+        const haystack = normalizedSearchText(nodeSearchFields(node).join(" "));
+        return tokens.every(token => haystack.includes(token));
+      }
+
+      function searchNodeScore(node, tokens) {
+        if (!tokens.length) return 0;
+        const title = normalizedSearchText(displayText(node));
+        const owner = normalizedSearchText(node.owner);
+        const id = normalizedSearchText(node.id);
+        return tokens.reduce((score, token) => {
+          if (title === token) return score - 60;
+          if (title.startsWith(token)) return score - 40;
+          if (title.includes(token)) return score - 28;
+          if (owner.includes(token)) return score - 18;
+          if (id.includes(token)) return score - 10;
+          return score;
+        }, 0);
+      }
+
+      function searchResultMeta(node) {
+        const parts = [nodeTypeLabel(node.type)];
+        if (isCcpmBufferNode(node)) {
+          if (node.deadline) parts.push(`期限 ${node.deadline}`);
+        } else {
+          if ((node.owner || "").trim()) parts.push(`担当 ${node.owner.trim()}`);
+          if ((node.estimate || "").trim()) parts.push(`見積 ${node.estimate.trim()}`);
+          const statuses = normalizeStatuses(node.statuses).map(statusLabel);
+          if (statuses.length) parts.push(statuses.join(", "));
+        }
+        if (isCrtNode(node)) parts.push(crtColorDefinition(node.color).label);
+        return parts.join(" / ");
+      }
+
+      function searchResultSnippet(node, tokens) {
+        const candidates = nodeSearchFields(node)
+          .filter(value => value !== displayText(node) && value !== node.id)
+          .map(value => String(value).replace(/\s+/g, " ").trim())
+          .filter(Boolean);
+        const match = tokens.length
+          ? candidates.find(value => {
+            const normalized = normalizedSearchText(value);
+            return tokens.some(token => normalized.includes(token));
+          })
+          : "";
+        return (match || candidates[0] || "").slice(0, 120);
+      }
+
+      function searchMatchingNodes(query) {
+        const tokens = normalizedSearchText(query).trim().split(/\s+/).filter(Boolean);
+        return visibleNodes()
+          .filter(node => searchNodeMatches(node, tokens))
+          .sort((left, right) =>
+            searchNodeScore(left, tokens) - searchNodeScore(right, tokens) ||
+            compareGraphOrder(left, right)
+          );
+      }
+
+      function renderSearchResults() {
+        const query = searchInput.value || "";
+        const matches = searchMatchingNodes(query);
+        const selectedId = state.selected?.type === "node" ? state.selected.id : "";
+        const visibleCount = visibleNodes().length;
+        searchSummary.textContent = query.trim()
+          ? `${matches.length} / ${visibleCount}件`
+          : `${visibleCount}件。入力すると絞り込みます。`;
+        if (!matches.length) {
+          searchResults.innerHTML = `<div class="search-empty">一致するノードがありません。</div>`;
+          return;
+        }
+        searchResults.innerHTML = matches.slice(0, 80).map(node => {
+          const snippet = searchResultSnippet(node, normalizedSearchText(query).trim().split(/\s+/).filter(Boolean));
+          return `
+            <button class="search-result${node.id === selectedId ? " selected" : ""}" type="button" data-search-node="${escapeAttribute(node.id)}">
+              <span class="search-result-title">${escapeHtml(displayText(node))}</span>
+              <span class="search-result-meta">${escapeHtml(searchResultMeta(node))}</span>
+              ${snippet ? `<span class="search-result-snippet">${escapeHtml(snippet)}</span>` : ""}
+            </button>
+          `;
+        }).join("");
+      }
+
+      function openSearchDialog() {
+        if (isGoalNaviDiagram()) {
+          setStatus("Goal Naviには検索対象のノードがありません");
+          return;
+        }
+        searchDialog.classList.add("open");
+        renderSearchResults();
+        requestAnimationFrame(() => {
+          searchInput.focus();
+          searchInput.select();
+        });
+      }
+
+      function closeSearchDialog() {
+        searchDialog.classList.remove("open");
+      }
+
+      function openShortcutDialog() {
+        shortcutDialog.classList.add("open");
+        requestAnimationFrame(() => {
+          shortcutDialog.querySelector("[data-shortcuts='close']")?.focus();
+        });
+      }
+
+      function closeShortcutDialog() {
+        shortcutDialog.classList.remove("open");
+      }
+
+      function selectSearchNode(nodeId) {
+        const node = findNode(nodeId);
+        if (!node || !isNodeVisibleInCurrentMode(node)) return;
+        state.selected = { type: "node", id: node.id };
+        state.pendingPort = null;
+        state.editingNodeId = null;
+        state.editingNodeField = null;
+        state.detailEditing = false;
+        state.detailEditingNodeId = null;
+        closePalette();
+        closeSearchDialog();
+        render();
+        centerOnNode(node);
+        setStatus(`${displayText(node)} を選択しました`);
+      }
+
+      function toggleSelectedDetailPanel() {
+        const node = selectedNode();
+        if (!node || !isNodeVisibleInCurrentMode(node)) {
+          setStatus("詳細を開くノードを選択してください");
+          return;
+        }
+        if (state.detailEditing) {
+          setStatus("詳細を編集中です。保存またはキャンセルしてから閉じてください");
+          return;
+        }
+        if (state.detailVisible && state.selected?.type === "node" && state.selected.id === node.id) {
+          closeDetailPanel();
+          setStatus("詳細を閉じました");
+        } else {
+          openDetailPanel(node.id);
+        }
+      }
+
+      function startSelectedDetailEdit() {
+        const node = selectedNode();
+        if (!node || !isNodeVisibleInCurrentMode(node)) {
+          setStatus("詳細を編集するノードを選択してください");
+          return;
+        }
+        state.selected = { type: "node", id: node.id };
+        state.pendingPort = null;
+        state.editingNodeId = null;
+        state.editingNodeField = null;
+        closePalette();
+        startDetailEdit("detail");
+        setStatus("詳細編集を開始しました");
       }
 
       function detailInlineValue(field) {
@@ -15574,32 +16273,13 @@
         });
       }
 
-      function appendExportCrtNodeText(parent, node, size, appearance) {
+      function appendExportCrtNodeText(parent, node, size) {
         const textSize = normalizeNodeTextSize(state.nodeTextSize);
-        const left = node.x - size.width / 2 + 18;
-        const top = node.y - size.height / 2 + 23;
-        parent.append(exportSvgEl("circle", {
-          cx: exportNumber(left + 7),
-          cy: exportNumber(top),
-          r: exportNumber(Math.max(6, textSize * .46)),
-          fill: appearance.accent || "#fff",
-          stroke: appearance.stroke
-        }));
-        appendExportText(parent, "CRT", left + 31, top + 3, {
-          anchor: "start",
-          fontSize: textSize * .72,
-          lineHeight: textSize,
-          maxWidth: 48,
-          maxLines: 1,
-          weight: 760,
-          muted: true,
-          charRatio: .62
-        });
-        appendExportText(parent, (node.text || "").trim() || "未設定", node.x, node.y + 14, {
+        appendExportText(parent, (node.text || "").trim() || "未設定", node.x, node.y + textSize * .16, {
           fontSize: textSize,
           lineHeight: Math.max(17, textSize * 1.3),
           maxWidth: size.width - 38,
-          maxLines: Math.max(2, Math.floor((size.height - 48) / Math.max(17, textSize * 1.3))),
+          maxLines: Math.max(2, Math.floor((size.height - 34) / Math.max(17, textSize * 1.3))),
           weight: (node.text || "").trim() ? 740 : 600
         });
       }
@@ -15740,7 +16420,7 @@
         if (isSttNode(node)) {
           appendExportSttNodeText(parent, node, size);
         } else if (isCrtNode(node)) {
-          appendExportCrtNodeText(parent, node, size, appearance);
+          appendExportCrtNodeText(parent, node, size);
         } else if (isCcpmNode(node)) {
           appendExportCcpmNodeText(parent, node, size, schedule, colors);
         } else if (isEcNode(node)) {
@@ -16123,6 +16803,26 @@
           return;
         }
 
+        const searchAction = event.target.closest("[data-search]");
+        if (searchAction) {
+          const action = searchAction.dataset.search;
+          if (action === "close") closeSearchDialog();
+          return;
+        }
+
+        const searchNode = event.target.closest("[data-search-node]");
+        if (searchNode) {
+          selectSearchNode(searchNode.dataset.searchNode);
+          return;
+        }
+
+        const shortcutAction = event.target.closest("[data-shortcuts]");
+        if (shortcutAction) {
+          const action = shortcutAction.dataset.shortcuts;
+          if (action === "close") closeShortcutDialog();
+          return;
+        }
+
         const detailAction = event.target.closest("[data-detail]");
         if (detailAction) {
           const action = detailAction.dataset.detail;
@@ -16264,6 +16964,10 @@
         event.target.value = "";
       });
 
+      searchInput.addEventListener("input", () => {
+        renderSearchResults();
+      });
+
       diagramTypeSelect.addEventListener("change", event => {
         setDiagramType(event.target.value);
       });
@@ -16357,11 +17061,11 @@
       nodeLayer.addEventListener("keydown", event => {
         const nodeEl = event.target.closest(".node");
         if (!nodeEl) return;
-        if (event.key === " ") {
+        if (event.key === " " && !isTextEditingTarget(event.target) && !event.target.closest("button, select")) {
           event.preventDefault();
           state.selected = { type: "node", id: nodeEl.dataset.nodeId };
           render();
-          setStatus("ノードを選択しました。F2でタイトル編集、ダブルクリックで詳細を表示します");
+          setStatus("ノードを選択しました。F2/Spaceでタイトル編集、ダブルクリックで詳細を表示します");
         }
       });
 
@@ -16370,6 +17074,46 @@
           if (event.key === "Escape") {
             event.preventDefault();
             closeCheckDialog();
+          }
+          return;
+        }
+
+        if (shortcutDialog.classList.contains("open")) {
+          if (event.key === "Escape" || event.key === "?") {
+            event.preventDefault();
+            closeShortcutDialog();
+          }
+          return;
+        }
+
+        if (searchDialog.classList.contains("open")) {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeSearchDialog();
+            return;
+          }
+          if (event.key === "Enter") {
+            const target = event.target.closest("[data-search-node]") || searchResults.querySelector("[data-search-node]");
+            if (target) {
+              event.preventDefault();
+              selectSearchNode(target.dataset.searchNode);
+            }
+            return;
+          }
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            const results = [...searchResults.querySelectorAll("[data-search-node]")];
+            if (!results.length) return;
+            event.preventDefault();
+            const activeIndex = results.indexOf(document.activeElement);
+            if (event.key === "ArrowUp" && activeIndex <= 0) {
+              searchInput.focus();
+              return;
+            }
+            const nextIndex = event.key === "ArrowDown"
+              ? Math.min(results.length - 1, activeIndex + 1)
+              : Math.max(0, activeIndex < 0 ? 0 : activeIndex - 1);
+            results[nextIndex].focus();
+            return;
           }
           return;
         }
@@ -16449,7 +17193,41 @@
           return;
         }
 
-        if (event.key === "F2") {
+        const shortcutTarget = !event.target.closest("button, select");
+        const helpShortcut = !event.ctrlKey && !event.metaKey && !event.altKey && shortcutTarget;
+        if (helpShortcut && event.key === "?") {
+          event.preventDefault();
+          openShortcutDialog();
+          return;
+        }
+
+        const plainShortcut = !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && shortcutTarget;
+        if (plainShortcut && key === "a") {
+          event.preventDefault();
+          addLooseNodeFromShortcut();
+          return;
+        }
+
+        if (plainShortcut && event.key === "/") {
+          event.preventDefault();
+          openSearchDialog();
+          return;
+        }
+
+        if (plainShortcut && key === "d") {
+          event.preventDefault();
+          toggleSelectedDetailPanel();
+          return;
+        }
+
+        if (plainShortcut && key === "i") {
+          event.preventDefault();
+          startSelectedDetailEdit();
+          return;
+        }
+
+        const titleEditKey = event.key === "F2" || event.key === " ";
+        if (titleEditKey && plainShortcut) {
           const node = selectedNode();
           if (node) {
             event.preventDefault();
@@ -16474,11 +17252,16 @@
           ArrowUp: "up",
           ArrowRight: "right",
           ArrowDown: "down",
-          ArrowLeft: "left"
+          ArrowLeft: "left",
+          h: "left",
+          j: "down",
+          k: "up",
+          l: "right"
         };
-        if (arrowDirections[event.key]) {
+        const direction = arrowDirections[event.key] || (plainShortcut ? arrowDirections[key] : null);
+        if (direction) {
           event.preventDefault();
-          selectNodeInDirection(arrowDirections[event.key]);
+          selectNodeInDirection(direction);
           return;
         }
 
@@ -16600,6 +17383,14 @@
 
       checkDialog.addEventListener("click", event => {
         if (event.target === checkDialog) closeCheckDialog();
+      });
+
+      searchDialog.addEventListener("click", event => {
+        if (event.target === searchDialog) closeSearchDialog();
+      });
+
+      shortcutDialog.addEventListener("click", event => {
+        if (event.target === shortcutDialog) closeShortcutDialog();
       });
 
       window.addEventListener("resize", () => {

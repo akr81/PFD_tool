@@ -1553,6 +1553,20 @@
       box-shadow: 0 0 0 5px rgba(47, 70, 100, .16), 0 14px 34px rgba(22, 31, 40, .18);
     }
 
+    .node.selected {
+      z-index: 8;
+    }
+
+    .node.selected::before {
+      content: "";
+      position: absolute;
+      inset: -9px;
+      border: 3px solid var(--accent);
+      border-radius: inherit;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, .95), 0 0 0 8px rgba(23, 123, 132, .24);
+      pointer-events: none;
+    }
+
     .node.pending-connect {
       box-shadow: 0 0 0 6px rgba(23, 123, 132, .2), 0 14px 34px rgba(22, 31, 40, .2);
     }
@@ -2108,6 +2122,7 @@
       opacity: .34;
     }
 
+    .node.selected .port:not(:disabled):not(.disabled),
     .node:hover .port:not(:disabled):not(.disabled),
     .node.pending-connect .port:not(:disabled):not(.disabled) {
       opacity: 1;
@@ -11394,7 +11409,8 @@
             el.classList.add("detail-mode");
           }
           applyNodeDisplayScale(el);
-          if (state.selected?.type === "node" && state.selected.id === node.id) el.classList.add("selected");
+          const selected = state.selected?.type === "node" && state.selected.id === node.id;
+          if (selected) el.classList.add("selected");
           if (state.pendingPort?.nodeId === node.id) el.classList.add("pending-connect");
           if (!node.text.trim()) el.classList.add("empty");
           el.dataset.nodeId = node.id;
@@ -11435,7 +11451,7 @@
           }
           renderNodeDocumentIndicator(el, node);
 
-          if (supportsPorts()) SIDES.forEach(side => {
+          if (supportsPorts() && selected) SIDES.forEach(side => {
             const plan = portPlan(node, side);
             const enabled = isPortEnabled(node, side);
             const port = document.createElement("button");
@@ -12906,6 +12922,8 @@
             selectEdge(edge.id);
           });
           edgesSvg.append(hit);
+
+          if (!selected) return;
 
           const midpoint = route?.midpoint || edgeMidpoint(from, targetNode, drawFromSide, drawToSide);
           const handle = document.createElement("button");
@@ -16910,6 +16928,11 @@
         const nodeEl = event.target.closest(".node");
         if (nodeEl) {
           const id = nodeEl.dataset.nodeId;
+          if (state.pendingPort) {
+            const side = state.pendingPort.mode === "source" ? layoutUpstreamSide() : layoutDownstreamSide();
+            completeConnection(id, side);
+            return;
+          }
           clearCenterClickTimer();
           const nodeField = nodeDetailFieldFromClick(nodeEl, event);
           if (nodeField) {
@@ -16942,6 +16965,22 @@
         }
 
         if (!event.target.closest(".dialog, .detail-panel")) {
+          const hadSelection = Boolean(state.selected);
+          const hadDetail = state.detailVisible || state.detailEditing || state.detailEditingNodeId;
+          const hadTitleEdit = Boolean(state.editingNodeId);
+          const hadFieldEdit = Boolean(state.editingNodeField);
+          const hadPendingPort = Boolean(state.pendingPort);
+          closePalette();
+          state.selected = null;
+          state.editingNodeId = null;
+          state.editingNodeField = null;
+          state.detailVisible = false;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          state.pendingPort = null;
+          if (hadSelection || hadDetail || hadTitleEdit || hadFieldEdit || hadPendingPort) {
+            render();
+          }
           closePalette();
           if (state.editingNodeField) {
             state.editingNodeField = null;
@@ -17279,7 +17318,7 @@
 
       viewport.addEventListener("pointerdown", event => {
         if (event.button !== 0) return;
-        if (event.target.closest(".node, .port, .mini-palette, .crt-and-editor, button, select")) return;
+        if (event.target.closest(".node, .port, .edge-hit, .mini-palette, .crt-and-editor, button, select")) return;
         panGesture = {
           pointerId: event.pointerId,
           x: event.clientX,

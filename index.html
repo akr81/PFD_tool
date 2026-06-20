@@ -1462,6 +1462,11 @@
       box-shadow: 0 0 0 5px rgba(210, 139, 0, .16), 0 14px 34px rgba(22, 31, 40, .17);
     }
 
+    .node.crt.loop-warning {
+      border-color: #d28b00;
+      box-shadow: 0 0 0 5px rgba(210, 139, 0, .16), 0 14px 34px rgba(22, 31, 40, .17);
+    }
+
     .node.ccpm.estimate-warning,
     .node.ccpm-buffer.estimate-warning,
     .node.ccpm-milestone.estimate-warning {
@@ -4834,9 +4839,13 @@
         </svg>
       </button>
     </div>
-    <div class="toolbar-group mode-group" aria-label="表示">
+    <div class="toolbar-group mode-group" id="viewModeToolbar" aria-label="表示">
       <button class="mode-button active" data-mode="simple" type="button" aria-pressed="true">シンプル</button>
       <button class="mode-button" data-mode="detail" type="button" aria-pressed="false">詳細</button>
+    </div>
+    <div class="toolbar-group mode-group" id="crtLayoutToolbar" aria-label="CRT配置" hidden>
+      <button class="mode-button active" data-crt-layout-mode="tree" type="button" aria-pressed="true">ツリー</button>
+      <button class="mode-button" data-crt-layout-mode="compact" type="button" aria-pressed="false">コンパクト</button>
     </div>
     <div class="toolbar-group" id="projectSettingsToolbar" aria-label="プロジェクト設定" hidden>
       <button class="icon-button" id="projectSettingsButton" data-command="project-settings" title="プロジェクト設定">
@@ -5457,6 +5466,8 @@
       const detailTools = document.getElementById("detailTools");
       const projectSettingsToolbar = document.getElementById("projectSettingsToolbar");
       const pfdOrientationButton = document.getElementById("pfdOrientationButton");
+      const viewModeToolbar = document.getElementById("viewModeToolbar");
+      const crtLayoutToolbar = document.getElementById("crtLayoutToolbar");
       const totalEstimateValue = document.getElementById("totalEstimateValue");
       const doneEstimateValue = document.getElementById("doneEstimateValue");
       const progressRateValue = document.getElementById("progressRateValue");
@@ -5523,6 +5534,7 @@
         detailEditingNodeId: null,
         diagramType: "pfd",
         pfdOrientation: "horizontal",
+        crtLayoutMode: "tree",
         viewMode: "simple",
         nodeTextSize: DEFAULT_NODE_TEXT_SIZE,
         ganttHeight: DEFAULT_GANTT_HEIGHT,
@@ -6469,6 +6481,7 @@
       function makeInitialState(diagramType = state.diagramType || "pfd") {
         state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(state.pfdOrientation);
+        state.crtLayoutMode = normalizeCrtLayoutMode(state.crtLayoutMode);
         state.project = makeDefaultProjectSettings();
         state.goalNavi = makeDefaultGoalNavi();
         state.selectedFeverDate = "";
@@ -6556,6 +6569,7 @@
             edges: [],
             diagramType: "goal",
             pfdOrientation: graphPfdOrientation(parsed),
+            crtLayoutMode: graphCrtLayoutMode(parsed),
             viewMode: parsed.viewMode === "detail" ? "detail" : null,
             nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
             ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6652,6 +6666,7 @@
           edges,
           diagramType,
           pfdOrientation: graphPfdOrientation(parsed),
+          crtLayoutMode: graphCrtLayoutMode(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6684,6 +6699,7 @@
           edges: makeEcEdges(),
           diagramType: "ec",
           pfdOrientation: graphPfdOrientation(parsed),
+          crtLayoutMode: graphCrtLayoutMode(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
@@ -6741,6 +6757,16 @@
         );
       }
 
+      function normalizeCrtLayoutMode(value) {
+        return value === "compact" ? "compact" : "tree";
+      }
+
+      function graphCrtLayoutMode(graph = {}) {
+        return normalizeCrtLayoutMode(
+          graph.crtLayoutMode ?? graph.crt_layout_mode ?? graph.crtLayout ?? graph.layoutMode
+        );
+      }
+
       function isPfdVertical() {
         return isPfdDiagram() && state.pfdOrientation === "vertical";
       }
@@ -6751,6 +6777,10 @@
 
       function isCrtDiagram() {
         return state.diagramType === "crt";
+      }
+
+      function isCrtTreeLayoutMode() {
+        return isCrtDiagram() && state.crtLayoutMode === "tree";
       }
 
       function isCcpmDiagram() {
@@ -6860,6 +6890,7 @@
         const payload = {
           diagramType: state.diagramType,
           pfdOrientation: state.pfdOrientation,
+          crtLayoutMode: state.crtLayoutMode,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           viewMode: state.viewMode,
@@ -6909,6 +6940,7 @@
       function applyGraphData(graph) {
         state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(graph.pfdOrientation);
+        state.crtLayoutMode = normalizeCrtLayoutMode(graph.crtLayoutMode);
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
         if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -6950,6 +6982,7 @@
           const graph = normalizeGraphData(parsed);
           state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
           state.pfdOrientation = normalizePfdOrientation(graph.pfdOrientation);
+          state.crtLayoutMode = normalizeCrtLayoutMode(graph.crtLayoutMode);
           state.nodes = graph.nodes.map(cloneNodeData);
           state.edges = graph.edges;
           if (graph.viewMode) state.viewMode = graph.viewMode;
@@ -6975,6 +7008,7 @@
         return {
           diagramType: state.diagramType,
           pfdOrientation: state.pfdOrientation,
+          crtLayoutMode: state.crtLayoutMode,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
           selected: state.selected ? { ...state.selected } : null,
@@ -7016,6 +7050,7 @@
       function restoreSnapshot(snapshot) {
         state.diagramType = DIAGRAM_TYPES[snapshot.diagramType] ? snapshot.diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(snapshot.pfdOrientation);
+        state.crtLayoutMode = normalizeCrtLayoutMode(snapshot.crtLayoutMode);
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
         state.ganttHeight = normalizeGanttHeight(snapshot.ganttHeight);
@@ -7090,6 +7125,22 @@
         setStatus(nextMode === "detail" ? "詳細モードに切り替えました" : "シンプルモードに切り替えました");
       }
 
+      function setCrtLayoutMode(mode) {
+        if (!isCrtDiagram()) return;
+        const nextMode = normalizeCrtLayoutMode(mode);
+        if (state.crtLayoutMode === nextMode) return;
+        recordHistory();
+        state.crtLayoutMode = nextMode;
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        closePalette();
+        autoLayout();
+        render();
+        saveState();
+        centerOnGraph();
+        setStatus(nextMode === "tree" ? "CRTをツリー配置に切り替えました" : "CRTをコンパクト配置に切り替えました");
+      }
+
       function setDiagramType(diagramType) {
         const nextType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         if (state.diagramType === nextType) return;
@@ -7130,7 +7181,8 @@
           pfdOrientationButton.hidden = !isPfdDiagram();
           updatePfdOrientationButton();
         }
-        document.querySelector(".mode-group").hidden = isGoalNaviDiagram();
+        if (viewModeToolbar) viewModeToolbar.hidden = isGoalNaviDiagram();
+        updateCrtLayoutModeControls();
         document.querySelector(".text-size-toolbar").hidden = isGoalNaviDiagram();
         document.querySelectorAll('[data-command="layout"], [data-command="fit"], [data-command="delete"]').forEach(button => {
           button.hidden = isGoalNaviDiagram();
@@ -7147,6 +7199,7 @@
           button.classList.toggle("active", active);
           button.setAttribute("aria-pressed", active ? "true" : "false");
         });
+        updateCrtLayoutModeControls();
         detailTools.classList.toggle("visible", state.viewMode === "detail" && (isPfdDiagram() || isCcpmDiagram()));
         detailTools.classList.toggle("ccpm-visible", state.viewMode === "detail" && isCcpmDiagram());
         const metricStrip = detailTools.querySelector(".metric-strip");
@@ -7189,6 +7242,16 @@
         const size = normalizeNodeTextSize(state.nodeTextSize);
         nodeTextSizeSlider.value = String(size);
         nodeTextSizeValue.textContent = `${size}px`;
+      }
+
+      function updateCrtLayoutModeControls() {
+        if (!crtLayoutToolbar) return;
+        crtLayoutToolbar.hidden = !isCrtDiagram();
+        crtLayoutToolbar.querySelectorAll("[data-crt-layout-mode]").forEach(button => {
+          const active = button.dataset.crtLayoutMode === state.crtLayoutMode;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
+        });
       }
 
       function updatePfdOrientationButton() {
@@ -8638,14 +8701,27 @@
         return order;
       }
 
-      function ccpmCycleInfo(nodes, edges) {
+      function emptyCycleInfo() {
+        return {
+          nodeIds: new Set(),
+          edgeIds: new Set(),
+          feedbackEdgeIds: new Set()
+        };
+      }
+
+      function graphCycleInfo(nodes, edges) {
         const outgoing = new Map(nodes.map(node => [node.id, []]));
-        edges.forEach(edge => outgoing.get(edge.from)?.push(edge));
+        const nodeIds = new Set(nodes.map(node => node.id));
+        edges.forEach(edge => {
+          if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) return;
+          outgoing.get(edge.from)?.push(edge);
+        });
         const visiting = new Set();
         const visited = new Set();
         const stack = [];
         const cycleNodeIds = new Set();
         const cycleEdgeIds = new Set();
+        const feedbackEdgeIds = new Set();
 
         const visit = nodeId => {
           if (visiting.has(nodeId)) return;
@@ -8660,6 +8736,7 @@
               cycleNodeIds.add(edge.from);
               cycleNodeIds.add(edge.to);
               cycleEdgeIds.add(edge.id);
+              feedbackEdgeIds.add(edge.id);
               if (startIndex >= 0) {
                 for (let index = startIndex; index < stack.length - 1; index += 1) {
                   const from = stack[index];
@@ -8680,8 +8757,21 @@
         nodes.forEach(node => visit(node.id));
         return {
           nodeIds: cycleNodeIds,
-          edgeIds: cycleEdgeIds
+          edgeIds: cycleEdgeIds,
+          feedbackEdgeIds
         };
+      }
+
+      function ccpmCycleInfo(nodes, edges) {
+        return graphCycleInfo(nodes, edges);
+      }
+
+      function crtCycleInfo(nodes = state.nodes, edges = state.edges) {
+        if (!isCrtDiagram()) return emptyCycleInfo();
+        const crtNodes = nodes.filter(node => isCrtNode(node));
+        const crtNodeIds = new Set(crtNodes.map(node => node.id));
+        const crtEdges = edges.filter(edge => crtNodeIds.has(edge.from) && crtNodeIds.has(edge.to));
+        return graphCycleInfo(crtNodes, crtEdges);
       }
 
       function ccpmWarnings(cycleInfo, taskById) {
@@ -10770,13 +10860,17 @@
           return;
         }
 
+        const cycleInfo = isCrtDiagram() ? crtCycleInfo(layoutNodes, state.edges) : emptyCycleInfo();
+        const layoutEdges = isCrtDiagram()
+          ? state.edges.filter(edge => !cycleInfo.feedbackEdgeIds.has(edge.id))
+          : state.edges;
         const outgoing = new Map();
         const incoming = new Map();
         layoutNodes.forEach(node => {
           outgoing.set(node.id, []);
           incoming.set(node.id, []);
         });
-        state.edges.forEach(edge => {
+        layoutEdges.forEach(edge => {
           outgoing.get(edge.from)?.push(edge);
           incoming.get(edge.to)?.push(edge);
         });
@@ -10838,8 +10932,12 @@
         }
 
         if (isCrtDiagram()) {
-          reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition);
-          optimizeCrtLayerPositions(layerKeys, groups, layer, incoming, outgoing, xPosition);
+          if (isCrtTreeLayoutMode()) {
+            layoutCrtTreePositions(layerKeys, groups, layer, incoming, outgoing, xPosition);
+          } else {
+            reorderCrtLayersByConnections(layerKeys, groups, incoming, outgoing, xPosition);
+            optimizeCrtLayerPositions(layerKeys, groups, layer, incoming, outgoing, xPosition);
+          }
         }
 
         const averageX = Array.from(xPosition.values()).reduce((sum, value) => sum + value, 0) / Math.max(1, xPosition.size);
@@ -10849,6 +10947,9 @@
             node.gridY = nodeLayerIndex;
           });
         });
+        if (isCrtTreeLayoutMode()) {
+          alignCrtSingleTargetAndInputGridPositions(layerKeys, groups);
+        }
 
         const layerY = sttLayerYPositions(layerKeys, groups);
         layoutNodes.forEach(node => {
@@ -11031,6 +11132,337 @@
           layerKeys.forEach(nodeLayerIndex => compactCrtLayer(groups.get(nodeLayerIndex), xPosition, incoming, outgoing));
           if (!reduceCrtLayerCrossings(layerKeys, groups, layoutEdges, andGroups, xPosition)) break;
         }
+        straightenCrtSingleChains(layerKeys, groups, incoming, outgoing, xPosition);
+      }
+
+      function layoutCrtTreePositions(layerKeys, groups, layer, incoming, outgoing, xPosition) {
+        const layerByNodeId = new Map();
+        const nodeById = new Map();
+        layerKeys.forEach(nodeLayerIndex => {
+          (groups.get(nodeLayerIndex) || []).forEach(node => {
+            layerByNodeId.set(node.id, nodeLayerIndex);
+            nodeById.set(node.id, node);
+          });
+        });
+
+        const primaryTargetByNodeId = crtTreePrimaryTargets(layerKeys, groups, layerByNodeId, outgoing, xPosition);
+        const childrenByTarget = new Map();
+        primaryTargetByNodeId.forEach((targetId, nodeId) => {
+          const child = nodeById.get(nodeId);
+          if (!child) return;
+          if (!childrenByTarget.has(targetId)) childrenByTarget.set(targetId, []);
+          childrenByTarget.get(targetId).push(child);
+        });
+
+        const treeOrder = crtTreeBranchOrder(childrenByTarget, xPosition);
+        childrenByTarget.forEach(children => {
+          children.sort((a, b) => treeOrder(a) - treeOrder(b) || a.id.localeCompare(b.id));
+        });
+
+        const widthMemo = new Map();
+        const offsetMemo = new Map();
+        const visiting = new Set();
+        const subtreeWidth = nodeId => {
+          if (widthMemo.has(nodeId)) return widthMemo.get(nodeId);
+          if (visiting.has(nodeId)) return 1;
+          visiting.add(nodeId);
+          const children = childrenByTarget.get(nodeId) || [];
+          let width = 1;
+          if (children.length) {
+            const layout = crtTreeSiblingLayout(children, child => subtreeWidth(child.id), incoming, outgoing);
+            width = Math.max(1, layout.width);
+            offsetMemo.set(nodeId, layout.offsets);
+          }
+          visiting.delete(nodeId);
+          widthMemo.set(nodeId, width);
+          return width;
+        };
+
+        const roots = layerKeys
+          .flatMap(nodeLayerIndex => groups.get(nodeLayerIndex) || [])
+          .filter(node => !primaryTargetByNodeId.has(node.id))
+          .sort((a, b) => treeOrder(a) - treeOrder(b) || a.id.localeCompare(b.id));
+        const rootLayout = crtTreeSiblingLayout(roots, node => subtreeWidth(node.id), incoming, outgoing);
+
+        const placeSubtree = (node, centerX) => {
+          xPosition.set(node.id, centerX);
+          const children = childrenByTarget.get(node.id) || [];
+          const offsets = offsetMemo.get(node.id) || new Map();
+          children.forEach(child => {
+            placeSubtree(child, centerX + (offsets.get(child.id) || 0));
+          });
+        };
+
+        roots.forEach(root => {
+          placeSubtree(root, rootLayout.offsets.get(root.id) || 0);
+        });
+
+        layerKeys.forEach(nodeLayerIndex => {
+          groups.set(nodeLayerIndex, [...(groups.get(nodeLayerIndex) || [])].sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          ));
+        });
+
+        straightenCrtSingleChains(layerKeys, groups, incoming, outgoing, xPosition);
+        compactCrtTreeHorizontalSpace(layerKeys, groups, xPosition);
+      }
+
+      function crtTreePrimaryTargets(layerKeys, groups, layerByNodeId, outgoing, xPosition) {
+        const stableNodeOrder = new Map(state.nodes.map((node, index) => [node.id, index]));
+        const result = new Map();
+        layerKeys.forEach(nodeLayerIndex => {
+          (groups.get(nodeLayerIndex) || []).forEach(node => {
+            const candidates = (outgoing.get(node.id) || [])
+              .map(edge => ({
+                edge,
+                targetLayer: layerByNodeId.get(edge.to),
+                targetX: xPosition.get(edge.to),
+                stable: stableNodeOrder.get(edge.to) || 0
+              }))
+              .filter(item => Number.isFinite(item.targetLayer) && item.targetLayer < nodeLayerIndex)
+              .sort((a, b) =>
+                b.targetLayer - a.targetLayer ||
+                (Number.isFinite(a.targetX) ? a.targetX : 0) - (Number.isFinite(b.targetX) ? b.targetX : 0) ||
+                a.stable - b.stable ||
+                a.edge.to.localeCompare(b.edge.to)
+              );
+            if (candidates[0]) result.set(node.id, candidates[0].edge.to);
+          });
+        });
+        return result;
+      }
+
+      function crtTreeBranchOrder(childrenByTarget, xPosition) {
+        const stableNodeOrder = new Map(state.nodes.map((node, index) => [node.id, index]));
+        const memo = new Map();
+        const visiting = new Set();
+        const branchOrder = nodeId => {
+          if (memo.has(nodeId)) return memo.get(nodeId);
+          if (visiting.has(nodeId)) return stableNodeOrder.get(nodeId) || 0;
+          visiting.add(nodeId);
+          const children = childrenByTarget.get(nodeId) || [];
+          const descendantOrder = children
+            .map(child => branchOrder(child.id))
+            .filter(Number.isFinite);
+          const current = Number.isFinite(xPosition.get(nodeId)) ? xPosition.get(nodeId) * 1000 : stableNodeOrder.get(nodeId) || 0;
+          const value = descendantOrder.length
+            ? Math.min(current, ...descendantOrder)
+            : current;
+          visiting.delete(nodeId);
+          memo.set(nodeId, value);
+          return value;
+        };
+        return node => branchOrder(node.id);
+      }
+
+      function crtTreeSiblingLayout(nodes, widthForNode, incoming, outgoing) {
+        const widths = nodes.map(node => Math.max(1, widthForNode(node)));
+        const offsets = new Map();
+        if (!nodes.length) return { width: 0, offsets };
+        let cursor = widths[0] / 2;
+        offsets.set(nodes[0].id, cursor);
+        for (let index = 1; index < nodes.length; index += 1) {
+          cursor += widths[index - 1] / 2 + crtTreeSubtreeGap(nodes[index - 1], nodes[index], incoming, outgoing) + widths[index] / 2;
+          offsets.set(nodes[index].id, cursor);
+        }
+        const left = offsets.get(nodes[0].id) - widths[0] / 2;
+        const last = nodes[nodes.length - 1];
+        const right = offsets.get(last.id) + widths[widths.length - 1] / 2;
+        const center = (left + right) / 2;
+        offsets.forEach((value, id) => {
+          offsets.set(id, value - center);
+        });
+        return {
+          width: Math.max(1, right - left),
+          offsets
+        };
+      }
+
+      function crtTreeSubtreeGap(left, right, incoming = null, outgoing = null) {
+        const extraFanGap = Math.max(0, crtLayerGap(left, right, incoming, outgoing) - LAYOUT_ROW_GAP) * .35;
+        return .18 + extraFanGap;
+      }
+
+      function straightenCrtSingleChains(layerKeys, groups, incoming, outgoing, xPosition) {
+        const layerByNodeId = new Map();
+        layerKeys.forEach(nodeLayerIndex => {
+          (groups.get(nodeLayerIndex) || []).forEach(node => {
+            layerByNodeId.set(node.id, nodeLayerIndex);
+          });
+        });
+
+        for (let pass = 0; pass < 4; pass += 1) {
+          let changed = false;
+          state.edges.forEach(edge => {
+            if (!(outgoing.get(edge.from) || []).some(layoutEdge => layoutEdge.id === edge.id)) return;
+            if (normalizeCrtAnd(edge.and) !== "None") return;
+            if ((outgoing.get(edge.from) || []).length !== 1) return;
+            if ((incoming.get(edge.to) || []).length !== 1) return;
+
+            const sourceLayer = layerByNodeId.get(edge.from);
+            const targetLayer = layerByNodeId.get(edge.to);
+            if (!Number.isFinite(sourceLayer) || !Number.isFinite(targetLayer) || sourceLayer <= targetLayer) return;
+
+            const targetX = xPosition.get(edge.to);
+            if (!Number.isFinite(targetX)) return;
+            if (!canMoveCrtNodeWithinLayer(edge.from, sourceLayer, targetX, groups, xPosition)) return;
+            if (Math.abs((xPosition.get(edge.from) || 0) - targetX) <= .001) return;
+            xPosition.set(edge.from, targetX);
+            changed = true;
+          });
+          if (!changed) break;
+        }
+      }
+
+      function canMoveCrtNodeWithinLayer(nodeId, nodeLayerIndex, targetX, groups, xPosition) {
+        return (groups.get(nodeLayerIndex) || []).every(node => {
+          if (node.id === nodeId) return true;
+          const currentX = xPosition.get(node.id);
+          return !Number.isFinite(currentX) || Math.abs(currentX - targetX) >= LAYOUT_ROW_GAP;
+        });
+      }
+
+      function compactCrtTreeHorizontalSpace(layerKeys, groups, xPosition) {
+        const values = [...xPosition.values()].filter(Number.isFinite);
+        if (values.length <= 1) return;
+        const center = values.reduce((sum, value) => sum + value, 0) / values.length;
+        const scale = crtTreeHorizontalCompression();
+        xPosition.forEach((value, id) => {
+          if (Number.isFinite(value)) xPosition.set(id, center + (value - center) * scale);
+        });
+
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex) || [];
+          if (group.length <= 1) return;
+          const ordered = [...group].sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          );
+          const beforeCenter = ordered.reduce((sum, node) => sum + (xPosition.get(node.id) || 0), 0) / ordered.length;
+          const positions = ordered.map(node => xPosition.get(node.id) || 0);
+
+          for (let index = 1; index < ordered.length; index += 1) {
+            const gap = crtMinimumNodeGapUnits(ordered[index - 1], ordered[index]);
+            positions[index] = Math.max(positions[index], positions[index - 1] + gap);
+          }
+          for (let index = ordered.length - 2; index >= 0; index -= 1) {
+            const gap = crtMinimumNodeGapUnits(ordered[index], ordered[index + 1]);
+            positions[index] = Math.min(positions[index], positions[index + 1] - gap);
+          }
+
+          const afterCenter = positions.reduce((sum, value) => sum + value, 0) / positions.length;
+          const shift = beforeCenter - afterCenter;
+          ordered.forEach((node, index) => {
+            xPosition.set(node.id, positions[index] + shift);
+          });
+        });
+      }
+
+      function crtTreeHorizontalCompression() {
+        return state.viewMode === "detail" ? .78 : .86;
+      }
+
+      function crtMinimumNodeGapUnits(left, right) {
+        const leftWidth = nodeSize(left).width;
+        const rightWidth = nodeSize(right).width;
+        const gapPx = state.viewMode === "detail" ? 42 : 38;
+        return (leftWidth / 2 + rightWidth / 2 + gapPx) / gridSpacingX();
+      }
+
+      function alignCrtSingleTargetAndInputGridPositions(layerKeys, groups) {
+        const nodeById = new Map(state.nodes.map(node => [node.id, node]));
+        const groupsByTarget = new Map();
+        const andGroups = new Map();
+        state.edges.forEach(edge => {
+          const andId = normalizeCrtAnd(edge.and);
+          if (andId === "None") return;
+          const source = nodeById.get(edge.from);
+          const target = nodeById.get(edge.to);
+          if (!source || !target || !isCrtNode(source) || !isCrtNode(target)) return;
+          const key = crtAndGroupKey(andId, target.id);
+          if (!andGroups.has(key)) {
+            andGroups.set(key, {
+              andId,
+              targetId: target.id,
+              sourceIds: new Set()
+            });
+            groupsByTarget.set(target.id, (groupsByTarget.get(target.id) || 0) + 1);
+          }
+          andGroups.get(key).sourceIds.add(source.id);
+        });
+
+        andGroups.forEach(group => {
+          if (groupsByTarget.get(group.targetId) !== 1) return;
+          const target = nodeById.get(group.targetId);
+          const sources = [...group.sourceIds].map(id => nodeById.get(id)).filter(Boolean);
+          if (!target || sources.length < 2) return;
+          const sourceLayer = sources[0].gridY;
+          if (!Number.isFinite(sourceLayer) || sources.some(node => node.gridY !== sourceLayer)) return;
+          if (!Number.isFinite(target.gridX) || sourceLayer <= target.gridY) return;
+
+          const layerNodes = groups.get(sourceLayer) || [];
+          const orderedLayer = [...layerNodes].sort((a, b) =>
+            a.gridX - b.gridX || a.id.localeCompare(b.id)
+          );
+          const sourceIds = new Set(sources.map(node => node.id));
+          const sourceIndexes = orderedLayer
+            .map((node, index) => sourceIds.has(node.id) ? index : -1)
+            .filter(index => index >= 0);
+          if (!sourceIndexes.length) return;
+          const firstIndex = Math.min(...sourceIndexes);
+          const lastIndex = Math.max(...sourceIndexes);
+          for (let index = firstIndex; index <= lastIndex; index += 1) {
+            if (!sourceIds.has(orderedLayer[index]?.id)) return;
+          }
+
+          const orderedSources = orderedLayer.slice(firstIndex, lastIndex + 1);
+          const gap = crtAndInputGridGap(orderedSources);
+          const desired = orderedSources.map((node, index) =>
+            roundGridQuarter(target.gridX + (index - (orderedSources.length - 1) / 2) * gap)
+          );
+          if (!crtCanApplyAndInputGridPositions(orderedLayer, firstIndex, lastIndex, desired)) return;
+          orderedSources.forEach((node, index) => {
+            node.gridX = desired[index];
+          });
+        });
+
+        layerKeys.forEach(nodeLayerIndex => {
+          groups.set(nodeLayerIndex, [...(groups.get(nodeLayerIndex) || [])].sort((a, b) =>
+            a.gridX - b.gridX || a.id.localeCompare(b.id)
+          ));
+        });
+      }
+
+      function crtAndInputGridGap(nodes) {
+        if (nodes.length <= 1) return 1;
+        let gap = 1;
+        for (let index = 1; index < nodes.length; index += 1) {
+          gap = Math.max(gap, crtMinimumNodeGapUnits(nodes[index - 1], nodes[index]));
+        }
+        return roundGridQuarter(gap);
+      }
+
+      function crtCanApplyAndInputGridPositions(orderedLayer, firstIndex, lastIndex, desired) {
+        for (let index = 1; index < desired.length; index += 1) {
+          const gap = crtMinimumNodeGapUnits(orderedLayer[firstIndex + index - 1], orderedLayer[firstIndex + index]);
+          if (desired[index] - desired[index - 1] < gap - .001) return false;
+        }
+        const leftNode = orderedLayer[firstIndex - 1];
+        if (leftNode) {
+          const gap = crtMinimumNodeGapUnits(leftNode, orderedLayer[firstIndex]);
+          if (desired[0] - leftNode.gridX < gap - .001) return false;
+        }
+        const rightNode = orderedLayer[lastIndex + 1];
+        if (rightNode) {
+          const gap = crtMinimumNodeGapUnits(orderedLayer[lastIndex], rightNode);
+          if (rightNode.gridX - desired[desired.length - 1] < gap - .001) return false;
+        }
+        return true;
+      }
+
+      function roundGridQuarter(value) {
+        return Math.round(value * 4) / 4;
       }
 
       function crtLayoutEdges(layer) {
@@ -11386,6 +11818,7 @@
       function renderNodes() {
         nodeLayer.innerHTML = "";
         const ccpmSchedule = isCcpmDiagram() ? ccpmScheduleInfo() : null;
+        const crtCycle = isCrtDiagram() ? crtCycleInfo() : emptyCycleInfo();
         state.nodes.forEach(node => {
           if (!isNodeVisibleInCurrentMode(node)) return;
           const el = document.createElement("div");
@@ -11396,6 +11829,9 @@
             el.classList.add("critical-chain");
           }
           if (isCcpmNode(node) && ccpmSchedule?.cycleNodeIds.has(node.id)) {
+            el.classList.add("loop-warning");
+          }
+          if (isCrtNode(node) && crtCycle.nodeIds.has(node.id)) {
             el.classList.add("loop-warning");
           }
           if (isCcpmNode(node) && ccpmSchedule?.taskById.get(node.id)?.estimateInfo?.fallback) {
@@ -12861,7 +13297,8 @@
         const dependencyCriticalEdges = state.viewMode === "detail" && ccpmSchedule
           ? ccpmSchedule.dependencyCriticalEdgeIds
           : new Set();
-        const loopEdges = ccpmSchedule?.cycleEdgeIds || new Set();
+        const crtCycle = isCrtDiagram() ? crtCycleInfo() : emptyCycleInfo();
+        const loopEdges = ccpmSchedule?.cycleEdgeIds || crtCycle.edgeIds || new Set();
         const crtAnd = isCrtDiagram() ? crtAndGroups() : { groups: [], edgeToGroup: new Map() };
         const renderedAndOutputs = new Set();
         const crtRenderedRoutes = [];
@@ -12879,7 +13316,7 @@
           const targetNode = andGroup || to;
           const targetSide = andGroup ? "bottom" : edge.toSide;
           const route = !conflict && isCrtDiagram()
-            ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes)
+            ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes, { edgeId: edge.id, loop, crtAnd })
             : null;
           const drawFromSide = route?.fromSide || edge.fromSide;
           const drawToSide = route?.toSide || targetSide;
@@ -12889,6 +13326,7 @@
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${!critical && dependencyCritical ? " dependency-critical" : ""}${loop ? " loop-warning" : ""}${conflict ? " conflict" : ""}${selected ? " selected" : ""}`);
           path.setAttribute("d", d);
+          path.dataset.edgeId = edge.id;
           if (!conflict) {
             path.setAttribute("marker-end", loop ? "url(#arrow-warning)" : (critical ? "url(#arrow-critical)" : (dependencyCritical ? "url(#arrow-dependency)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"))));
           }
@@ -12901,10 +13339,12 @@
               const groupSelected = andGroup.edges.some(groupEdge => state.selected?.type === "edge" && state.selected.id === groupEdge.id);
               const outputPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
               const outputRoute = isCrtDiagram()
-                ? crtAutoRoute(andGroup, to, "top", "bottom", crtRenderedRoutes)
+                ? crtAutoRoute(andGroup, to, "top", "bottom", crtRenderedRoutes, { edgeId: outputKey, loop, crtAnd })
                 : null;
               outputPath.setAttribute("class", `edge edge-dynamic crt-and-output${groupSelected ? " selected" : ""}`);
               outputPath.setAttribute("d", outputRoute?.d || edgePath(andGroup, to, "top", "bottom"));
+              outputPath.dataset.edgeId = outputKey;
+              outputPath.dataset.crtAndOutput = "true";
               outputPath.setAttribute("marker-end", groupSelected ? "url(#arrow-selected)" : "url(#arrow)");
               edgesSvg.append(outputPath);
               if (outputRoute) crtRenderedRoutes.push({ points: outputRoute.points, edgeId: outputKey });
@@ -13011,6 +13451,9 @@
           el.className = "crt-and-node";
           el.style.left = `${group.x}px`;
           el.style.top = `${group.y}px`;
+          el.dataset.crtAndId = group.andId;
+          el.dataset.crtTargetId = group.targetId;
+          el.dataset.crtSingleTarget = group.singleAndForTarget ? "true" : "false";
           el.textContent = `AND${group.andId}`;
           edgeControlLayer.append(el);
         });
@@ -13060,7 +13503,8 @@
               targets: new Map(),
               edges: [],
               x: 0,
-              y: 0
+              y: 0,
+              singleAndForTarget: false
             });
           }
           const group = groups.get(key);
@@ -13069,7 +13513,12 @@
           edgeToGroup.set(edge.id, group);
         });
 
+        const groupsByTarget = new Map();
         groups.forEach(group => {
+          groupsByTarget.set(group.targetId, (groupsByTarget.get(group.targetId) || 0) + 1);
+        });
+        groups.forEach(group => {
+          group.singleAndForTarget = groupsByTarget.get(group.targetId) === 1;
           const sources = group.edges
             .map(edge => findNode(edge.from))
             .filter(Boolean);
@@ -13100,23 +13549,26 @@
         const targetAverageX = targets.reduce((sum, node) => sum + node.x, 0) / targets.length;
         const sourceAverageY = sources.reduce((sum, node) => sum + node.y, 0) / sources.length;
         const targetAverageY = targets.reduce((sum, node) => sum + node.y, 0) / targets.length;
+        const alignToSingleTarget = group.singleAndForTarget && targets.length === 1;
         const sourceTop = Math.min(...sourceRects.map(rect => rect.top));
         const targetBottom = Math.max(...targetRects.map(rect => rect.bottom));
         const gapCenterY = sourceTop > targetBottom
           ? (sourceTop + targetBottom) / 2
           : (sourceAverageY + targetAverageY) / 2;
-        const xCandidates = uniqueNumbers([
-          group.x,
-          sourceAverageX,
-          (sourceAverageX + targetAverageX) / 2,
-          targetAverageX,
-          sourceAverageX - 92,
-          sourceAverageX + 92,
-          group.x - 92,
-          group.x + 92,
-          targetAverageX - 92,
-          targetAverageX + 92
-        ]);
+        const xCandidates = alignToSingleTarget
+          ? [targetAverageX]
+          : uniqueNumbers([
+            group.x,
+            sourceAverageX,
+            (sourceAverageX + targetAverageX) / 2,
+            targetAverageX,
+            sourceAverageX - 92,
+            sourceAverageX + 92,
+            group.x - 92,
+            group.x + 92,
+            targetAverageX - 92,
+            targetAverageX + 92
+          ]);
         const yCandidates = uniqueNumbers([
           group.y,
           gapCenterY,
@@ -13133,10 +13585,10 @@
             const outsideGap = sourceTop > targetBottom && (y <= targetBottom || y >= sourceTop);
             const score = collision * 600
               + (outsideGap ? 50000 + Math.min(Math.abs(y - targetBottom), Math.abs(y - sourceTop)) * 200 : 0)
-              + Math.abs(x - sourceAverageX) * 5.8
-              + Math.abs(x - targetAverageX) * 2.2
+              + Math.abs(x - sourceAverageX) * (alignToSingleTarget ? 1.8 : 5.8)
+              + Math.abs(x - targetAverageX) * (alignToSingleTarget ? 32 : 2.2)
               + Math.abs(y - gapCenterY) * 5.5
-              + Math.abs(x - group.x) * .8
+              + Math.abs(x - group.x) * (alignToSingleTarget ? .3 : .8)
               + Math.abs(y - group.y) * .8;
             if (!best || score < best.score) best = { x, y, score };
           });
@@ -13251,11 +13703,24 @@
       }
 
       function portPoint(node, side) {
+        return sidePortPoint(node, side);
+      }
+
+      function sidePortPoint(node, side, offset = 0) {
         const { width, height } = nodeSize(node);
-        if (side === "top") return { x: node.x, y: node.y - height / 2 };
-        if (side === "right") return { x: node.x + width / 2, y: node.y };
-        if (side === "bottom") return { x: node.x, y: node.y + height / 2 };
-        return { x: node.x - width / 2, y: node.y };
+        const safeOffset = clampSidePortOffset(node, side, offset);
+        if (side === "top") return { x: node.x + safeOffset, y: node.y - height / 2 };
+        if (side === "right") return { x: node.x + width / 2, y: node.y + safeOffset };
+        if (side === "bottom") return { x: node.x + safeOffset, y: node.y + height / 2 };
+        return { x: node.x - width / 2, y: node.y + safeOffset };
+      }
+
+      function clampSidePortOffset(node, side, offset = 0) {
+        const { width, height } = nodeSize(node);
+        const sideLength = (side === "top" || side === "bottom") ? width : height;
+        const inset = Math.min(46, Math.max(18, sideLength * .22));
+        const limit = Math.max(0, sideLength / 2 - inset);
+        return clampNumber(offset, -limit, limit);
       }
 
       function nodeSize(node) {
@@ -13389,21 +13854,27 @@
         return polylineMidpoint(dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide)));
       }
 
-      function crtAutoRoute(from, to, preferredFromSide = "top", preferredToSide = "bottom", renderedRoutes = []) {
+      function crtAutoRoute(from, to, preferredFromSide = "top", preferredToSide = "bottom", renderedRoutes = [], options = {}) {
         if (!from || !to) return null;
-        const fromSides = crtRouteCandidateSides(preferredFromSide);
-        const toSides = crtRouteCandidateSides(preferredToSide);
-        const obstacles = routeObstacles(from, to);
+        const useVirtualPorts = crtShouldUseVirtualPorts(from, to, options);
+        const preferredFrom = useVirtualPorts ? "top" : preferredFromSide;
+        const preferredTo = useVirtualPorts ? "bottom" : preferredToSide;
+        const fromSides = useVirtualPorts ? crtRouteCandidateSidesForRole(preferredFrom, "out") : crtRouteCandidateSides(preferredFrom);
+        const toSides = useVirtualPorts ? crtRouteCandidateSidesForRole(preferredTo, "in") : crtRouteCandidateSides(preferredTo);
+        const routeOptions = { nodePadding: crtRouteObstaclePadding(), crtAnd: options.crtAnd };
+        const obstacles = routeObstacles(from, to, routeOptions);
         const dx = (to.x || 0) - (from.x || 0);
         const dy = (to.y || 0) - (from.y || 0);
         let best = null;
 
         fromSides.forEach(fromSide => {
           toSides.forEach(toSide => {
-            crtRouteOptions(from, to, fromSide, toSide).forEach(option => {
+            const ports = useVirtualPorts ? crtVirtualRoutePorts(from, to, fromSide, toSide, options) : null;
+            crtRouteOptions(from, to, fromSide, toSide, ports, routeOptions).forEach(option => {
               const score = routeScore(option.points, obstacles, option.straight ? 18 : 72)
-                + crtRouteSidePenalty(fromSide, preferredFromSide, dx, dy, "from")
-                + crtRouteSidePenalty(toSide, preferredToSide, dx, dy, "to")
+                + crtRouteSidePenalty(fromSide, preferredFrom, dx, dy, "from")
+                + crtRouteSidePenalty(toSide, preferredTo, dx, dy, "to")
+                + (useVirtualPorts ? crtRouteRoleSidePenalty(fromSide, "out") + crtRouteRoleSidePenalty(toSide, "in") : 0)
                 + crtRouteFlowPenalty(fromSide, toSide, dy)
                 + crtRouteCrossingPenalty(option.points, renderedRoutes)
                 + (option.straight ? -90 : 0);
@@ -13422,31 +13893,151 @@
         };
       }
 
-      function crtRouteOptions(from, to, fromSide, toSide) {
+      function crtShouldUseVirtualPorts(from, to, options = {}) {
+        if (options.loop) return false;
+        return isCrtRouteNode(from) && isCrtRouteNode(to);
+      }
+
+      function crtRouteObstaclePadding() {
+        return state.viewMode === "detail" ? 44 : 38;
+      }
+
+      function isCrtRouteNode(node) {
+        return node?.type === "crt" || node?.type === "crtAnd";
+      }
+
+      function crtVirtualRoutePorts(from, to, fromSide, toSide, options = {}) {
+        return {
+          start: crtVirtualPortPoint(from, fromSide, to, "out", options.crtAnd),
+          end: crtVirtualPortPoint(to, toSide, from, "in", options.crtAnd)
+        };
+      }
+
+      function crtVirtualPortPoint(node, side, peer, role, crtAnd) {
+        const offset = crtVirtualPortOffset(node, side, peer, role, crtAnd);
+        return sidePortPoint(node, side, offset);
+      }
+
+      function crtVirtualPortOffset(node, side, peer, role, crtAnd) {
+        const peers = crtRouteEndpointPeers(node, role, crtAnd);
+        const peerKey = crtRoutePeerKey(peer);
+        if (peer && !peers.some(item => crtRoutePeerKey(item) === peerKey)) peers.push(peer);
+        if (peers.length <= 1) return 0;
+        const horizontalSide = side === "top" || side === "bottom";
+        peers.sort((left, right) => {
+          const leftPosition = horizontalSide ? (left?.x || 0) : (left?.y || 0);
+          const rightPosition = horizontalSide ? (right?.x || 0) : (right?.y || 0);
+          if (Math.abs(leftPosition - rightPosition) > .1) return leftPosition - rightPosition;
+          return crtRoutePeerKey(left).localeCompare(crtRoutePeerKey(right), "ja");
+        });
+        const { width, height } = nodeSize(node);
+        const sideLength = horizontalSide ? width : height;
+        const inset = Math.min(46, Math.max(18, sideLength * .22));
+        const usable = Math.max(0, sideLength - inset * 2);
+        if (!usable) return 0;
+        const slotCount = peers.length % 2 === 1 ? peers.length : peers.length + 1;
+        const slotIndex = crtVirtualPortSlotIndex(node, peers, peerKey, horizontalSide, slotCount);
+        const middle = (slotCount - 1) / 2;
+        const spacing = Math.min(42, usable / Math.max(1, slotCount - 1));
+        return (slotIndex - middle) * spacing;
+      }
+
+      function crtVirtualPortSlotIndex(node, peers, peerKey, horizontalSide, slotCount) {
+        const middle = Math.floor(slotCount / 2);
+        const peerIndex = Math.max(0, peers.findIndex(item => crtRoutePeerKey(item) === peerKey));
+        if (peers.length % 2 === 1) return Math.min(slotCount - 1, peerIndex);
+
+        const axisCenter = horizontalSide ? (node?.x || 0) : (node?.y || 0);
+        const axisValue = peer => horizontalSide ? (peer?.x || 0) : (peer?.y || 0);
+        const deltas = peers.map(peer => axisValue(peer) - axisCenter);
+        const centerCandidateIndex = deltas.reduce((bestIndex, delta, index) =>
+          Math.abs(delta) < Math.abs(deltas[bestIndex]) ? index : bestIndex
+        , 0);
+        const shouldUseCenter = crtShouldUseCenterVirtualPort(deltas, centerCandidateIndex, horizontalSide);
+        if (!shouldUseCenter) {
+          return peerIndex < middle ? peerIndex : peerIndex + 1;
+        }
+        if (peerIndex === centerCandidateIndex) return middle;
+        if (peerIndex < centerCandidateIndex) {
+          const leftCount = centerCandidateIndex;
+          return middle - leftCount + peerIndex;
+        }
+        return middle + (peerIndex - centerCandidateIndex);
+      }
+
+      function crtShouldUseCenterVirtualPort(deltas, centerCandidateIndex, horizontalSide) {
+        const threshold = (horizontalSide ? gridSpacingX() : gridSpacingY()) * .28;
+        if (Math.abs(deltas[centerCandidateIndex]) <= threshold) return true;
+        const allLeft = deltas.every(value => value <= 0);
+        const allRight = deltas.every(value => value >= 0);
+        return allLeft || allRight;
+      }
+
+      function crtRouteEndpointPeers(node, role, crtAnd = null) {
+        const peers = [];
+        const seen = new Set();
+        const addPeer = peer => {
+          if (!peer || !isCrtRouteNode(peer)) return;
+          const key = crtRoutePeerKey(peer);
+          if (seen.has(key)) return;
+          seen.add(key);
+          peers.push(peer);
+        };
+
+        if (node?.type === "crtAnd") {
+          if (role === "in") {
+            (node.edges || []).forEach(edge => addPeer(findNode(edge.from)));
+          } else {
+            (node.targets ? [...node.targets.values()] : [findNode(node.targetId)]).forEach(addPeer);
+          }
+          return peers;
+        }
+
+        if (!node?.id) return peers;
+        const crtAndInfo = crtAnd || crtAndGroups();
+        state.edges.forEach(edge => {
+          if (role === "out" && edge.from === node.id) {
+            addPeer(crtAndInfo.edgeToGroup.get(edge.id) || findNode(edge.to));
+          } else if (role === "in" && edge.to === node.id) {
+            addPeer(crtAndInfo.edgeToGroup.get(edge.id) || findNode(edge.from));
+          }
+        });
+        return peers;
+      }
+
+      function crtRoutePeerKey(peer) {
+        return String(peer?.id || peer?.key || "");
+      }
+
+      function crtRouteOptions(from, to, fromSide, toSide, ports = null, routeOptions = null) {
         const options = [{
-          points: dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide)),
+          points: dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide, ports, routeOptions)),
           straight: false
         }];
-        const straightPoints = crtStraightRoutePoints(from, to, fromSide, toSide);
+        const straightPoints = crtStraightRoutePoints(from, to, fromSide, toSide, ports);
         if (straightPoints) {
           options.unshift({ points: straightPoints, straight: true });
         }
         return options;
       }
 
-      function crtStraightRoutePoints(from, to, fromSide, toSide) {
-        if (!crtStraightRouteAllowed(from, to, fromSide, toSide)) return null;
-        const points = dedupeRoutePoints([portPoint(from, fromSide), portPoint(to, toSide)]);
+      function crtStraightRoutePoints(from, to, fromSide, toSide, ports = null) {
+        if (!crtStraightRouteAllowed(from, to, fromSide, toSide, ports)) return null;
+        const points = dedupeRoutePoints([
+          ports?.start || portPoint(from, fromSide),
+          ports?.end || portPoint(to, toSide)
+        ]);
         return points.length === 2 ? points : null;
       }
 
-      function crtStraightRouteAllowed(from, to, fromSide, toSide) {
+      function crtStraightRouteAllowed(from, to, fromSide, toSide, ports = null) {
         const fromDir = DIRS[fromSide] || { x: 0, y: 0 };
         const toDir = DIRS[toSide] || { x: 0, y: 0 };
-        const start = portPoint(from, fromSide);
-        const end = portPoint(to, toSide);
+        const start = ports?.start || portPoint(from, fromSide);
+        const end = ports?.end || portPoint(to, toSide);
         const dx = end.x - start.x;
         const dy = end.y - start.y;
+        if (Math.abs(dx) > ROUTE_EPS && Math.abs(dy) > ROUTE_EPS) return false;
         const distance = Math.hypot(dx, dy);
         if (distance < 40) return false;
         const fromFacing = (fromDir.x * dx + fromDir.y * dy) / distance;
@@ -13457,6 +14048,19 @@
       function crtRouteCandidateSides(preferredSide) {
         const preferred = SIDES.includes(preferredSide) ? preferredSide : "top";
         return [preferred, ...SIDES.filter(side => side !== preferred)];
+      }
+
+      function crtRouteCandidateSidesForRole(preferredSide, role) {
+        const allowed = role === "out" ? ["top", "right", "left"] : ["bottom", "right", "left"];
+        const preferred = allowed.includes(preferredSide) ? preferredSide : allowed[0];
+        return [preferred, ...allowed.filter(side => side !== preferred)];
+      }
+
+      function crtRouteRoleSidePenalty(side, role) {
+        const primary = role === "out" ? "top" : "bottom";
+        if (side === primary) return 0;
+        if (side === "left" || side === "right") return 130;
+        return 160;
       }
 
       function crtRouteSidePenalty(side, preferredSide, dx, dy, role) {
@@ -13652,9 +14256,9 @@
         return false;
       }
 
-      function orthogonalRoutePoints(from, to, fromSide, toSide) {
-        const start = portPoint(from, fromSide);
-        const end = portPoint(to, toSide);
+      function orthogonalRoutePoints(from, to, fromSide, toSide, ports = null, routeOptions = null) {
+        const start = ports?.start || portPoint(from, fromSide);
+        const end = ports?.end || portPoint(to, toSide);
         const sourceDir = DIRS[fromSide] || { x: 0, y: 0 };
         const targetDir = DIRS[toSide] || { x: 0, y: 0 };
         const stub = 34;
@@ -13666,7 +14270,7 @@
           x: end.x + targetDir.x * stub,
           y: end.y + targetDir.y * stub
         };
-        const obstacles = routeObstacles(from, to);
+        const obstacles = routeObstacles(from, to, routeOptions);
         const candidates = orthogonalRouteCandidates(start, startExit, endExit, end, fromSide, toSide, obstacles)
           .map(dedupeRoutePoints)
           .map(points => ({
@@ -13721,6 +14325,11 @@
           xLanes.forEach(x => {
             routes.push([start, startExit, { x, y: startExit.y }, { x, y: endExit.y }, endExit, end]);
           });
+          xLanes.forEach(x => {
+            yLanes.forEach(y => {
+              routes.push([start, startExit, { x, y: startExit.y }, { x, y }, { x: endExit.x, y }, endExit, end]);
+            });
+          });
           return routes;
         }
 
@@ -13730,6 +14339,11 @@
           });
           yLanes.forEach(y => {
             routes.push([start, startExit, { x: startExit.x, y }, { x: endExit.x, y }, endExit, end]);
+          });
+          yLanes.forEach(y => {
+            xLanes.forEach(x => {
+              routes.push([start, startExit, { x: startExit.x, y }, { x, y }, { x, y: endExit.y }, endExit, end]);
+            });
           });
           return routes;
         }
@@ -13771,13 +14385,23 @@
         return routes;
       }
 
-      function routeObstacles(from, to) {
+      function routeObstacles(from, to, options = {}) {
+        const nodePadding = Number.isFinite(options?.nodePadding) ? options.nodePadding : 22;
+        const endpointPadding = Number.isFinite(options?.endpointPadding) ? options.endpointPadding : 12;
         const endpoints = new Set([from?.id, to?.id].filter(Boolean));
         const obstacles = visibleNodes()
           .filter(node => !endpoints.has(node.id))
-          .map(node => ({ ...nodeRect(node, 22), role: "obstacle" }));
-        if (from) obstacles.push({ ...nodeRect(from, 12), role: "source" });
-        if (to) obstacles.push({ ...nodeRect(to, 12), role: "target" });
+          .map(node => ({ ...nodeRect(node, nodePadding), role: "obstacle" }));
+        const crtAndGroupsForRoute = isCrtDiagram()
+          ? (options?.crtAnd?.groups || crtAndGroups().groups)
+          : [];
+        crtAndGroupsForRoute
+          .filter(group => group?.id && !endpoints.has(group.id))
+          .forEach(group => {
+            obstacles.push({ ...crtAndRectAt(group.x, group.y, nodePadding), role: "obstacle" });
+          });
+        if (from) obstacles.push({ ...nodeRect(from, endpointPadding), role: "source", endpointPadding });
+        if (to) obstacles.push({ ...nodeRect(to, endpointPadding), role: "target", endpointPadding });
         return obstacles;
       }
 
@@ -13800,8 +14424,8 @@
           const current = points[index];
           length += Math.hypot(current.x - previous.x, current.y - previous.y);
           collisions += obstacles.filter(rect => {
-            if (rect.role === "source" && index === 1) return false;
-            if (rect.role === "target" && index === points.length - 1) return false;
+            if (rect.role === "source" && index === 1 && endpointSegmentContactAllowed(previous, current, rect)) return false;
+            if (rect.role === "target" && index === points.length - 1 && endpointSegmentContactAllowed(current, previous, rect)) return false;
             return segmentIntersectsRect(previous, current, rect);
           }).length;
           if (index >= 2) {
@@ -13812,6 +14436,26 @@
           }
         }
         return length + bends * bendPenalty + collisions * 100000;
+      }
+
+      function endpointSegmentContactAllowed(endpoint, other, rect) {
+        const contactLength = segmentRectOverlapLength(endpoint, other, rect);
+        const limit = (Number.isFinite(rect.endpointPadding) ? rect.endpointPadding : 12) + 3;
+        return contactLength <= limit + ROUTE_EPS;
+      }
+
+      function segmentRectOverlapLength(start, end, rect) {
+        const horizontal = Math.abs(start.y - end.y) < .1;
+        const vertical = Math.abs(start.x - end.x) < .1;
+        if (horizontal) {
+          if (start.y < rect.top || start.y > rect.bottom) return 0;
+          return Math.max(0, Math.min(Math.max(start.x, end.x), rect.right) - Math.max(Math.min(start.x, end.x), rect.left));
+        }
+        if (vertical) {
+          if (start.x < rect.left || start.x > rect.right) return 0;
+          return Math.max(0, Math.min(Math.max(start.y, end.y), rect.bottom) - Math.max(Math.min(start.y, end.y), rect.top));
+        }
+        return segmentIntersectsRect(start, end, rect) ? Number.POSITIVE_INFINITY : 0;
       }
 
       function segmentIntersectsRect(start, end, rect) {
@@ -16130,6 +16774,7 @@
           result.stroke = color.border;
           result.accent = color.accent;
           result.rx = 8;
+          if (crtCycleInfo().nodeIds.has(node.id)) result.stroke = "#d28b00";
         } else if (isCcpmNode(node)) {
           const buffer = isCcpmBufferNode(node);
           result.fill = buffer ? colors.ccpmBuffer : colors.ccpm;
@@ -16535,7 +17180,8 @@
         const dependencyCriticalEdges = state.viewMode === "detail" && schedule
           ? schedule.dependencyCriticalEdgeIds
           : new Set();
-        const loopEdges = schedule?.cycleEdgeIds || new Set();
+        const crtCycle = isCrtDiagram() ? crtCycleInfo() : emptyCycleInfo();
+        const loopEdges = schedule?.cycleEdgeIds || crtCycle.edgeIds || new Set();
         const crtAnd = isCrtDiagram() ? crtAndGroups() : { groups: [], edgeToGroup: new Map() };
         const renderedAndOutputs = new Set();
         const crtRenderedRoutes = [];
@@ -16552,7 +17198,7 @@
           const targetNode = andGroup || to;
           const targetSide = andGroup ? "bottom" : edge.toSide;
           const route = !conflict && isCrtDiagram()
-            ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes)
+            ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes, { edgeId: edge.id, loop, crtAnd })
             : null;
           const d = conflict
             ? conflictPath(from, to, edge.fromSide, edge.toSide)
@@ -16565,7 +17211,7 @@
             if (!renderedAndOutputs.has(outputKey)) {
               renderedAndOutputs.add(outputKey);
               const outputRoute = isCrtDiagram()
-                ? crtAutoRoute(andGroup, to, "top", "bottom", crtRenderedRoutes)
+                ? crtAutoRoute(andGroup, to, "top", "bottom", crtRenderedRoutes, { edgeId: outputKey, loop, crtAnd })
                 : null;
               appendExportEdgePath(group, outputRoute?.d || edgePath(andGroup, to, "top", "bottom"));
               if (outputRoute) crtRenderedRoutes.push({ points: outputRoute.points, edgeId: outputKey });
@@ -16778,6 +17424,12 @@
         const modeButton = event.target.closest("[data-mode]");
         if (modeButton) {
           setViewMode(modeButton.dataset.mode);
+          return;
+        }
+
+        const crtLayoutModeButton = event.target.closest("[data-crt-layout-mode]");
+        if (crtLayoutModeButton) {
+          setCrtLayoutMode(crtLayoutModeButton.dataset.crtLayoutMode);
           return;
         }
 
@@ -17585,6 +18237,10 @@
             setViewMode(mode);
             return state.viewMode;
           },
+          setCrtLayoutMode(mode) {
+            setCrtLayoutMode(mode);
+            return clone(graphPayload());
+          },
           setDiagramType(diagramType) {
             setDiagramType(diagramType);
             return clone(graphPayload());
@@ -17612,6 +18268,14 @@
           },
           criticalPathInfo() {
             return serializeCriticalPath(criticalPathInfo());
+          },
+          crtCycleInfo() {
+            const info = crtCycleInfo();
+            return {
+              nodeIds: setToArray(info.nodeIds),
+              edgeIds: setToArray(info.edgeIds),
+              feedbackEdgeIds: setToArray(info.feedbackEdgeIds)
+            };
           },
           ccpmScheduleInfo(project = state.project) {
             return serializeSchedule(ccpmScheduleInfo(project));

@@ -253,6 +253,17 @@ PNG/SVG保存時には、JSON相当の編集データも画像内に埋め込ま
 
 ファイル操作の「サンプル」プルダウンから、同梱サンプルを直接読み込めます。サンプルとして `sample/sample_curry.json`、`sample/sample_stt.json`、`sample/sample_crt.json`、`sample/sample_crt_study_time.json`、`sample/sample_ec.json`、`sample/sample_ccpm.json` を同梱しています。CCPMの元ツール相当の確認用に、序盤・中盤・終盤の3状態を持つ `sample/sample_ccpm_original_like*.json` もあります。担当者制約確認用に `sample/sample_ccpm_resource_priority.json`、警告確認用に `sample/sample_ccpm_warnings.json` もあります。Goal Naviの週次評価サンプルとして `sample/sample_goal_navi_late_scenario.json` もあります。
 
+## テスト
+
+機能追加や修正後は、回帰確認として次を実行します。
+
+```powershell
+npm test
+```
+
+PowerShellの実行ポリシーで `npm` が止まる場合は、`npm.cmd test` を使います。
+テスト方針と個別コマンドは `TESTING.md`、作業者向けの必須チェックは `AGENTS.md` にまとめています。
+
 ## ローカル利用とセキュリティ
 
 このツールは完全ローカルで動作する想定です。通常の使い方ではサーバーや外部サービスは不要で、外部通信も行いません。

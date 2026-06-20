@@ -1,0 +1,15 @@
+{
+  "name": "pfd-tool",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "npm run test:logic && npm run test:e2e",
+    "test:logic": "playwright test tests/logic tests/regression",
+    "test:e2e": "playwright test tests/e2e",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

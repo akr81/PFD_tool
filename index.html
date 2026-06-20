@@ -17399,6 +17399,224 @@
         closePalette();
       });
 
+      function exposeTestApi() {
+        if (!new URLSearchParams(window.location.search).has("test")) return;
+
+        const clone = value => JSON.parse(JSON.stringify(value));
+        const setToArray = value => value instanceof Set ? [...value] : [];
+        const numberOrNull = value => Number.isFinite(value) ? value : null;
+        const historyCounts = () => ({
+          past: history.past.length,
+          future: history.future.length
+        });
+        const serializeTask = task => ({
+          id: task.node.id,
+          text: displayText(task.node),
+          type: task.node.type,
+          start: numberOrNull(task.start),
+          finish: numberOrNull(task.finish),
+          duration: numberOrNull(task.duration),
+          remainingDuration: numberOrNull(task.remainingDuration),
+          plannedDuration: numberOrNull(task.plannedDuration),
+          remainsDays: numberOrNull(task.remainsDays),
+          owner: task.owner || "",
+          owners: Array.isArray(task.owners) ? task.owners.slice() : [],
+          started: !!task.started,
+          finished: !!task.finished,
+          critical: !!task.critical,
+          estimateFallback: !!task.estimateInfo?.fallback
+        });
+        const serializeSchedule = schedule => ({
+          tasks: schedule.tasks.map(serializeTask),
+          plannedTasks: schedule.plannedTasks.map(serializeTask),
+          edges: schedule.edges.map(edge => ({ ...edge })),
+          resourceLinks: schedule.resourceLinks.map(link => ({ ...link })),
+          warnings: schedule.warnings.slice(),
+          hasCycle: !!schedule.hasCycle,
+          cycleNodeIds: setToArray(schedule.cycleNodeIds),
+          cycleEdgeIds: setToArray(schedule.cycleEdgeIds),
+          dependencyCriticalNodeIds: setToArray(schedule.dependencyCriticalNodeIds),
+          dependencyCriticalEdgeIds: setToArray(schedule.dependencyCriticalEdgeIds),
+          criticalNodeIds: setToArray(schedule.criticalNodeIds),
+          criticalEdgeIds: setToArray(schedule.criticalEdgeIds),
+          criticalResourceLinkIds: setToArray(schedule.criticalResourceLinkIds),
+          plannedCriticalNodeIds: setToArray(schedule.plannedCriticalNodeIds),
+          plannedCriticalEdgeIds: setToArray(schedule.plannedCriticalEdgeIds),
+          plannedCriticalResourceLinkIds: setToArray(schedule.plannedCriticalResourceLinkIds),
+          criticalDuration: numberOrNull(schedule.criticalDuration),
+          criticalPlannedDuration: numberOrNull(schedule.criticalPlannedDuration),
+          baselineCriticalDuration: numberOrNull(schedule.baselineCriticalDuration),
+          criticalProgressNodeIds: setToArray(schedule.criticalProgressNodeIds),
+          criticalProgressDuration: numberOrNull(schedule.criticalProgressDuration),
+          criticalDoneDays: numberOrNull(schedule.criticalDoneDays),
+          criticalProgress: numberOrNull(schedule.criticalProgress),
+          dependencyCriticalDuration: numberOrNull(schedule.dependencyCriticalDuration),
+          dependencyCriticalDoneDays: numberOrNull(schedule.dependencyCriticalDoneDays),
+          dependencyCriticalProgress: numberOrNull(schedule.dependencyCriticalProgress),
+          totalDays: numberOrNull(schedule.totalDays),
+          doneDays: numberOrNull(schedule.doneDays),
+          progress: numberOrNull(schedule.progress),
+          projectFinish: numberOrNull(schedule.projectFinish),
+          todayBoundaryOffset: numberOrNull(schedule.todayBoundaryOffset),
+          projectBufferStart: numberOrNull(schedule.projectBufferStart),
+          projectBufferEnd: numberOrNull(schedule.projectBufferEnd),
+          projectBufferDays: numberOrNull(schedule.projectBufferDays),
+          feedingBuffers: schedule.feedingBuffers.map(buffer => ({ ...buffer })),
+          dependencyTimingIssues: schedule.dependencyTimingIssues.map(issue => ({ ...issue })),
+          baselineFinishOffset: numberOrNull(schedule.baselineFinishOffset),
+          baselineFinishDelta: numberOrNull(schedule.baselineFinishDelta),
+          horizonDays: numberOrNull(schedule.horizonDays)
+        });
+        const serializeCriticalPath = info => ({
+          path: Array.isArray(info.path) ? info.path.slice() : [],
+          edgeIds: setToArray(info.edgeIds),
+          nodeIds: setToArray(info.nodeIds),
+          totalDays: numberOrNull(info.totalDays),
+          doneDays: numberOrNull(info.doneDays),
+          progress: numberOrNull(info.progress)
+        });
+        const withFreshHistory = result => {
+          history.past = [];
+          history.future = [];
+          updateHistoryControls();
+          return result;
+        };
+
+        window.__PFD_TEST_API__ = {
+          reset(diagramType = "pfd") {
+            localStorage.removeItem(STORAGE_KEY);
+            nextId = 1;
+            state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
+            makeInitialState(state.diagramType);
+            autoLayout();
+            render();
+            saveState();
+            return withFreshHistory(clone(graphPayload()));
+          },
+          loadGraph(graph) {
+            const normalized = normalizeGraphData(clone(graph));
+            applyGraphData(normalized);
+            return withFreshHistory(clone(graphPayload()));
+          },
+          getState() {
+            return clone(graphPayload());
+          },
+          samples() {
+            return SAMPLE_GRAPHS.map(sample => ({
+              id: sample.id,
+              label: sample.label,
+              path: sample.path,
+              data: clone(sample.data)
+            }));
+          },
+          sample(id) {
+            const sample = SAMPLE_GRAPHS.find(item => item.id === id);
+            if (!sample) throw new Error(`Unknown sample: ${id}`);
+            return clone(sample.data);
+          },
+          historyCounts,
+          recordHistory() {
+            recordHistory();
+            return historyCounts();
+          },
+          undo() {
+            undo();
+            return clone(graphPayload());
+          },
+          redo() {
+            redo();
+            return clone(graphPayload());
+          },
+          mutateNode(id, patch) {
+            const node = findNode(id);
+            if (!node) throw new Error(`Unknown node: ${id}`);
+            Object.assign(node, clone(patch));
+            render();
+            saveState();
+            return clone(node);
+          },
+          selectNode(id) {
+            if (!findNode(id)) throw new Error(`Unknown node: ${id}`);
+            state.selected = { type: "node", id };
+            ensureVisibleSelection();
+            render();
+            return clone(state.selected);
+          },
+          setViewMode(mode) {
+            setViewMode(mode);
+            return state.viewMode;
+          },
+          setDiagramType(diagramType) {
+            setDiagramType(diagramType);
+            return clone(graphPayload());
+          },
+          estimateDaysFromText,
+          normalizeEstimateText,
+          formatEstimateDays,
+          formatSignedEstimateDays,
+          normalizeProjectSettings(project) {
+            return clone(normalizeProjectSettings(project));
+          },
+          projectWorkdaysBetween,
+          projectWorkdayOffsetFromDate,
+          projectWorkdayOffsetAfterDate,
+          projectWorkdayIsoFromOffset,
+          projectCalendarIsoFromOffset,
+          projectCalendarOffsetFromDate,
+          nextProjectWorkdayIso,
+          ccpmTodayBoundaryOffset,
+          normalizeGraphData(graph) {
+            return clone(normalizeGraphData(clone(graph)));
+          },
+          parseGraphJson(text) {
+            return clone(parseGraphJson(text));
+          },
+          criticalPathInfo() {
+            return serializeCriticalPath(criticalPathInfo());
+          },
+          ccpmScheduleInfo(project = state.project) {
+            return serializeSchedule(ccpmScheduleInfo(project));
+          },
+          ccpmCheckItems() {
+            return clone(ccpmCheckItems(ccpmScheduleInfo()));
+          },
+          ccpmResourceSettings(project = state.project) {
+            const settings = ccpmResourceSettings(project);
+            return {
+              resources: [...settings.capacities.keys()],
+              capacities: Object.fromEntries(settings.capacities),
+              totalCapacity: settings.maxConcurrency
+            };
+          },
+          ccpmOwnerNames,
+          goalNaviInfo(navi = state.goalNavi) {
+            return clone(goalNaviInfo(navi));
+          },
+          normalizeGoalNavi(navi) {
+            return clone(normalizeGoalNavi(navi));
+          },
+          goalNaviEvaluation,
+          graphPayload() {
+            return clone(graphPayload());
+          },
+          embeddedGraphJson,
+          buildDiagramExport(options = {}) {
+            return buildDiagramExport(options).svgText;
+          },
+          extractEmbeddedGraphJsonFromSvg,
+          async pngMetadataRoundTrip(metadataJson = embeddedGraphJson()) {
+            const canvas = document.createElement("canvas");
+            canvas.width = 1;
+            canvas.height = 1;
+            canvas.getContext("2d").fillRect(0, 0, 1, 1);
+            const blob = await canvasBlob(canvas, "image/png");
+            const embeddedBlob = await embedPngGraphMetadata(blob, metadataJson);
+            return extractEmbeddedGraphJsonFromPng(await embeddedBlob.arrayBuffer());
+          }
+        };
+      }
+
+      exposeTestApi();
       loadState();
       autoLayout();
       render();

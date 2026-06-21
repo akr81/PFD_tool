@@ -2,6 +2,7 @@
   "name": "pfd-tool",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "test": "npm run test:logic && npm run test:e2e",
     "test:logic": "playwright test tests/logic tests/regression",

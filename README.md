@@ -295,6 +295,10 @@ PowerShellの実行ポリシーで `npm` が止まる場合は、`npm.cmd test` 
 - `sample/sample_ccpm_warnings.json`: CCPM警告確認用サンプル
 - `sample/sample_goal_navi_late_scenario.json`: Goal Naviの週次評価サンプル
 
+## ライセンス
+
+このツールはMITライセンスで公開しています。詳細は `LICENSE` を参照してください。
+
 ## 補足
 
 このツールはローカルで動く、思考整理・工程設計・進捗確認のための軽量ワークベンチです。サーバーや外部サービスは不要です。

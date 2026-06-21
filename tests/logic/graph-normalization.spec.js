@@ -118,6 +118,7 @@ test("goal-shaped payload normalizes as Goal Navi", async () => {
 test("loadGraph persists and returns graphPayload shape", async () => {
   const payload = await callApi(page, "loadGraph", {
     diagramType: "pfd",
+    pfdReverseDirection: true,
     nodes: [
       { id: "a", type: "artifact", text: "A" },
       { id: "p", type: "process", text: "P", estimate: "2d" }
@@ -127,6 +128,7 @@ test("loadGraph persists and returns graphPayload shape", async () => {
     nodeTextSize: 18
   });
   expect(payload.diagramType).toBe("pfd");
+  expect(payload.pfdReverseDirection).toBe(true);
   expect(payload.viewMode).toBe("detail");
   expect(payload.nodeTextSize).toBe(18);
   expect(payload.nodes).toHaveLength(2);

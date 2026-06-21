@@ -165,6 +165,48 @@ test("add root process button adds a PFD node", async () => {
   expect(payload.nodes.some(node => node.type === "process")).toBe(true);
 });
 
+test("PFD reverse direction flips horizontal layout and Tab adds upstream", async () => {
+  const initial = await callApi(page, "reset", "pfd");
+  const anchor = initial.nodes[0];
+  await page.locator('[data-command="pfd-reverse"]').click();
+  await expect(page.locator('[data-command="pfd-reverse"]')).toHaveAttribute("aria-pressed", "true");
+
+  await page.keyboard.press("Tab");
+  const payload = await callApi(page, "getState");
+  const added = payload.nodes.find(node => node.id !== anchor.id);
+  const currentAnchor = payload.nodes.find(node => node.id === anchor.id);
+
+  expect(payload.pfdReverseDirection).toBe(true);
+  expect(added.gridX).toBeGreaterThan(currentAnchor.gridX);
+  expect(payload.edges).toEqual([
+    expect.objectContaining({ from: added.id, to: anchor.id })
+  ]);
+});
+
+test("PFD reverse direction flips vertical layout and Enter adds upstream", async () => {
+  const initial = await callApi(page, "loadGraph", {
+    diagramType: "pfd",
+    pfdOrientation: "vertical",
+    pfdReverseDirection: false,
+    nodes: [{ id: "goal", type: "artifact", text: "Goal", gridX: 0, gridY: 0 }],
+    edges: []
+  });
+  const anchor = initial.nodes[0];
+  await page.locator('[data-command="pfd-reverse"]').click();
+
+  await page.keyboard.press("Enter");
+  const payload = await callApi(page, "getState");
+  const added = payload.nodes.find(node => node.id !== anchor.id);
+  const currentAnchor = payload.nodes.find(node => node.id === anchor.id);
+
+  expect(payload.pfdOrientation).toBe("vertical");
+  expect(payload.pfdReverseDirection).toBe(true);
+  expect(added.gridY).toBeGreaterThan(currentAnchor.gridY);
+  expect(payload.edges).toEqual([
+    expect.objectContaining({ from: added.id, to: anchor.id })
+  ]);
+});
+
 test("undo button reverts an added root node", async () => {
   await callApi(page, "reset", "pfd");
   await page.locator('[data-add-root="process"]').click();

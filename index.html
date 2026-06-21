@@ -4828,6 +4828,14 @@
           <path d="m4 15 3 3 3-3"></path>
         </svg>
       </button>
+      <button class="icon-button" id="pfdReverseButton" data-command="pfd-reverse" title="PFDの表示方向を反転" aria-label="PFDの表示方向を反転" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M8 7h10"></path>
+          <path d="m11 4-3 3 3 3"></path>
+          <path d="M16 17H6"></path>
+          <path d="m13 14 3 3-3 3"></path>
+        </svg>
+      </button>
       <button class="icon-button" data-command="fit" title="全体表示">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M21 16v3a2 2 0 0 1-2 2h-3"></path>
@@ -5466,6 +5474,7 @@
       const detailTools = document.getElementById("detailTools");
       const projectSettingsToolbar = document.getElementById("projectSettingsToolbar");
       const pfdOrientationButton = document.getElementById("pfdOrientationButton");
+      const pfdReverseButton = document.getElementById("pfdReverseButton");
       const viewModeToolbar = document.getElementById("viewModeToolbar");
       const crtLayoutToolbar = document.getElementById("crtLayoutToolbar");
       const totalEstimateValue = document.getElementById("totalEstimateValue");
@@ -5534,6 +5543,7 @@
         detailEditingNodeId: null,
         diagramType: "pfd",
         pfdOrientation: "horizontal",
+        pfdReverseDirection: false,
         crtLayoutMode: "tree",
         viewMode: "simple",
         nodeTextSize: DEFAULT_NODE_TEXT_SIZE,
@@ -6481,6 +6491,7 @@
       function makeInitialState(diagramType = state.diagramType || "pfd") {
         state.diagramType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(state.pfdOrientation);
+        state.pfdReverseDirection = normalizePfdReverseDirection(state.pfdReverseDirection);
         state.crtLayoutMode = normalizeCrtLayoutMode(state.crtLayoutMode);
         state.project = makeDefaultProjectSettings();
         state.goalNavi = makeDefaultGoalNavi();
@@ -6569,6 +6580,7 @@
             edges: [],
             diagramType: "goal",
             pfdOrientation: graphPfdOrientation(parsed),
+            pfdReverseDirection: graphPfdReverseDirection(parsed),
             crtLayoutMode: graphCrtLayoutMode(parsed),
             viewMode: parsed.viewMode === "detail" ? "detail" : null,
             nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
@@ -6666,6 +6678,7 @@
           edges,
           diagramType,
           pfdOrientation: graphPfdOrientation(parsed),
+          pfdReverseDirection: graphPfdReverseDirection(parsed),
           crtLayoutMode: graphCrtLayoutMode(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
@@ -6699,6 +6712,7 @@
           edges: makeEcEdges(),
           diagramType: "ec",
           pfdOrientation: graphPfdOrientation(parsed),
+          pfdReverseDirection: graphPfdReverseDirection(parsed),
           crtLayoutMode: graphCrtLayoutMode(parsed),
           viewMode: parsed.viewMode === "detail" ? "detail" : null,
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
@@ -6757,6 +6771,16 @@
         );
       }
 
+      function normalizePfdReverseDirection(value) {
+        return value === true || value === "true" || value === "reverse" || value === "reversed" || value === "upstream";
+      }
+
+      function graphPfdReverseDirection(graph = {}) {
+        return normalizePfdReverseDirection(
+          graph.pfdReverseDirection ?? graph.pfdReversed ?? graph.pfdAddReversed ?? graph.reversePfdDirection
+        );
+      }
+
       function normalizeCrtLayoutMode(value) {
         return value === "compact" ? "compact" : "tree";
       }
@@ -6797,14 +6821,14 @@
 
       function layoutDownstreamSide() {
         if (isUpwardDiagram()) return "top";
-        if (isPfdVertical()) return "bottom";
-        return "right";
+        if (isPfdVertical()) return state.pfdReverseDirection ? "top" : "bottom";
+        return isPfdDiagram() && state.pfdReverseDirection ? "left" : "right";
       }
 
       function layoutUpstreamSide() {
         if (isUpwardDiagram()) return "bottom";
-        if (isPfdVertical()) return "top";
-        return "left";
+        if (isPfdVertical()) return state.pfdReverseDirection ? "bottom" : "top";
+        return isPfdDiagram() && state.pfdReverseDirection ? "right" : "left";
       }
 
       function isEcDiagram() {
@@ -6890,6 +6914,7 @@
         const payload = {
           diagramType: state.diagramType,
           pfdOrientation: state.pfdOrientation,
+          pfdReverseDirection: state.pfdReverseDirection,
           crtLayoutMode: state.crtLayoutMode,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
@@ -6940,6 +6965,7 @@
       function applyGraphData(graph) {
         state.diagramType = DIAGRAM_TYPES[graph.diagramType] ? graph.diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(graph.pfdOrientation);
+        state.pfdReverseDirection = normalizePfdReverseDirection(graph.pfdReverseDirection);
         state.crtLayoutMode = normalizeCrtLayoutMode(graph.crtLayoutMode);
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
@@ -7008,6 +7034,7 @@
         return {
           diagramType: state.diagramType,
           pfdOrientation: state.pfdOrientation,
+          pfdReverseDirection: state.pfdReverseDirection,
           crtLayoutMode: state.crtLayoutMode,
           nodes: state.nodes.map(cloneNodeData),
           edges: state.edges.map(edge => ({ ...edge })),
@@ -7050,6 +7077,7 @@
       function restoreSnapshot(snapshot) {
         state.diagramType = DIAGRAM_TYPES[snapshot.diagramType] ? snapshot.diagramType : "pfd";
         state.pfdOrientation = normalizePfdOrientation(snapshot.pfdOrientation);
+        state.pfdReverseDirection = normalizePfdReverseDirection(snapshot.pfdReverseDirection);
         state.crtLayoutMode = normalizeCrtLayoutMode(snapshot.crtLayoutMode);
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
@@ -7181,6 +7209,10 @@
           pfdOrientationButton.hidden = !isPfdDiagram();
           updatePfdOrientationButton();
         }
+        if (pfdReverseButton) {
+          pfdReverseButton.hidden = !isPfdDiagram();
+          updatePfdReverseButton();
+        }
         if (viewModeToolbar) viewModeToolbar.hidden = isGoalNaviDiagram();
         updateCrtLayoutModeControls();
         document.querySelector(".text-size-toolbar").hidden = isGoalNaviDiagram();
@@ -7264,6 +7296,20 @@
         pfdOrientationButton.title = title;
       }
 
+      function updatePfdReverseButton() {
+        if (!pfdReverseButton) return;
+        const reversed = Boolean(state.pfdReverseDirection);
+        const normalDirection = isPfdVertical() ? "上→下" : "左→右";
+        const reversedDirection = isPfdVertical() ? "下→上" : "右→左";
+        const title = reversed
+          ? `PFDを${normalDirection}に戻す`
+          : `PFDを${reversedDirection}に反転`;
+        pfdReverseButton.classList.toggle("active", reversed);
+        pfdReverseButton.setAttribute("aria-pressed", reversed ? "true" : "false");
+        pfdReverseButton.setAttribute("aria-label", title);
+        pfdReverseButton.title = title;
+      }
+
       function setNodeTextSize(value, persist = false) {
         const nextSize = normalizeNodeTextSize(value);
         if (state.nodeTextSize === nextSize) {
@@ -7290,6 +7336,22 @@
         setStatus(isPfdVertical()
           ? "PFDを上から下へ流す表示にしました"
           : "PFDを左から右へ流す表示にしました");
+      }
+
+      function togglePfdReverseDirection() {
+        if (!isPfdDiagram()) return;
+        recordHistory();
+        state.pfdReverseDirection = !state.pfdReverseDirection;
+        state.pendingPort = null;
+        state.editingNodeField = null;
+        closePalette();
+        autoLayout();
+        render();
+        saveState();
+        centerOnGraph();
+        setStatus(state.pfdReverseDirection
+          ? "PFDの表示方向を反転しました"
+          : "PFDの表示方向を順方向に戻しました");
       }
 
       function applyNodeDisplayScale(el) {
@@ -10238,6 +10300,7 @@
             title: `${displayText(target)}を参照する同階層のS&T項目を追加`
           };
         }
+        if (isPfdDiagram()) return pfdPortPlan(node, side);
         if (isPfdVertical()) {
           if (side === "bottom") {
             return {
@@ -10294,6 +10357,47 @@
             mode: "upstream",
             connectable: true,
             title: "左に接続元を追加"
+          };
+        }
+        const edge = primaryOutgoingEdge(node.id);
+        const target = edge ? findNode(edge.to) : null;
+        if (!target) {
+          return {
+            enabled: false,
+            validType: null,
+            mode: "parallel",
+            connectable: false,
+            target: null,
+            title: "接続先があるときだけ並列入力を追加できます"
+          };
+        }
+        return {
+          enabled: true,
+          validType: node.type,
+          mode: "parallel",
+          connectable: false,
+          target,
+          title: `${displayText(target)}への並列入力を追加`
+        };
+      }
+
+      function pfdPortPlan(node, side) {
+        if (side === layoutDownstreamSide()) {
+          return {
+            enabled: true,
+            validType: oppositeType(node.type),
+            mode: "downstream",
+            connectable: true,
+            title: "下流側に接続先を追加"
+          };
+        }
+        if (side === layoutUpstreamSide()) {
+          return {
+            enabled: true,
+            validType: oppositeType(node.type),
+            mode: "upstream",
+            connectable: true,
+            title: "上流側に接続元を追加"
           };
         }
         const edge = primaryOutgoingEdge(node.id);
@@ -10685,8 +10789,9 @@
 
         const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
         const verticalFlow = isPfdVertical();
-        const fromSide = verticalFlow ? "bottom" : "right";
-        const toSide = verticalFlow ? "top" : "left";
+        const fromSide = layoutDownstreamSide();
+        const toSide = layoutUpstreamSide();
+        const mainAxisDirection = isPfdDiagram() && state.pfdReverseDirection ? -1 : 1;
         state.edges = state.edges.filter(edge => {
           const source = nodeMap.get(edge.from);
           const target = nodeMap.get(edge.to);
@@ -10778,9 +10883,9 @@
             const cross = Math.round((crossPosition.get(node.id) - averageCross) * 4) / 4;
             if (verticalFlow) {
               node.gridX = cross;
-              node.gridY = nodeLayerIndex;
+              node.gridY = nodeLayerIndex * mainAxisDirection;
             } else {
-              node.gridX = nodeLayerIndex;
+              node.gridX = nodeLayerIndex * mainAxisDirection;
               node.gridY = cross;
             }
           });
@@ -17366,6 +17471,8 @@
           setStatus("自動配列しました");
         } else if (command === "pfd-orientation") {
           togglePfdOrientation();
+        } else if (command === "pfd-reverse") {
+          togglePfdReverseDirection();
         } else if (command === "fit") {
           centerOnGraph();
           setStatus("全体を表示");

@@ -3678,6 +3678,11 @@
       line-height: 1.45;
     }
 
+    .detail-panel.editing textarea {
+      overflow: hidden;
+      resize: none;
+    }
+
     .detail-input {
       width: 100%;
       border: 1px solid #bac4cc;
@@ -7144,6 +7149,10 @@
       function setViewMode(mode) {
         const nextMode = mode === "detail" ? "detail" : "simple";
         if (state.viewMode === nextMode) return;
+        if (!confirmPendingDetailEdit()) {
+          updateViewModeControls();
+          return;
+        }
         state.viewMode = nextMode;
         state.editingNodeField = null;
         ensureVisibleSelection();
@@ -7157,6 +7166,10 @@
         if (!isCrtDiagram()) return;
         const nextMode = normalizeCrtLayoutMode(mode);
         if (state.crtLayoutMode === nextMode) return;
+        if (!confirmPendingDetailEdit()) {
+          updateCrtLayoutModeControls();
+          return;
+        }
         recordHistory();
         state.crtLayoutMode = nextMode;
         state.pendingPort = null;
@@ -7172,6 +7185,10 @@
       function setDiagramType(diagramType) {
         const nextType = DIAGRAM_TYPES[diagramType] ? diagramType : "pfd";
         if (state.diagramType === nextType) return;
+        if (!confirmPendingDetailEdit()) {
+          updateDiagramControls();
+          return;
+        }
         const hasGoalWork = isGoalNaviDiagram() && JSON.stringify(normalizeGoalNavi(state.goalNavi)) !== JSON.stringify(makeDefaultGoalNavi());
         const hasWork = hasGoalWork || state.nodes.length > 1 || state.edges.length > 0 || (state.nodes[0] && state.nodes[0].text !== DIAGRAM_TYPES[state.diagramType].rootText);
         if (hasWork && !confirm("図の種類を切り替えると、新しい図として開始します。切り替えますか？")) {
@@ -9639,6 +9656,66 @@
           .map(input => input.dataset.statusEditor));
       }
 
+      function detailEditIsDirty(node = findNode(state.detailEditingNodeId)) {
+        if (!state.detailEditing || !node || state.detailEditingNodeId !== node.id) return false;
+        if (isCrtNode(node)) {
+          const nextValues = readCrtDetailValues();
+          return (node.text || "") !== nextValues.text || normalizeCrtColor(node.color) !== nextValues.color;
+        }
+        if (isEcNode(node)) {
+          return (node.text || "") !== readEcDetailValue();
+        }
+        const nextText = (detailTitle.textContent || "").trim();
+        if (isSttNode(node)) {
+          const nextStt = readSttDetailValues();
+          nextStt.id = nextText;
+          return (node.text || "") !== nextText || !sameSttFields(node.stt || node, nextStt);
+        }
+        if (isCcpmNode(node)) {
+          const nextValues = readCcpmDetailValues(node);
+          return (node.text || "") !== nextValues.text ||
+            (node.estimate || "") !== nextValues.estimate ||
+            (node.owner || "") !== nextValues.owner ||
+            !sameList(normalizeStatuses(node.statuses), nextValues.statuses) ||
+            normalizeProjectDate(node.start) !== nextValues.start ||
+            normalizeProjectDate(node.end) !== nextValues.end ||
+            normalizeProjectDate(node.deadline) !== nextValues.deadline ||
+            normalizeCcpmRemains(node.remains) !== nextValues.remains ||
+            Boolean(node.finished) !== nextValues.finished ||
+            (node.detail || "") !== nextValues.detail;
+        }
+        const nextEstimate = detailInlineValue("estimate");
+        const nextOwner = detailInlineValue("owner");
+        const nextStatuses = readStatusEditorValues();
+        const nextDetail = detailMarkdownEditor.value.replace(/\r\n/g, "\n").trim();
+        return (node.text || "") !== nextText ||
+          (node.estimate || "") !== nextEstimate ||
+          (node.owner || "") !== nextOwner ||
+          !sameList(normalizeStatuses(node.statuses), nextStatuses) ||
+          (node.detail || "") !== nextDetail;
+      }
+
+      function confirmPendingDetailEdit() {
+        if (!state.detailEditing) return true;
+        const node = findNode(state.detailEditingNodeId);
+        if (!node || !detailEditIsDirty(node)) {
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          return true;
+        }
+        const shouldSave = confirm("詳細に未保存の変更があります。保存してから移動しますか？\nOK: 保存して続行 / キャンセル: 編集を続ける");
+        if (!shouldSave) {
+          state.selected = { type: "node", id: node.id };
+          state.detailVisible = true;
+          state.detailEditing = true;
+          state.detailEditingNodeId = node.id;
+          setStatus("詳細の編集を続けています");
+          return false;
+        }
+        saveDetailEdit();
+        return true;
+      }
+
       function syncDetailEditorFields(node) {
         detailNameEditor.value = node.text || "";
         detailEstimateEditor.value = node.estimate || "";
@@ -9648,6 +9725,19 @@
         document.querySelectorAll("[data-status-editor]").forEach(input => {
           input.checked = statuses.has(input.dataset.statusEditor);
         });
+      }
+
+      function autoResizeTextarea(textarea) {
+        if (!(textarea instanceof HTMLTextAreaElement)) return;
+        const styles = getComputedStyle(textarea);
+        const minHeight = Number.parseFloat(styles.minHeight) || 0;
+        const borderHeight = textarea.offsetHeight - textarea.clientHeight;
+        textarea.style.height = "auto";
+        textarea.style.height = `${Math.max(minHeight, textarea.scrollHeight + borderHeight)}px`;
+      }
+
+      function autoResizeDetailTextareas(root = detailPanel) {
+        root.querySelectorAll("textarea").forEach(autoResizeTextarea);
       }
 
       function sameList(left, right) {
@@ -10582,8 +10672,21 @@
         autoLayout();
         render();
         saveState();
-        startTitleEdit(node.id);
+        startNewNodeEdit(node);
         setStatus(`${displayText(node)} を追加`);
+      }
+
+      function startNewNodeEdit(node) {
+        if (isSttNode(node)) {
+          state.selected = { type: "node", id: node.id };
+          state.editingNodeId = null;
+          state.editingNodeField = null;
+          state.pendingPort = null;
+          closePalette();
+          startDetailEdit("strategy");
+          return;
+        }
+        startTitleEdit(node.id);
       }
 
       function shortcutRootType() {
@@ -10685,6 +10788,7 @@
 
       function deleteSelection() {
         if (!state.selected) return;
+        if (!confirmPendingDetailEdit()) return;
         if (isEcDiagram()) {
           setStatus("ECの構造は固定です");
           return;
@@ -13780,6 +13884,7 @@
 
       function selectEdge(edgeId) {
         if (!findEdge(edgeId)) return;
+        if (!confirmPendingDetailEdit()) return;
         state.selected = { type: "edge", id: edgeId };
         state.pendingPort = null;
         state.editingNodeField = null;
@@ -14970,6 +15075,7 @@
       }
 
       function selectNodeInDirection(direction) {
+        if (!confirmPendingDetailEdit()) return;
         const current = selectedNode();
         if (!current || !isNodeVisibleInCurrentMode(current)) {
           const firstVisible = visibleNodes()[0];
@@ -15095,25 +15201,27 @@
 
         if (editing) {
           detailMarkdownEditor.value = node.detail || "";
+          requestAnimationFrame(() => autoResizeDetailTextareas());
         } else {
           syncDetailEditorFields(node);
         }
       }
 
       function openDetailPanel(nodeId) {
-        if (!findNode(nodeId)) return;
+        const node = findNode(nodeId);
+        if (!node) return;
+        if (state.detailEditing && state.detailEditingNodeId !== node.id && !confirmPendingDetailEdit()) return;
         state.selected = { type: "node", id: nodeId };
         state.detailVisible = true;
-        state.detailEditing = false;
-        state.detailEditingNodeId = null;
         state.pendingPort = null;
         state.editingNodeField = null;
         closePalette();
-        render();
+        startDetailEdit(defaultDetailFocusTarget(node));
         setStatus("詳細を表示");
       }
 
       function closeDetailPanel() {
+        if (!confirmPendingDetailEdit()) return;
         state.detailVisible = false;
         state.detailEditing = false;
         state.detailEditingNodeId = null;
@@ -15270,6 +15378,7 @@
       function selectSearchNode(nodeId) {
         const node = findNode(nodeId);
         if (!node || !isNodeVisibleInCurrentMode(node)) return;
+        if (state.detailEditing && state.detailEditingNodeId !== node.id && !confirmPendingDetailEdit()) return;
         state.selected = { type: "node", id: node.id };
         state.pendingPort = null;
         state.editingNodeId = null;
@@ -15287,10 +15396,6 @@
         const node = selectedNode();
         if (!node || !isNodeVisibleInCurrentMode(node)) {
           setStatus("詳細を開くノードを選択してください");
-          return;
-        }
-        if (state.detailEditing) {
-          setStatus("詳細を編集中です。保存またはキャンセルしてから閉じてください");
           return;
         }
         if (state.detailVisible && state.selected?.type === "node" && state.selected.id === node.id) {
@@ -15312,7 +15417,7 @@
         state.editingNodeId = null;
         state.editingNodeField = null;
         closePalette();
-        startDetailEdit("detail");
+        startDetailEdit(defaultDetailFocusTarget(node));
         setStatus("詳細編集を開始しました");
       }
 
@@ -15330,6 +15435,13 @@
         const selection = window.getSelection();
         selection.removeAllRanges();
         selection.addRange(range);
+      }
+
+      function defaultDetailFocusTarget(node) {
+        if (isSttNode(node)) return STT_FIELDS[0]?.key || "detail";
+        if (isCrtNode(node)) return "text";
+        if (isEcNode(node)) return "text";
+        return "title";
       }
 
       function startDetailEdit(focusTarget = "detail") {
@@ -17433,6 +17545,7 @@
 
       async function importGraphFile(file) {
         if (!file) return;
+        if (!confirmPendingDetailEdit()) return;
         try {
           const graph = await graphFromImportFile(file);
           recordHistory();
@@ -17446,6 +17559,7 @@
       function loadSampleGraph(sampleId) {
         const sample = SAMPLE_GRAPHS.find(item => item.id === sampleId);
         if (!sample) return;
+        if (!confirmPendingDetailEdit()) return;
 
         try {
           const parsed = JSON.parse(JSON.stringify(sample.data));
@@ -17459,6 +17573,8 @@
       }
 
       function handleCommand(command, source = null) {
+        const requiresDetailSave = new Set(["undo", "redo", "layout", "pfd-orientation", "pfd-reverse", "delete", "reset"]);
+        if (requiresDetailSave.has(command) && !confirmPendingDetailEdit()) return;
         if (command === "undo") {
           undo();
         } else if (command === "redo") {
@@ -17662,6 +17778,7 @@
             openDetailPanel(ganttNode.dataset.ganttNode);
             return;
           }
+          if (!confirmPendingDetailEdit()) return;
           state.selected = { type: "node", id: ganttNode.dataset.ganttNode };
           state.pendingPort = null;
           state.editingNodeId = null;
@@ -17674,6 +17791,7 @@
 
         const priorityNode = event.target.closest("[data-priority-node]");
         if (priorityNode) {
+          if (!confirmPendingDetailEdit()) return;
           state.selected = { type: "node", id: priorityNode.dataset.priorityNode };
           state.pendingPort = null;
           state.editingNodeId = null;
@@ -17692,6 +17810,7 @@
             completeConnection(id, side);
             return;
           }
+          if (!confirmPendingDetailEdit()) return;
           clearCenterClickTimer();
           const nodeField = nodeDetailFieldFromClick(nodeEl, event);
           if (nodeField) {
@@ -17724,6 +17843,7 @@
         }
 
         if (!event.target.closest(".dialog, .detail-panel")) {
+          if (!confirmPendingDetailEdit()) return;
           const hadSelection = Boolean(state.selected);
           const hadDetail = state.detailVisible || state.detailEditing || state.detailEditingNodeId;
           const hadTitleEdit = Boolean(state.editingNodeId);
@@ -17768,6 +17888,7 @@
 
       diagramTypeSelect.addEventListener("change", event => {
         setDiagramType(event.target.value);
+        event.target.blur();
       });
 
       nodeTextSizeSlider.addEventListener("input", event => {
@@ -17808,6 +17929,12 @@
             console.warn(error);
             setStatus("クリップボード画像を貼り付けできませんでした");
           });
+      });
+
+      detailPanel.addEventListener("input", event => {
+        if (event.target instanceof HTMLTextAreaElement) {
+          autoResizeTextarea(event.target);
+        }
       });
 
       document.addEventListener("change", event => {

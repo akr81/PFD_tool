@@ -157,6 +157,111 @@ test("clicking empty canvas clears node and edge selection", async () => {
   await expect(page.locator(".edge-handle")).toHaveCount(0);
 });
 
+test("detail panel opens directly in edit mode for PFD nodes", async () => {
+  await callApi(page, "reset", "pfd");
+  await page.locator(".node").first().dblclick();
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await expect(page.locator("#detailTitle")).toHaveAttribute("contenteditable", "true");
+  await expect(page.locator("#detailMarkdownEditor")).toBeVisible();
+});
+
+test("S&T detail panel opens with editable textareas", async () => {
+  await callApi(page, "reset", "stt");
+  await page.locator(".node").first().dblclick();
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await expect(page.locator(".stt-detail-textarea")).toHaveCount(5);
+});
+
+test("S&T shortcut a adds an unconnected upper item with editable strategy and tactics", async () => {
+  await callApi(page, "reset", "pfd");
+  await page.locator("#diagramTypeSelect").focus();
+  await page.locator("#diagramTypeSelect").selectOption("stt");
+  await expect(page.locator("#diagramTypeSelect")).toHaveValue("stt");
+
+  const initial = await callApi(page, "getState");
+  const anchor = initial.nodes[0];
+
+  await page.keyboard.press("a");
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await expect(page.locator(".stt-detail-textarea")).toHaveCount(5);
+
+  await page.locator('[data-stt-field="strategy"]').fill("上位戦略");
+  await page.locator('[data-stt-field="tactics"]').fill("上位戦術");
+  await page.keyboard.press("Control+Enter");
+
+  const payload = await callApi(page, "getState");
+  const added = payload.nodes.find(node => node.id !== anchor.id);
+
+  expect(payload.edges).toHaveLength(0);
+  expect(added.type).toBe("stt");
+  expect(added.stt.strategy).toBe("上位戦略");
+  expect(added.stt.tactics).toBe("上位戦術");
+});
+
+test("detail textareas grow to fit edited content", async () => {
+  await callApi(page, "reset", "stt");
+  await page.locator(".node").first().dblclick();
+
+  const textarea = page.locator(".stt-detail-textarea").first();
+  const beforeHeight = await textarea.evaluate(element => element.getBoundingClientRect().height);
+  await textarea.fill([
+    "1行目",
+    "2行目",
+    "3行目",
+    "4行目",
+    "5行目",
+    "6行目",
+    "7行目",
+    "8行目",
+    "9行目",
+    "10行目"
+  ].join("\n"));
+  const metrics = await textarea.evaluate(element => ({
+    height: element.getBoundingClientRect().height,
+    clientHeight: element.clientHeight,
+    scrollHeight: element.scrollHeight
+  }));
+
+  expect(metrics.height).toBeGreaterThan(beforeHeight);
+  expect(metrics.scrollHeight).toBeLessThanOrEqual(metrics.clientHeight + 1);
+});
+
+test("unsaved detail edits prompt before leaving and can be saved", async () => {
+  await callApi(page, "reset", "stt");
+  await page.locator(".node").first().dblclick();
+
+  await page.locator(".stt-detail-textarea").first().fill("未保存の仮説");
+
+  let keepEditingMessage = "";
+  page.once("dialog", async dialog => {
+    keepEditingMessage = dialog.message();
+    await dialog.dismiss();
+  });
+  await clickEmptyCanvas(page);
+  expect(keepEditingMessage).toContain("未保存");
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator(".stt-detail-textarea").first()).toHaveValue("未保存の仮説");
+
+  let saveMessage = "";
+  page.once("dialog", async dialog => {
+    saveMessage = dialog.message();
+    await dialog.accept();
+  });
+  await clickEmptyCanvas(page);
+  expect(saveMessage).toContain("未保存");
+
+  await expect(page.locator("#detailPanel")).not.toHaveClass(/open/);
+  const payload = await callApi(page, "getState");
+  expect(payload.nodes[0].stt.necessaryAssumption).toBe("未保存の仮説");
+});
+
 test("add root process button adds a PFD node", async () => {
   await callApi(page, "reset", "pfd");
   await page.locator('[data-add-root="process"]').click();

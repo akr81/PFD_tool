@@ -186,6 +186,41 @@ test("CRT long AND routes keep clearance from middle nodes", async ({ page }) =>
   expect(await edgeIntersectsElement(page, "study-edge-7", '.crt-and-node[data-crt-target-id="sleep_short"]', 8)).toBe(false);
 });
 
+test("CRT AND dropdown keeps the selected edge active", async ({ page }) => {
+  await loadApp(page);
+  await callApi(page, "loadGraph", {
+    diagramType: "crt",
+    crtLayoutMode: "tree",
+    viewMode: "simple",
+    nodeTextSize: 13,
+    nodes: [
+      { id: "effect", type: "crt", text: "effect", color: "Red" },
+      { id: "target", type: "crt", text: "target", color: "Yellow" },
+      { id: "left-cause", type: "crt", text: "left cause", color: "Blue" },
+      { id: "right-cause", type: "crt", text: "right cause", color: "Blue" }
+    ],
+    edges: [
+      { id: "edge-target-effect", from: "target", to: "effect" },
+      { id: "edge-left-target", from: "left-cause", to: "target" },
+      { id: "edge-right-target", from: "right-cause", to: "target" }
+    ]
+  });
+
+  await page.locator('path.edge-hit[data-edge-id="edge-left-target"]').click();
+  await expect(page.locator(".crt-and-editor")).toBeVisible();
+
+  const andSelect = page.locator('[data-crt-and-edge="edge-left-target"]');
+  await andSelect.click();
+
+  await expect(page.locator(".crt-and-editor")).toBeVisible();
+  await expect(page.locator('path.edge-dynamic.selected[data-edge-id="edge-left-target"]:not(.edge-hit)')).toHaveCount(1);
+
+  await andSelect.selectOption("__new__");
+  const payload = await callApi(page, "getState");
+  expect(payload.edges.find(edge => edge.id === "edge-left-target").and).toBe("1");
+  await expect(page.locator(".crt-and-editor")).toBeVisible();
+});
+
 test("CRT simple cause chains stay vertically aligned", async ({ page }) => {
   await loadApp(page);
   const pairs = [
@@ -203,6 +238,35 @@ test("CRT simple cause chains stay vertically aligned", async ({ page }) => {
       expect(Math.abs(nodes.get(fromId).x - nodes.get(toId).x), `${layoutMode} ${fromId} -> ${toId}`).toBeLessThan(1);
     });
   }
+});
+
+test("CRT tree layout propagates deeper layers for multi-target causes", async ({ page }) => {
+  await loadApp(page);
+  const payload = await callApi(page, "loadGraph", {
+    diagramType: "crt",
+    crtLayoutMode: "tree",
+    nodes: [
+      { id: "top-a", type: "crt", text: "結果A", color: "Red" },
+      { id: "top-b", type: "crt", text: "結果B", color: "Red" },
+      { id: "middle", type: "crt", text: "中間原因", color: "Yellow" },
+      { id: "shared", type: "crt", text: "複数結果につながる原因", color: "Blue" },
+      { id: "root", type: "crt", text: "根本原因", color: "Orange" }
+    ],
+    edges: [
+      { id: "edge-shared-a", from: "shared", to: "top-a" },
+      { id: "edge-middle-b", from: "middle", to: "top-b" },
+      { id: "edge-shared-middle", from: "shared", to: "middle" },
+      { id: "edge-root-shared", from: "root", to: "shared" }
+    ]
+  });
+  const nodes = new Map(payload.nodes.map(node => [node.id, node]));
+
+  for (const edge of payload.edges) {
+    expect(nodes.get(edge.from).gridY, edge.id).toBeGreaterThan(nodes.get(edge.to).gridY);
+  }
+  expect(nodes.get("shared").gridX).toBeGreaterThan(nodes.get("top-a").gridX);
+  expect(nodes.get("shared").gridX).toBeLessThan(nodes.get("middle").gridX);
+  expect(Math.abs(nodes.get("top-b").gridX - nodes.get("middle").gridX)).toBeLessThan(0.01);
 });
 
 test("single CRT AND nodes align vertically with their targets", async ({ page }) => {
@@ -348,4 +412,55 @@ test("CRT loops are explicit warnings and do not break tree layout", async ({ pa
   expect(payload.nodes.every(node => Number.isFinite(node.x) && Number.isFinite(node.y))).toBe(true);
   await expect(page.locator("path.edge.loop-warning:not(.edge-hit)")).not.toHaveCount(0);
   await expect(page.locator(".node.crt.loop-warning")).not.toHaveCount(0);
+});
+
+test("CRT loop connection can preserve the current node order", async ({ page }) => {
+  await loadApp(page);
+  const before = await callApi(page, "loadGraph", {
+    diagramType: "crt",
+    crtLayoutMode: "tree",
+    nodes: [
+      { id: "effect", type: "crt", text: "効果", color: "Red", gridX: 0, gridY: 0 },
+      { id: "middle", type: "crt", text: "中間原因", color: "Yellow", gridX: 0, gridY: 1 },
+      { id: "root", type: "crt", text: "根本原因", color: "Orange", gridX: 0, gridY: 2 }
+    ],
+    edges: [
+      { id: "edge-root-middle", from: "root", to: "middle" },
+      { id: "edge-middle-effect", from: "middle", to: "effect" }
+    ]
+  });
+  const beforePositions = new Map(before.nodes.map(node => [node.id, {
+    x: node.x,
+    y: node.y,
+    gridX: node.gridX,
+    gridY: node.gridY
+  }]));
+
+  await callApi(page, "selectNode", "effect");
+  await page.locator('.node[data-node-id="effect"] .port.top').click();
+  await page.locator('.mini-button[data-action="connect"]').click();
+
+  const dialogPromise = new Promise(resolve => {
+    page.once("dialog", async dialog => {
+      expect(dialog.message()).toContain("CRTにループ");
+      await dialog.accept();
+      resolve();
+    });
+  });
+  await page.locator('.node[data-node-id="root"]').click();
+  await dialogPromise;
+
+  const after = await callApi(page, "getState");
+  for (const node of after.nodes) {
+    expect({
+      x: node.x,
+      y: node.y,
+      gridX: node.gridX,
+      gridY: node.gridY
+    }).toEqual(beforePositions.get(node.id));
+  }
+
+  const loopEdge = after.edges.find(edge => edge.from === "effect" && edge.to === "root");
+  expect(loopEdge).toBeTruthy();
+  await expect(page.locator(`path.edge.loop-warning[data-edge-id="${loopEdge.id}"]:not(.edge-hit)`)).toHaveCount(1);
 });

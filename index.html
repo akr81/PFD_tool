@@ -9329,17 +9329,18 @@
       }
 
       function hasNodeDocumentDetail(node) {
-        return (node?.type === "artifact" || node?.type === "process")
+        return (node?.type === "artifact" || node?.type === "process" || isCrtNode(node))
           && typeof node.detail === "string"
           && node.detail.trim().length > 0;
       }
 
       function renderNodeDocumentIndicator(el, node) {
         if (!hasNodeDocumentDetail(node)) return;
+        const label = isCrtNode(node) ? "メモあり" : "ドキュメントあり";
         const indicator = document.createElement("span");
         indicator.className = "node-doc-indicator";
-        indicator.title = "ドキュメントあり";
-        indicator.setAttribute("aria-label", "ドキュメントあり");
+        indicator.title = label;
+        indicator.setAttribute("aria-label", label);
         indicator.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><path d="M8 13h8"></path><path d="M8 17h6"></path></svg>';
         el.append(indicator);
       }
@@ -9552,6 +9553,7 @@
 
       function renderCrtDetailFields(node, editing = false) {
         const value = (node.text || "").trim();
+        const detail = (node.detail || "").trim();
         const color = crtColorDefinition(node.color);
         if (editing) {
           return `
@@ -9559,6 +9561,10 @@
               <label class="crt-detail-field">
                 <strong>課題・状況</strong>
                 <textarea class="crt-detail-textarea" data-crt-field="text" rows="6" spellcheck="false">${escapeHtml(value)}</textarea>
+              </label>
+              <label class="crt-detail-field">
+                <strong>メモ</strong>
+                <textarea class="crt-detail-textarea" data-crt-field="detail" rows="5" spellcheck="false">${escapeHtml(detail)}</textarea>
               </label>
               <label class="crt-detail-field">
                 <strong>色</strong>
@@ -9574,11 +9580,15 @@
         }
         return `
           <div class="crt-detail-grid">
-            <div class="crt-detail-field" data-meta-field="crt-text">
+            <div class="crt-detail-field" data-meta-field="text">
               <strong>課題・状況</strong>
               <div class="crt-detail-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
             </div>
-            <div class="crt-detail-field" data-meta-field="crt-color">
+            <div class="crt-detail-field" data-meta-field="detail">
+              <strong>メモ</strong>
+              <div class="crt-detail-value${detail ? "" : " empty"}">${detail ? escapeHtml(detail) : "未設定"}</div>
+            </div>
+            <div class="crt-detail-field" data-meta-field="color">
               <strong>色</strong>
               <span class="crt-color-row">
                 <span class="crt-color-swatch" style="--crt-accent:${escapeAttribute(color.accent)};--crt-border:${escapeAttribute(color.border)}"></span>
@@ -9592,6 +9602,7 @@
       function readCrtDetailValues() {
         return {
           text: (detailMetaView.querySelector("[data-crt-field='text']")?.value || "").replace(/\r\n/g, "\n").trim(),
+          detail: (detailMetaView.querySelector("[data-crt-field='detail']")?.value || "").replace(/\r\n/g, "\n").trim(),
           color: normalizeCrtColor(detailMetaView.querySelector("[data-crt-field='color']")?.value)
         };
       }
@@ -9660,7 +9671,9 @@
         if (!state.detailEditing || !node || state.detailEditingNodeId !== node.id) return false;
         if (isCrtNode(node)) {
           const nextValues = readCrtDetailValues();
-          return (node.text || "") !== nextValues.text || normalizeCrtColor(node.color) !== nextValues.color;
+          return (node.text || "") !== nextValues.text ||
+            (node.detail || "") !== nextValues.detail ||
+            normalizeCrtColor(node.color) !== nextValues.color;
         }
         if (isEcNode(node)) {
           return (node.text || "") !== readEcDetailValue();
@@ -10550,6 +10563,43 @@
         return edge;
       }
 
+      function hasDirectedPath(startId, targetId, edges = state.edges) {
+        if (!startId || !targetId) return false;
+        const outgoing = new Map();
+        edges.forEach(edge => {
+          if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
+          outgoing.get(edge.from).push(edge.to);
+        });
+        const visited = new Set();
+        const stack = [startId];
+        while (stack.length) {
+          const id = stack.pop();
+          if (id === targetId) return true;
+          if (visited.has(id)) continue;
+          visited.add(id);
+          (outgoing.get(id) || []).forEach(nextId => {
+            if (!visited.has(nextId)) stack.push(nextId);
+          });
+        }
+        return false;
+      }
+
+      function connectionWouldCreateCrtLoop(fromId, toId) {
+        if (!isCrtDiagram()) return false;
+        const source = findNode(fromId);
+        const target = findNode(toId);
+        if (!isCrtNode(source) || !isCrtNode(target)) return false;
+        return hasDirectedPath(toId, fromId, state.edges);
+      }
+
+      function shouldKeepLayoutForCrtLoopConnection(fromId, toId) {
+        const source = findNode(fromId);
+        const target = findNode(toId);
+        return confirm(
+          `この接続はCRTにループを作ります。\n\n${displayText(source)} → ${displayText(target)}\n\nOK: ノードの並びを変えずに接続\nキャンセル: 自動レイアウトして接続`
+        );
+      }
+
       function nextFreeGridNear(origin, side, index = 0) {
         const occupied = new Set(state.nodes.map(node => `${node.gridX},${node.gridY}`));
         const dir = DIRS[side];
@@ -10771,14 +10821,18 @@
           setStatus("同じ接続がすでにあります");
           return false;
         }
+        const createsCrtLoop = connectionWouldCreateCrtLoop(fromId, toId);
+        const keepLayoutForLoop = createsCrtLoop && shouldKeepLayoutForCrtLoopConnection(fromId, toId);
         recordHistory();
         const edge = createEdge(fromId, toId);
         state.pendingPort = null;
         if (edge) {
           state.selected = { type: "edge", id: edge.id };
-          autoLayout();
+          if (!keepLayoutForLoop) autoLayout();
           saveState();
-          setStatus("接続を追加");
+          setStatus(createsCrtLoop
+            ? (keepLayoutForLoop ? "ループ接続を追加しました（並びを維持）" : "ループ接続を追加しました（自動レイアウト）")
+            : "接続を追加");
         } else {
           setStatus("同じ接続がすでにあります");
         }
@@ -11090,22 +11144,26 @@
           .sort((a, b) => isCrtDiagram()
             ? (stableNodeOrder.get(a.id) || 0) - (stableNodeOrder.get(b.id) || 0) || a.id.localeCompare(b.id)
             : a.gridY - b.gridY || a.gridX - b.gridX || a.id.localeCompare(b.id));
-        const queue = (roots.length ? roots : layoutNodes.slice(0, 1)).map(node => node.id);
-        const queued = new Set(queue);
-        for (let index = 0; index < queue.length; index += 1) {
-          const id = queue[index];
-          (incoming.get(id) || []).forEach(edge => {
-            const childLayer = Math.max(layer.get(edge.from) || 0, (layer.get(id) || 0) + 1);
-            if (childLayer !== layer.get(edge.from)) layer.set(edge.from, childLayer);
-            if (!queued.has(edge.from)) {
-              queued.add(edge.from);
-              queue.push(edge.from);
+        const reachable = new Set((roots.length ? roots : layoutNodes.slice(0, 1)).map(node => node.id));
+        for (let pass = 0; pass < layoutNodes.length; pass += 1) {
+          let changed = false;
+          layoutEdges.forEach(edge => {
+            if (!reachable.has(edge.to)) return;
+            if (!reachable.has(edge.from)) {
+              reachable.add(edge.from);
+              changed = true;
+            }
+            const childLayer = Math.max(layer.get(edge.from) || 0, (layer.get(edge.to) || 0) + 1);
+            if (childLayer !== layer.get(edge.from)) {
+              layer.set(edge.from, childLayer);
+              changed = true;
             }
           });
+          if (!changed) break;
         }
 
         layoutNodes.forEach((node, index) => {
-          if (!queued.has(node.id)) {
+          if (!reachable.has(node.id)) {
             layer.set(node.id, Math.max(0, Number.isFinite(node.gridY) ? node.gridY : index));
           }
         });
@@ -11415,6 +11473,8 @@
 
         straightenCrtSingleChains(layerKeys, groups, incoming, outgoing, xPosition);
         compactCrtTreeHorizontalSpace(layerKeys, groups, xPosition);
+        balanceCrtTreeMultiTargetSources(layerKeys, groups, outgoing, xPosition);
+        balanceCrtTreeTerminalTargets(layerKeys, groups, incoming, outgoing, xPosition);
       }
 
       function crtTreePrimaryTargets(layerKeys, groups, layerByNodeId, outgoing, xPosition) {
@@ -11565,6 +11625,79 @@
           ordered.forEach((node, index) => {
             xPosition.set(node.id, positions[index] + shift);
           });
+        });
+      }
+
+      function balanceCrtTreeMultiTargetSources(layerKeys, groups, outgoing, xPosition) {
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex) || [];
+          if (group.length < 1) return;
+          const ordered = [...group].sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          );
+
+          ordered.forEach((node, index) => {
+            const targetXs = (outgoing.get(node.id) || [])
+              .map(edge => xPosition.get(edge.to))
+              .filter(Number.isFinite);
+            if (targetXs.length < 2) return;
+            const desired = targetXs.reduce((sum, value) => sum + value, 0) / targetXs.length;
+            const current = xPosition.get(node.id);
+            if (!Number.isFinite(current)) return;
+            const previous = ordered[index - 1];
+            const next = ordered[index + 1];
+            const minX = previous
+              ? (xPosition.get(previous.id) || 0) + crtMinimumNodeGapUnits(previous, node)
+              : Number.NEGATIVE_INFINITY;
+            const maxX = next
+              ? (xPosition.get(next.id) || 0) - crtMinimumNodeGapUnits(node, next)
+              : Number.POSITIVE_INFINITY;
+            const nextX = Math.min(maxX, Math.max(minX, desired));
+            if (Number.isFinite(nextX)) xPosition.set(node.id, nextX);
+          });
+
+          groups.set(nodeLayerIndex, ordered.sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          ));
+        });
+      }
+
+      function balanceCrtTreeTerminalTargets(layerKeys, groups, incoming, outgoing, xPosition) {
+        layerKeys.forEach(nodeLayerIndex => {
+          const group = groups.get(nodeLayerIndex) || [];
+          if (group.length < 1) return;
+          const ordered = [...group].sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          );
+
+          ordered.forEach((node, index) => {
+            if ((outgoing.get(node.id) || []).length) return;
+            const sourceXs = (incoming.get(node.id) || [])
+              .map(edge => xPosition.get(edge.from))
+              .filter(Number.isFinite);
+            if (!sourceXs.length) return;
+            const desired = sourceXs.reduce((sum, value) => sum + value, 0) / sourceXs.length;
+            const current = xPosition.get(node.id);
+            if (!Number.isFinite(current)) return;
+            const previous = ordered[index - 1];
+            const next = ordered[index + 1];
+            const minX = previous
+              ? (xPosition.get(previous.id) || 0) + crtMinimumNodeGapUnits(previous, node)
+              : Number.NEGATIVE_INFINITY;
+            const maxX = next
+              ? (xPosition.get(next.id) || 0) - crtMinimumNodeGapUnits(node, next)
+              : Number.POSITIVE_INFINITY;
+            const nextX = Math.min(maxX, Math.max(minX, desired));
+            if (Number.isFinite(nextX)) xPosition.set(node.id, nextX);
+          });
+
+          groups.set(nodeLayerIndex, ordered.sort((a, b) =>
+            (xPosition.get(a.id) || 0) - (xPosition.get(b.id) || 0) ||
+            a.id.localeCompare(b.id)
+          ));
         });
       }
 
@@ -13689,6 +13822,11 @@
           event.stopPropagation();
           deleteSelection();
         });
+        ["pointerdown", "mousedown", "click", "dblclick"].forEach(eventName => {
+          editor.addEventListener(eventName, event => {
+            event.stopPropagation();
+          });
+        });
         edgeControlLayer.append(editor);
       }
 
@@ -15456,7 +15594,9 @@
           if (isCrtNode(node)) {
             const target = focusTarget === "color"
               ? detailMetaView.querySelector("[data-crt-field='color']")
-              : detailMetaView.querySelector("[data-crt-field='text']");
+              : (focusTarget === "detail"
+                ? detailMetaView.querySelector("[data-crt-field='detail']")
+                : detailMetaView.querySelector("[data-crt-field='text']"));
             target?.focus();
             if (target?.select) target.select();
           } else if (isEcNode(node)) {
@@ -15498,7 +15638,11 @@
         if (!node) return;
         if (isCrtNode(node)) {
           const nextValues = readCrtDetailValues();
-          if ((node.text || "") === nextValues.text && normalizeCrtColor(node.color) === nextValues.color) {
+          if (
+            (node.text || "") === nextValues.text &&
+            (node.detail || "") === nextValues.detail &&
+            normalizeCrtColor(node.color) === nextValues.color
+          ) {
             state.detailEditing = false;
             state.detailEditingNodeId = null;
             renderDetailPanel();
@@ -15507,6 +15651,7 @@
           }
           recordHistory();
           node.text = nextValues.text;
+          node.detail = nextValues.detail;
           node.color = nextValues.color;
           state.selected = { type: "node", id: node.id };
           state.detailVisible = true;
@@ -16501,7 +16646,16 @@
       }
 
       function downloadDateStamp() {
-        return new Date().toISOString().slice(0, 10);
+        const now = new Date();
+        return [
+          now.getFullYear(),
+          padFileDatePart(now.getMonth() + 1),
+          padFileDatePart(now.getDate())
+        ].join("") + "_" + [
+          padFileDatePart(now.getHours()),
+          padFileDatePart(now.getMinutes()),
+          padFileDatePart(now.getSeconds())
+        ].join("");
       }
 
       function diagramDownloadFileName(extension) {

@@ -176,6 +176,36 @@ test("S&T detail panel opens with editable textareas", async () => {
   await expect(page.locator(".stt-detail-textarea")).toHaveCount(5);
 });
 
+test("CRT detail memo stays out of the graph and renders a memo icon", async () => {
+  await callApi(page, "loadGraph", {
+    diagramType: "crt",
+    viewMode: "simple",
+    nodes: [
+      { id: "effect", type: "crt", text: "効果", color: "Red" }
+    ],
+    edges: []
+  });
+
+  const node = page.locator('.node[data-node-id="effect"]');
+  await expect(node).toContainText("効果");
+  await expect(node.locator(".node-doc-indicator")).toHaveCount(0);
+
+  await node.dblclick();
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await page.locator('[data-crt-field="detail"]').fill("詳細だけに置くメモ\nグラフ本文には出さない");
+  await page.locator('[data-detail="save"]').click();
+
+  await expect(page.locator("#detailPanel")).not.toHaveClass(/editing/);
+  await expect(page.locator('[data-meta-field="detail"]')).toContainText("詳細だけに置くメモ");
+  await expect(node).not.toContainText("詳細だけに置くメモ");
+  await expect(node.locator(".node-doc-indicator")).toHaveAttribute("aria-label", "メモあり");
+
+  const payload = await callApi(page, "getState");
+  expect(payload.nodes.find(item => item.id === "effect").detail).toBe("詳細だけに置くメモ\nグラフ本文には出さない");
+});
+
 test("S&T shortcut a adds an unconnected upper item with editable strategy and tactics", async () => {
   await callApi(page, "reset", "pfd");
   await page.locator("#diagramTypeSelect").focus();
@@ -377,7 +407,7 @@ test("SVG download command produces a file", async () => {
   const downloadPromise = page.waitForEvent("download");
   await page.locator('[data-command="download-svg"]').click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/\.svg$/);
+  expect(download.suggestedFilename()).toMatch(/^pfd-sketch-\d{8}_\d{6}\.svg$/);
 });
 
 test("JSON download command produces a file", async () => {
@@ -385,7 +415,7 @@ test("JSON download command produces a file", async () => {
   const downloadPromise = page.waitForEvent("download");
   await page.locator('[data-command="download"]').click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/\.json$/);
+  expect(download.suggestedFilename()).toMatch(/^pfd-sketch-\d{8}_\d{6}\.json$/);
 });
 
 test("CCPM sample renders gantt panel content", async () => {

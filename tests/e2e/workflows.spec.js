@@ -204,6 +204,41 @@ test("S&T shortcut a adds an unconnected upper item with editable strategy and t
   expect(added.stt.tactics).toBe("上位戦術");
 });
 
+test("shortcut a places loose nodes closer and wraps them in three columns", async () => {
+  await callApi(page, "loadGraph", {
+    diagramType: "pfd",
+    nodes: [
+      { id: "goal", type: "artifact", text: "Goal", gridX: 0, gridY: 0 },
+      { id: "step", type: "process", text: "Step", gridX: 1, gridY: 0 }
+    ],
+    edges: [{ id: "edge-goal-step", from: "goal", to: "step" }]
+  });
+
+  for (let i = 0; i < 4; i += 1) {
+    await page.keyboard.press("a");
+    const titleInput = page.locator("[data-title-input]");
+    await expect(titleInput).toBeVisible();
+    await titleInput.fill(`Loose ${i + 1}`);
+    await titleInput.evaluate(element => element.blur());
+    await expect(page.locator("[data-title-input]")).toHaveCount(0);
+  }
+
+  const payload = await callApi(page, "getState");
+  const connectedMaxGridX = Math.max(
+    ...payload.nodes
+      .filter(node => node.id === "goal" || node.id === "step")
+      .map(node => node.gridX)
+  );
+  const looseNodes = payload.nodes.filter(node => node.id !== "goal" && node.id !== "step");
+
+  expect(looseNodes.map(node => [node.gridX, node.gridY])).toEqual([
+    [connectedMaxGridX + 1, 0],
+    [connectedMaxGridX + 2, 0],
+    [connectedMaxGridX + 3, 0],
+    [connectedMaxGridX + 1, 1]
+  ]);
+});
+
 test("detail textareas grow to fit edited content", async () => {
   await callApi(page, "reset", "stt");
   await page.locator(".node").first().dblclick();

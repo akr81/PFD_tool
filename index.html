@@ -5281,7 +5281,7 @@
           </div>
           <div class="shortcut-row">
             <div class="shortcut-keys"><kbd class="shortcut-key">a</kbd></div>
-            <div class="shortcut-desc">接続なしでノードを追加（5列に整列）</div>
+            <div class="shortcut-desc">接続なしでノードを追加（3列に整列）</div>
           </div>
           <div class="shortcut-row">
             <div class="shortcut-keys"><kbd class="shortcut-key">F2</kbd><kbd class="shortcut-key">Space</kbd></div>
@@ -5325,7 +5325,7 @@
       const GRID_X = 250;
       const GRID_Y = 170;
       const LAYOUT_ROW_GAP = 1;
-      const LOOSE_NODE_COLUMNS = 5;
+      const LOOSE_NODE_COLUMNS = 3;
       const GANTT_LABEL_WIDTH = 214;
       const GANTT_HEADER_HEIGHT = 48;
       const GANTT_ROW_HEIGHT = 60;
@@ -10864,7 +10864,7 @@
         const connectedNodes = state.nodes.filter(node => (degree.get(node.id) || 0) > 0);
         const order = new Map(state.nodes.map((node, index) => [node.id, index]));
         const startGridX = connectedNodes.length
-          ? Math.ceil(Math.max(...connectedNodes.map(node => node.gridX)) + 2)
+          ? Math.ceil(Math.max(...connectedNodes.map(node => node.gridX)) + 1)
           : 0;
         const startGridY = connectedNodes.length
           ? Math.floor(Math.min(...connectedNodes.map(node => node.gridY)))

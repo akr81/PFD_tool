@@ -60,6 +60,58 @@ test("normalizeGraphData removes edges that point to missing nodes", async () =>
   expect(normalized.edges.map(edge => edge.id)).toEqual(["valid"]);
 });
 
+test("normalizeGraphData keeps PFD memos separate from flow nodes", async () => {
+  const normalized = await callApi(page, "normalizeGraphData", {
+    diagramType: "pfd",
+    nodes: [
+      { id: "a", type: "artifact", text: "A" },
+      { id: "p", type: "process", text: "P", estimate: "2d" },
+      {
+        id: "m",
+        type: "memo",
+        text: "Assumption note",
+        detail: "hidden detail",
+        estimate: "99d",
+        owner: "Owner",
+        statuses: ["done"],
+        start: "2026-01-01",
+        end: "2026-01-02",
+        deadline: "2026-01-03",
+        remains: 4,
+        finished: true
+      },
+      {
+        id: "m2",
+        type: "memo",
+        text: "Second note"
+      }
+    ],
+    edges: [
+      { id: "valid", from: "a", to: "p" },
+      { id: "memo-source", from: "m", to: "p" },
+      { id: "memo-target", from: "a", to: "m" },
+      { id: "memo-memo", from: "m", to: "m2" }
+    ]
+  });
+  const memo = normalized.nodes.find(node => node.id === "m");
+
+  expect(memo.type).toBe("memo");
+  expect(memo.text).toBe("Assumption note");
+  expect(memo.detail).toBe("");
+  expect(memo.estimate).toBe("");
+  expect(memo.owner).toBe("");
+  expect(memo.statuses).toEqual([]);
+  expect(memo.start).toBe("");
+  expect(memo.end).toBe("");
+  expect(memo.deadline).toBe("");
+  expect(memo.remains).toBe("");
+  expect(memo.finished).toBe(false);
+  expect(normalized.edges.map(edge => edge.id)).toEqual(["valid", "memo-source", "memo-target"]);
+  expect(normalized.edges.find(edge => edge.id === "valid").kind).toBeUndefined();
+  expect(normalized.edges.find(edge => edge.id === "memo-source").kind).toBe("annotation");
+  expect(normalized.edges.find(edge => edge.id === "memo-target").kind).toBe("annotation");
+});
+
 test("normalizeGraphData infers S&T diagram from fields", async () => {
   const normalized = await callApi(page, "normalizeGraphData", {
     nodes: [
@@ -85,6 +137,20 @@ test("normalizeGraphData infers CRT diagram from legacy shape", async () => {
   expect(normalized.diagramType).toBe("crt");
   expect(normalized.nodes.every(node => node.type === "crt")).toBe(true);
   expect(normalized.edges[0].and).toBe("1");
+});
+
+test("normalizeGraphData fixes CRT to detail tree mode", async () => {
+  const normalized = await callApi(page, "normalizeGraphData", {
+    diagramType: "crt",
+    crtLayoutMode: "compact",
+    viewMode: "simple",
+    nodes: [
+      { id: "effect", type: "crt", text: "Effect", color: "Red" }
+    ],
+    edges: []
+  });
+  expect(normalized.viewMode).toBe("detail");
+  expect(normalized.crtLayoutMode).toBe("tree");
 });
 
 test("normalizeGraphData infers EC diagram from fixed IDs", async () => {

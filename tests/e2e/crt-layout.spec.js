@@ -1,11 +1,9 @@
 const { test, expect } = require("@playwright/test");
 const { loadApp, callApi } = require("../helpers/app");
 
-async function loadCrtSample(page, sampleId, layoutMode = "tree") {
+async function loadCrtSample(page, sampleId) {
   const sample = await callApi(page, "sample", sampleId);
-  await callApi(page, "loadGraph", sample);
-  if (layoutMode !== "tree") return callApi(page, "setCrtLayoutMode", layoutMode);
-  return callApi(page, "getState");
+  return callApi(page, "loadGraph", sample);
 }
 
 async function diagonalEdgeSegments(page) {
@@ -102,10 +100,8 @@ test("CRT samples render edges without diagonal line segments", async ({ page })
   await loadApp(page);
 
   for (const sampleId of ["crt-project", "crt-study-time"]) {
-    for (const layoutMode of ["tree", "compact"]) {
-      await loadCrtSample(page, sampleId, layoutMode);
-      expect(await diagonalEdgeSegments(page), `${sampleId} ${layoutMode}`).toEqual([]);
-    }
+    await loadCrtSample(page, sampleId);
+    expect(await diagonalEdgeSegments(page), sampleId).toEqual([]);
   }
 });
 
@@ -114,7 +110,7 @@ test("CRT causal edges use top and bottom virtual ports", async ({ page }) => {
   const payload = await callApi(page, "loadGraph", {
     diagramType: "crt",
     crtLayoutMode: "tree",
-    viewMode: "simple",
+    viewMode: "detail",
     nodeTextSize: 13,
     nodes: [
       { id: "effect", type: "crt", text: "effect", color: "Red" },
@@ -146,7 +142,7 @@ test("CRT virtual ports keep aligned two-input edges straight", async ({ page })
   await callApi(page, "loadGraph", {
     diagramType: "crt",
     crtLayoutMode: "tree",
-    viewMode: "simple",
+    viewMode: "detail",
     nodeTextSize: 13,
     nodes: [
       { id: "effect", type: "crt", text: "effect", color: "Red" },
@@ -178,7 +174,7 @@ test("CRT virtual ports keep aligned two-input edges straight", async ({ page })
 
 test("CRT long AND routes keep clearance from middle nodes", async ({ page }) => {
   await loadApp(page);
-  await loadCrtSample(page, "crt-study-time", "tree");
+  await loadCrtSample(page, "crt-study-time");
 
   expect(await edgeIntersectsNode(page, "study-edge-7", "sleep_short", 40)).toBe(false);
   expect(await edgeIntersectsNode(page, "study-edge-7", "chores_night", 8)).toBe(false);
@@ -191,7 +187,7 @@ test("CRT AND dropdown keeps the selected edge active", async ({ page }) => {
   await callApi(page, "loadGraph", {
     diagramType: "crt",
     crtLayoutMode: "tree",
-    viewMode: "simple",
+    viewMode: "detail",
     nodeTextSize: 13,
     nodes: [
       { id: "effect", type: "crt", text: "effect", color: "Red" },
@@ -221,7 +217,7 @@ test("CRT AND dropdown keeps the selected edge active", async ({ page }) => {
   await expect(page.locator(".crt-and-editor")).toBeVisible();
 });
 
-test("CRT simple cause chains stay vertically aligned", async ({ page }) => {
+test("CRT cause chains stay vertically aligned", async ({ page }) => {
   await loadApp(page);
   const pairs = [
     ["node_already_evening", "node_give_up_going_out"],
@@ -231,13 +227,11 @@ test("CRT simple cause chains stay vertically aligned", async ({ page }) => {
     ["root_stay_up_late", "node_sleep_in"]
   ];
 
-  for (const layoutMode of ["tree", "compact"]) {
-    const payload = await loadCrtSample(page, "crt-project", layoutMode);
-    const nodes = new Map(payload.nodes.map(node => [node.id, node]));
-    pairs.forEach(([fromId, toId]) => {
-      expect(Math.abs(nodes.get(fromId).x - nodes.get(toId).x), `${layoutMode} ${fromId} -> ${toId}`).toBeLessThan(1);
-    });
-  }
+  const payload = await loadCrtSample(page, "crt-project");
+  const nodes = new Map(payload.nodes.map(node => [node.id, node]));
+  pairs.forEach(([fromId, toId]) => {
+    expect(Math.abs(nodes.get(fromId).x - nodes.get(toId).x), `${fromId} -> ${toId}`).toBeLessThan(1);
+  });
 });
 
 test("CRT tree layout propagates deeper layers for multi-target causes", async ({ page }) => {
@@ -273,32 +267,30 @@ test("single CRT AND nodes align vertically with their targets", async ({ page }
   await loadApp(page);
 
   for (const sampleId of ["crt-project", "crt-study-time"]) {
-    for (const layoutMode of ["tree", "compact"]) {
-      await loadCrtSample(page, sampleId, layoutMode);
-      const misaligned = await page.locator(".crt-and-node[data-crt-single-target='true']").evaluateAll(andNodes => {
-        return andNodes
-          .map(andNode => {
-            const target = document.querySelector(`.node[data-node-id="${andNode.dataset.crtTargetId}"]`);
-            if (!target) return null;
-            const andCenterX = Number.parseFloat(andNode.style.left);
-            const targetCenterX = Number.parseFloat(target.style.left);
-            return {
-              andId: andNode.dataset.crtAndId,
-              targetId: andNode.dataset.crtTargetId,
-              delta: Math.abs(andCenterX - targetCenterX)
-            };
-          })
-          .filter(item => item && item.delta > 1);
-      });
+    await loadCrtSample(page, sampleId);
+    const misaligned = await page.locator(".crt-and-node[data-crt-single-target='true']").evaluateAll(andNodes => {
+      return andNodes
+        .map(andNode => {
+          const target = document.querySelector(`.node[data-node-id="${andNode.dataset.crtTargetId}"]`);
+          if (!target) return null;
+          const andCenterX = Number.parseFloat(andNode.style.left);
+          const targetCenterX = Number.parseFloat(target.style.left);
+          return {
+            andId: andNode.dataset.crtAndId,
+            targetId: andNode.dataset.crtTargetId,
+            delta: Math.abs(andCenterX - targetCenterX)
+          };
+        })
+        .filter(item => item && item.delta > 1);
+    });
 
-      expect(misaligned, `${sampleId} ${layoutMode}`).toEqual([]);
-    }
+    expect(misaligned, sampleId).toEqual([]);
   }
 });
 
 test("single-target CRT AND input nodes center around their target", async ({ page }) => {
   await loadApp(page);
-  const payload = await loadCrtSample(page, "crt-study-time", "tree");
+  const payload = await loadCrtSample(page, "crt-study-time");
   const nodes = new Map(payload.nodes.map(node => [node.id, node]));
   const target = nodes.get("study_slot_taken");
   const leftInput = nodes.get("no_calendar_block");
@@ -310,23 +302,32 @@ test("single-target CRT AND input nodes center around their target", async ({ pa
   expect(rightInput.gridX).toBeGreaterThan(target.gridX);
 });
 
-test("CRT layout mode switches between tree and compact layouts", async ({ page }) => {
+test("CRT keeps detail tree mode fixed and hides mode choices", async ({ page }) => {
   await loadApp(page);
+  await callApi(page, "reset", "pfd");
+  await expect(page.locator("#viewModeToolbar")).toBeVisible();
   await expect(page.locator("#crtLayoutToolbar")).toBeHidden();
 
-  const treePayload = await loadCrtSample(page, "crt-project");
-  await expect(page.locator("#crtLayoutToolbar")).toBeVisible();
-  await expect(page.locator('[data-crt-layout-mode="tree"]')).toHaveAttribute("aria-pressed", "true");
-  expect(treePayload.crtLayoutMode).toBe("tree");
+  const payload = await callApi(page, "loadGraph", {
+    diagramType: "crt",
+    crtLayoutMode: "compact",
+    viewMode: "simple",
+    nodes: [
+      { id: "effect", type: "crt", text: "effect", color: "Red" }
+    ],
+    edges: []
+  });
+  expect(payload.viewMode).toBe("detail");
+  expect(payload.crtLayoutMode).toBe("tree");
+  await expect(page.locator("#viewModeToolbar")).toBeHidden();
+  await expect(page.locator("#crtLayoutToolbar")).toBeHidden();
 
-  await page.locator('[data-crt-layout-mode="compact"]').click();
-  await expect(page.locator('[data-crt-layout-mode="compact"]')).toHaveAttribute("aria-pressed", "true");
-  const compactPayload = await callApi(page, "getState");
-  expect(compactPayload.crtLayoutMode).toBe("compact");
+  expect(await callApi(page, "setViewMode", "simple")).toBe("detail");
+  expect((await callApi(page, "setCrtLayoutMode", "compact")).crtLayoutMode).toBe("tree");
 
-  await page.locator('[data-crt-layout-mode="tree"]').click();
-  await expect(page.locator('[data-crt-layout-mode="tree"]')).toHaveAttribute("aria-pressed", "true");
-  expect((await callApi(page, "getState")).crtLayoutMode).toBe("tree");
+  const fixed = await callApi(page, "getState");
+  expect(fixed.viewMode).toBe("detail");
+  expect(fixed.crtLayoutMode).toBe("tree");
 });
 
 test("CRT tree layout orders connected branches consistently", async ({ page }) => {

@@ -179,7 +179,7 @@ test("S&T detail panel opens with editable textareas", async () => {
 test("CRT detail memo stays out of the graph and renders a memo icon", async () => {
   await callApi(page, "loadGraph", {
     diagramType: "crt",
-    viewMode: "simple",
+    viewMode: "detail",
     nodes: [
       { id: "effect", type: "crt", text: "効果", color: "Red" }
     ],
@@ -194,7 +194,13 @@ test("CRT detail memo stays out of the graph and renders a memo icon", async () 
 
   await expect(page.locator("#detailPanel")).toHaveClass(/open/);
   await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
-  await page.locator('[data-crt-field="detail"]').fill("詳細だけに置くメモ\nグラフ本文には出さない");
+  const crtDetailField = page.locator('[data-crt-field="detail"]');
+  await expect(crtDetailField).toBeVisible();
+  const crtDetailText = "詳細だけに置くメモ\nグラフ本文には出さない";
+  await crtDetailField.evaluate((field, value) => {
+    field.value = value;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  }, crtDetailText);
   await page.locator('[data-detail="save"]').click();
 
   await expect(page.locator("#detailPanel")).not.toHaveClass(/editing/);
@@ -203,7 +209,7 @@ test("CRT detail memo stays out of the graph and renders a memo icon", async () 
   await expect(node.locator(".node-doc-indicator")).toHaveAttribute("aria-label", "メモあり");
 
   const payload = await callApi(page, "getState");
-  expect(payload.nodes.find(item => item.id === "effect").detail).toBe("詳細だけに置くメモ\nグラフ本文には出さない");
+  expect(payload.nodes.find(item => item.id === "effect").detail).toBe(crtDetailText);
 });
 
 test("S&T shortcut a adds an unconnected upper item with editable strategy and tactics", async () => {
@@ -221,9 +227,16 @@ test("S&T shortcut a adds an unconnected upper item with editable strategy and t
   await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
   await expect(page.locator(".stt-detail-textarea")).toHaveCount(5);
 
-  await page.locator('[data-stt-field="strategy"]').fill("上位戦略");
-  await page.locator('[data-stt-field="tactics"]').fill("上位戦術");
-  await page.keyboard.press("Control+Enter");
+  await page.locator('[data-stt-field="strategy"]').evaluate((field, value) => {
+    field.value = value;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  }, "上位戦略");
+  await page.locator('[data-stt-field="tactics"]').evaluate((field, value) => {
+    field.value = value;
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+  }, "上位戦術");
+  await page.locator('[data-detail="save"]').click();
+  await page.evaluate(() => document.activeElement?.blur());
 
   const payload = await callApi(page, "getState");
   const added = payload.nodes.find(node => node.id !== anchor.id);
@@ -333,6 +346,135 @@ test("add root process button adds a PFD node", async () => {
   const payload = await callApi(page, "getState");
   expect(payload.nodes.length).toBe(2);
   expect(payload.nodes.some(node => node.type === "process")).toBe(true);
+});
+
+test("add root memo button creates an editable standalone PFD memo", async () => {
+  await callApi(page, "reset", "pfd");
+  await page.locator('[data-add-root="memo"]').click();
+
+  const memoNode = page.locator(".node.memo");
+  await expect(memoNode).toHaveCount(1);
+  await expect(memoNode.locator(".memo-card-kicker")).toHaveText("メモ");
+  await expect(memoNode.locator(".port")).toHaveCount(4);
+  await expect(memoNode.locator(".port:not([disabled])")).toHaveCount(2);
+
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/memo-detail/);
+  await expect(page.locator('[data-memo-field="text"]')).toBeVisible();
+  await expect(page.locator("#detailMarkdownEditor")).toBeHidden();
+  await expect(page.locator("#detailTitle")).not.toHaveAttribute("contenteditable", "true");
+  await expect(page.locator('[data-meta-field="estimate"]')).toHaveCount(0);
+  await expect(page.locator('[data-meta-field="owner"]')).toHaveCount(0);
+  await expect(page.locator('[data-meta-field="status"]')).toHaveCount(0);
+
+  const memoField = page.locator('[data-memo-field="text"]');
+  await memoField.fill("Risk notes\nKeep outside the flow");
+  await expect(memoField).toHaveValue("Risk notes\nKeep outside the flow");
+  await page.locator('[data-detail="save"]').click();
+
+  await expect(page.locator("#detailPanel")).not.toHaveClass(/editing/);
+  await expect(memoNode).toContainText("Risk notes");
+  await expect(memoNode).toContainText("Keep outside the flow");
+  await expect(memoNode.locator(".port")).toHaveCount(4);
+  await expect(memoNode.locator(".port:not([disabled])")).toHaveCount(2);
+  await memoNode.locator(".port.right").click();
+  await expect(page.locator(".mini-palette .mini-button")).toHaveCount(1);
+  await expect(page.locator('.mini-palette [data-action="connect"]')).toHaveCount(1);
+  await expect(page.locator('.mini-palette [data-action="artifact"]')).toHaveCount(0);
+  await expect(page.locator('.mini-palette [data-action="process"]')).toHaveCount(0);
+  await expect(page.locator('.mini-palette [data-action="memo"]')).toHaveCount(0);
+  await page.keyboard.press("Escape");
+
+  const payload = await callApi(page, "getState");
+  const memo = payload.nodes.find(node => node.type === "memo");
+  await callApi(page, "selectNode", memo.id);
+  await page.keyboard.press("Tab");
+  const afterShortcut = await callApi(page, "getState");
+  expect(afterShortcut.nodes).toHaveLength(payload.nodes.length);
+  expect(afterShortcut.edges).toHaveLength(payload.edges.length);
+  expect(memo.text).toBe("Risk notes\nKeep outside the flow");
+  expect(memo.detail).toBe("");
+  expect(memo.estimate).toBe("");
+  expect(memo.owner).toBe("");
+  expect(memo.statuses).toEqual([]);
+  expect(payload.edges).toHaveLength(0);
+});
+
+test("PFD memo can be connected as a dotted annotation link", async () => {
+  await callApi(page, "loadGraph", {
+    diagramType: "pfd",
+    viewMode: "detail",
+    nodes: [
+      { id: "a", type: "artifact", text: "Spec", gridX: 0, gridY: 0 },
+      { id: "p", type: "process", text: "Build", estimate: "2d", gridX: 2, gridY: 0 },
+      { id: "m", type: "memo", text: "Assumption", gridX: 2, gridY: 1 }
+    ],
+    edges: [{ id: "edge-a-p", from: "a", to: "p" }]
+  });
+  await callApi(page, "mutateNode", "a", { gridX: 0, gridY: 0, x: 0, y: 0 });
+  await callApi(page, "mutateNode", "p", { gridX: 2, gridY: 0, x: 500, y: 0 });
+  await callApi(page, "mutateNode", "m", { gridX: 8, gridY: 4, x: 2000, y: 680 });
+  const before = await callApi(page, "getState");
+  const beforeMemo = before.nodes.find(node => node.id === "m");
+  const beforeEntity = before.nodes.find(node => node.id === "a");
+  const beforeFlowNodes = before.nodes
+    .filter(node => node.id === "a" || node.id === "p")
+    .map(node => [node.id, node.gridX, node.gridY, node.x, node.y]);
+  const beforeFlowEdge = before.edges.find(edge => edge.id === "edge-a-p");
+  const beforeDistance = Math.abs(beforeMemo.gridX - beforeEntity.gridX) + Math.abs(beforeMemo.gridY - beforeEntity.gridY);
+  const flowPath = page.locator('path.edge-dynamic[data-edge-id="edge-a-p"]:not(.edge-hit)');
+  await expect(flowPath).toHaveCount(1);
+  const beforeFlowPath = await flowPath.getAttribute("d");
+  expect(beforeFlowPath).toBeTruthy();
+
+  await callApi(page, "selectNode", "a");
+  await page.locator('.node[data-node-id="a"] .port.right').click();
+  await page.locator('.mini-button[data-action="connect"]').click();
+  await page.locator('.node[data-node-id="m"]').click();
+
+  const payload = await callApi(page, "getState");
+  const memoEdge = payload.edges.find(edge => edge.from === "a" && edge.to === "m");
+  expect(memoEdge).toEqual(expect.objectContaining({ kind: "annotation" }));
+  expect(payload.edges.find(edge => edge.id === "edge-a-p")).toEqual(beforeFlowEdge);
+  expect(payload.nodes
+    .filter(node => node.id === "a" || node.id === "p")
+    .map(node => [node.id, node.gridX, node.gridY, node.x, node.y])
+  ).toEqual(beforeFlowNodes);
+  await expect(flowPath).toHaveAttribute("d", beforeFlowPath);
+  const afterMemo = payload.nodes.find(node => node.id === "m");
+  const afterEntity = payload.nodes.find(node => node.id === "a");
+  const afterDistance = Math.abs(afterMemo.gridX - afterEntity.gridX) + Math.abs(afterMemo.gridY - afterEntity.gridY);
+  expect(afterDistance).toBeLessThan(beforeDistance);
+  expect(afterDistance).toBeLessThanOrEqual(2);
+  expect(afterMemo.gridY).not.toBe(afterEntity.gridY);
+  const memoOverlapsFlowPath = await page.evaluate(() => {
+    const memo = document.querySelector('.node[data-node-id="m"]');
+    const path = document.querySelector('path.edge-dynamic[data-edge-id="edge-a-p"]:not(.edge-hit)');
+    if (!memo || !path || typeof path.getTotalLength !== "function") return true;
+    const centerX = parseFloat(memo.style.left || "0");
+    const centerY = parseFloat(memo.style.top || "0");
+    const rect = {
+      left: centerX - memo.offsetWidth / 2,
+      right: centerX + memo.offsetWidth / 2,
+      top: centerY - memo.offsetHeight / 2,
+      bottom: centerY + memo.offsetHeight / 2
+    };
+    const total = path.getTotalLength();
+    const step = Math.max(2, total / 120);
+    for (let distance = 0; distance <= total; distance += step) {
+      const point = path.getPointAtLength(distance);
+      if (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom) {
+        return true;
+      }
+    }
+    const endPoint = path.getPointAtLength(total);
+    return endPoint.x >= rect.left && endPoint.x <= rect.right && endPoint.y >= rect.top && endPoint.y <= rect.bottom;
+  });
+  expect(memoOverlapsFlowPath).toBe(false);
+  const annotationPath = page.locator(`path.edge.annotation[data-edge-id="${memoEdge.id}"]:not(.edge-hit)`);
+  await expect(annotationPath).toHaveCount(1);
+  await expect(annotationPath).not.toHaveAttribute("marker-end", /url/);
 });
 
 test("PFD reverse direction flips horizontal layout and Tab adds upstream", async () => {

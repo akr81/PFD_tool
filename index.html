@@ -22,6 +22,10 @@
       --process: #f0fffb;
       --process-border: #188773;
       --process-glow: rgba(24, 135, 115, .18);
+      --memo: #fffdf4;
+      --memo-border: #8c6a2d;
+      --memo-glow: rgba(140, 106, 45, .18);
+      --memo-fold: #efe3c7;
       --stt: #f8fbff;
       --stt-border: #496b9e;
       --stt-glow: rgba(73, 107, 158, .18);
@@ -383,6 +387,26 @@
     .shape-icon.process {
       border-radius: 999px;
       color: var(--process-border);
+    }
+
+    .shape-icon.memo {
+      position: relative;
+      width: 20px;
+      height: 22px;
+      border-radius: 3px;
+      color: var(--memo-border);
+    }
+
+    .shape-icon.memo::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      background: #f4ead1;
     }
 
     .shape-icon.stt {
@@ -1218,6 +1242,18 @@
       pointer-events: none;
     }
 
+    .edge.annotation {
+      stroke: var(--memo-border);
+      stroke-dasharray: 7 6;
+      stroke-width: 2.4;
+      opacity: .86;
+    }
+
+    .edge.annotation.selected {
+      stroke: var(--accent-2);
+      opacity: 1;
+    }
+
     .edge-resource-label {
       align-items: center;
       background: rgba(255, 255, 255, .9);
@@ -1427,6 +1463,31 @@
       border-radius: 999px;
     }
 
+    .node.memo {
+      width: 264px;
+      min-height: 156px;
+      padding: 18px 20px 20px;
+      place-items: stretch;
+      background: var(--memo);
+      border-color: var(--memo-border);
+      border-radius: 6px;
+      box-shadow: 0 12px 28px rgba(64, 52, 35, .15);
+    }
+
+    .node.memo::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 24px;
+      height: 24px;
+      border-left: 2px solid var(--memo-border);
+      border-bottom: 2px solid var(--memo-border);
+      border-bottom-left-radius: 5px;
+      background: linear-gradient(135deg, var(--memo-fold) 0 50%, rgba(255, 255, 255, .86) 51% 100%);
+      pointer-events: none;
+    }
+
     .node.ccpm {
       width: 218px;
       min-height: 104px;
@@ -1539,6 +1600,10 @@
 
     .node.process.selected {
       box-shadow: 0 0 0 5px var(--process-glow), 0 14px 34px rgba(22, 31, 40, .18);
+    }
+
+    .node.memo.selected {
+      box-shadow: 0 0 0 5px var(--memo-glow), 0 14px 34px rgba(22, 31, 40, .18);
     }
 
     .node.ccpm.selected {
@@ -1667,6 +1732,40 @@
       font-weight: 600;
     }
 
+    .memo-card {
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      min-height: 100%;
+      pointer-events: none;
+    }
+
+    .memo-card-kicker {
+      justify-self: start;
+      padding: 2px 7px;
+      border: 1px solid rgba(140, 106, 45, .35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .74);
+      color: var(--memo-border);
+      font-size: calc(var(--node-text-size, 16px) * .68);
+      font-weight: 840;
+      line-height: 1.15;
+    }
+
+    .memo-card-value {
+      color: #2f2a20;
+      font-size: var(--node-text-size, 16px);
+      font-weight: 640;
+      line-height: 1.38;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .memo-card-value.empty {
+      color: #827665;
+      font-weight: 600;
+    }
+
     .ccpm-card {
       display: grid;
       align-content: center;
@@ -1771,6 +1870,11 @@
     .node.process.detail-mode {
       min-height: 100px;
       padding-block: 27px 24px;
+    }
+
+    .node.memo.detail-mode {
+      min-height: 170px;
+      padding-block: 22px;
     }
 
     .node.ccpm.detail-mode {
@@ -2207,6 +2311,10 @@
 
     .mini-button[data-action="process"] {
       color: var(--process-border);
+    }
+
+    .mini-button[data-action="memo"] {
+      color: var(--memo-border);
     }
 
     .mini-button[data-action="stt"] {
@@ -3394,6 +3502,12 @@
       background: #edfffa;
     }
 
+    .type-badge.memo {
+      border-color: rgba(140, 106, 45, .5);
+      color: var(--memo-border);
+      background: #fff7df;
+    }
+
     .type-badge.stt {
       border-color: rgba(73, 107, 158, .5);
       color: var(--stt-border);
@@ -3593,6 +3707,7 @@
 
     .detail-panel.stt-detail .detail-edit,
     .detail-panel.crt-detail .detail-edit,
+    .detail-panel.memo-detail .detail-edit,
     .detail-panel.ec-detail .detail-edit {
       display: none;
     }
@@ -3820,6 +3935,53 @@
     .ec-detail-textarea:focus {
       outline: 3px solid rgba(23, 123, 132, .18);
       border-color: var(--accent);
+    }
+
+    .memo-detail-field {
+      display: grid;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid rgba(140, 106, 45, .26);
+      border-radius: 8px;
+      background: #fffaf0;
+    }
+
+    .memo-detail-field strong {
+      color: var(--memo-border);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .memo-detail-value {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .memo-detail-value.empty {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .memo-detail-textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border: 1px solid #c9b783;
+      border-radius: 8px;
+      padding: 8px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .memo-detail-textarea:focus {
+      outline: 3px solid rgba(140, 106, 45, .18);
+      border-color: var(--memo-border);
     }
 
     .crt-detail-grid {
@@ -4797,6 +4959,10 @@
         <span class="shape-icon process" aria-hidden="true"></span>
         <span>プロセス</span>
       </button>
+      <button class="shape-button" data-add-root="memo" data-diagram-tool="pfd" title="メモを追加">
+        <span class="shape-icon memo" aria-hidden="true"></span>
+        <span>メモ</span>
+      </button>
       <button class="shape-button" data-add-root="ccpm" data-diagram-tool="ccpm" title="タスクを追加">
         <span class="shape-icon ccpm" aria-hidden="true"></span>
         <span>タスク</span>
@@ -5324,6 +5490,7 @@
     (() => {
       const GRID_X = 250;
       const GRID_Y = 170;
+      const MEMO_EDGE_CLEARANCE = 12;
       const LAYOUT_ROW_GAP = 1;
       const LOOSE_NODE_COLUMNS = 3;
       const GANTT_LABEL_WIDTH = 214;
@@ -6498,6 +6665,7 @@
         state.pfdOrientation = normalizePfdOrientation(state.pfdOrientation);
         state.pfdReverseDirection = normalizePfdReverseDirection(state.pfdReverseDirection);
         state.crtLayoutMode = normalizeCrtLayoutMode(state.crtLayoutMode);
+        enforceDiagramModeInvariants();
         state.project = makeDefaultProjectSettings();
         state.goalNavi = makeDefaultGoalNavi();
         state.selectedFeverDate = "";
@@ -6506,6 +6674,7 @@
           state.edges = [];
           state.selected = null;
           state.pendingPort = null;
+          state.editingNodeId = null;
           state.editingNodeField = null;
           state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
           state.detailVisible = false;
@@ -6518,6 +6687,7 @@
           state.edges = makeEcEdges();
           state.selected = { type: "node", id: "head" };
           state.pendingPort = null;
+          state.editingNodeId = null;
           state.editingNodeField = null;
           state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
           state.detailVisible = false;
@@ -6549,6 +6719,7 @@
         state.edges = [];
         state.selected = { type: "node", id: root.id };
         state.pendingPort = null;
+        state.editingNodeId = null;
         state.editingNodeField = null;
         state.nodeTextSize = DEFAULT_NODE_TEXT_SIZE;
         state.detailVisible = false;
@@ -6587,7 +6758,7 @@
             pfdOrientation: graphPfdOrientation(parsed),
             pfdReverseDirection: graphPfdReverseDirection(parsed),
             crtLayoutMode: graphCrtLayoutMode(parsed),
-            viewMode: parsed.viewMode === "detail" ? "detail" : null,
+            viewMode: graphViewMode(parsed, "goal"),
             nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
             ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
             ccpmPanelTab: normalizeCcpmPanelTab(parsed.ccpmPanelTab),
@@ -6627,19 +6798,21 @@
               ? String(node.text || node.title || node.id || "")
               : (typeof node.text === "string" ? node.text : (typeof node.title === "string" ? node.title : "")));
           if (type === "stt" && !stt.id) stt.id = text;
+          const memo = type === "memo";
+          const milestone = type === "ccpm-milestone";
           return {
             id,
             type,
             text,
-            detail: typeof node.detail === "string" ? node.detail : "",
-            estimate: type === "ccpm-milestone" ? "" : (typeof node.estimate === "string" ? node.estimate : ""),
-            owner: type === "ccpm-milestone" ? "" : (typeof node.owner === "string" ? node.owner : ""),
-            statuses: type === "ccpm-milestone" ? [] : normalizeStatuses(node.statuses),
-            start: type === "ccpm-milestone" ? "" : normalizeProjectDate(node.start),
-            end: type === "ccpm-milestone" ? "" : normalizeProjectDate(node.end),
-            deadline: normalizeProjectDate(node.deadline || node.due || node.dueDate),
-            remains: type === "ccpm-milestone" ? "" : normalizeCcpmRemains(node.remains),
-            finished: type === "ccpm-milestone" ? false : Boolean(node.finished),
+            detail: memo ? "" : (typeof node.detail === "string" ? node.detail : ""),
+            estimate: milestone || memo ? "" : (typeof node.estimate === "string" ? node.estimate : ""),
+            owner: milestone || memo ? "" : (typeof node.owner === "string" ? node.owner : ""),
+            statuses: milestone || memo ? [] : normalizeStatuses(node.statuses),
+            start: milestone || memo ? "" : normalizeProjectDate(node.start),
+            end: milestone || memo ? "" : normalizeProjectDate(node.end),
+            deadline: memo ? "" : normalizeProjectDate(node.deadline || node.due || node.dueDate),
+            remains: milestone || memo ? "" : normalizeCcpmRemains(node.remains),
+            finished: milestone || memo ? false : Boolean(node.finished),
             color: normalizeCrtColor(node.color),
             stt,
             x: Number.isFinite(node.x) ? node.x : index * GRID_X,
@@ -6658,7 +6831,7 @@
             const source = nodeById.get(from);
             const target = nodeById.get(to);
             if (!source || !target || source.id === target.id) return false;
-            if (diagramType === "pfd" && source.type === target.type) return false;
+            if (diagramType === "pfd" && !isPfdConnection(source, target)) return false;
             const key = `${source.id}->${target.id}`;
             if (seenPairs.has(key)) return false;
             seenPairs.add(key);
@@ -6668,12 +6841,18 @@
             let id = String(edge.id || `edge-import-${index + 1}`);
             while (usedEdgeIds.has(id)) id = `${id}-${index + 1}`;
             usedEdgeIds.add(id);
+            const from = edge.from || edge.source;
+            const to = edge.to || edge.destination;
+            const source = nodeById.get(from);
+            const target = nodeById.get(to);
+            const annotation = diagramType === "pfd" && isPfdAnnotationConnection(source, target);
             return {
               id,
-              from: edge.from || edge.source,
-              to: edge.to || edge.destination,
+              from,
+              to,
               fromSide: "right",
               toSide: "left",
+              kind: annotation ? "annotation" : undefined,
               and: diagramType === "crt" ? normalizeCrtAnd(edge.and) : undefined
             };
           });
@@ -6685,7 +6864,7 @@
           pfdOrientation: graphPfdOrientation(parsed),
           pfdReverseDirection: graphPfdReverseDirection(parsed),
           crtLayoutMode: graphCrtLayoutMode(parsed),
-          viewMode: parsed.viewMode === "detail" ? "detail" : null,
+          viewMode: graphViewMode(parsed, diagramType),
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
           ccpmPanelTab: normalizeCcpmPanelTab(parsed.ccpmPanelTab),
@@ -6719,7 +6898,7 @@
           pfdOrientation: graphPfdOrientation(parsed),
           pfdReverseDirection: graphPfdReverseDirection(parsed),
           crtLayoutMode: graphCrtLayoutMode(parsed),
-          viewMode: parsed.viewMode === "detail" ? "detail" : null,
+          viewMode: graphViewMode(parsed, "ec"),
           nodeTextSize: normalizeNodeTextSize(parsed.nodeTextSize),
           ganttHeight: normalizeGanttHeight(parsed.ganttHeight),
           ccpmPanelTab: normalizeCcpmPanelTab(parsed.ccpmPanelTab),
@@ -6742,6 +6921,7 @@
         }
         if (diagramType === "crt") return "crt";
         if (diagramType === "stt") return "stt";
+        if (diagramType === "pfd" && type === "memo") return "memo";
         return type === "process" ? "process" : "artifact";
       }
 
@@ -6787,13 +6967,18 @@
       }
 
       function normalizeCrtLayoutMode(value) {
-        return value === "compact" ? "compact" : "tree";
+        return "tree";
       }
 
       function graphCrtLayoutMode(graph = {}) {
         return normalizeCrtLayoutMode(
           graph.crtLayoutMode ?? graph.crt_layout_mode ?? graph.crtLayout ?? graph.layoutMode
         );
+      }
+
+      function graphViewMode(graph = {}, diagramType = graph.diagramType) {
+        if (diagramType === "crt") return "detail";
+        return graph.viewMode === "detail" ? "detail" : null;
       }
 
       function isPfdVertical() {
@@ -6820,6 +7005,12 @@
         return state.diagramType === "goal";
       }
 
+      function enforceDiagramModeInvariants() {
+        if (!isCrtDiagram()) return;
+        state.viewMode = "detail";
+        state.crtLayoutMode = "tree";
+      }
+
       function isUpwardDiagram() {
         return isSttDiagram() || isCrtDiagram();
       }
@@ -6842,6 +7033,44 @@
 
       function isSttNode(node) {
         return node?.type === "stt";
+      }
+
+      function isMemoNode(node) {
+        return node?.type === "memo";
+      }
+
+      function isPfdFlowNode(node) {
+        return node?.type === "artifact" || node?.type === "process";
+      }
+
+      function isPfdFlowConnection(source, target) {
+        return isPfdFlowNode(source) && isPfdFlowNode(target) && source.type !== target.type;
+      }
+
+      function isPfdAnnotationConnection(source, target) {
+        return (isMemoNode(source) && isPfdFlowNode(target)) || (isPfdFlowNode(source) && isMemoNode(target));
+      }
+
+      function isPfdConnection(source, target) {
+        return isPfdFlowConnection(source, target) || isPfdAnnotationConnection(source, target);
+      }
+
+      function isPfdAnnotationEdge(edge, nodeMap = null) {
+        const source = nodeMap ? nodeMap.get(edge?.from) : findNode(edge?.from);
+        const target = nodeMap ? nodeMap.get(edge?.to) : findNode(edge?.to);
+        return isPfdAnnotationConnection(source, target);
+      }
+
+      function isPfdFlowEdge(edge, nodeMap = null) {
+        const source = nodeMap ? nodeMap.get(edge?.from) : findNode(edge?.from);
+        const target = nodeMap ? nodeMap.get(edge?.to) : findNode(edge?.to);
+        return isPfdFlowConnection(source, target);
+      }
+
+      function edgeRouteOptions(source, target) {
+        if (!isPfdDiagram() || !isPfdFlowConnection(source, target)) return null;
+        const memoIds = state.nodes.filter(isMemoNode).map(node => node.id);
+        return memoIds.length ? { excludeNodeIds: new Set(memoIds) } : null;
       }
 
       function isCrtNode(node) {
@@ -6895,19 +7124,25 @@
         return !isEcDiagram() && !isGoalNaviDiagram();
       }
 
+      function nodeSupportsPorts(node) {
+        return supportsPorts() && (!isMemoNode(node) || isPfdDiagram());
+      }
+
       function cloneNodeData(node) {
         const milestone = isCcpmBufferNode(node);
+        const memo = isMemoNode(node);
         const clone = {
           ...node,
           type: milestone ? "ccpm-milestone" : node.type,
-          estimate: milestone ? "" : (typeof node.estimate === "string" ? node.estimate : ""),
-          owner: milestone ? "" : (typeof node.owner === "string" ? node.owner : ""),
-          statuses: milestone ? [] : normalizeStatuses(node.statuses),
-          start: milestone ? "" : normalizeProjectDate(node.start),
-          end: milestone ? "" : normalizeProjectDate(node.end),
-          deadline: normalizeProjectDate(node.deadline),
-          remains: milestone ? "" : normalizeCcpmRemains(node.remains),
-          finished: milestone ? false : Boolean(node.finished),
+          detail: memo ? "" : (typeof node.detail === "string" ? node.detail : ""),
+          estimate: milestone || memo ? "" : (typeof node.estimate === "string" ? node.estimate : ""),
+          owner: milestone || memo ? "" : (typeof node.owner === "string" ? node.owner : ""),
+          statuses: milestone || memo ? [] : normalizeStatuses(node.statuses),
+          start: milestone || memo ? "" : normalizeProjectDate(node.start),
+          end: milestone || memo ? "" : normalizeProjectDate(node.end),
+          deadline: memo ? "" : normalizeProjectDate(node.deadline),
+          remains: milestone || memo ? "" : normalizeCcpmRemains(node.remains),
+          finished: milestone || memo ? false : Boolean(node.finished),
           color: normalizeCrtColor(node.color)
         };
         if (node.type === "stt") clone.stt = normalizeSttFields(node.stt || node);
@@ -6975,6 +7210,7 @@
         state.nodes = graph.nodes.map(cloneNodeData);
         state.edges = graph.edges.map(edge => ({ ...edge }));
         if (graph.viewMode) state.viewMode = graph.viewMode;
+        enforceDiagramModeInvariants();
         state.nodeTextSize = normalizeNodeTextSize(graph.nodeTextSize);
         state.ganttHeight = normalizeGanttHeight(graph.ganttHeight);
         state.ccpmPanelTab = normalizeCcpmPanelTab(graph.ccpmPanelTab);
@@ -7017,6 +7253,7 @@
           state.nodes = graph.nodes.map(cloneNodeData);
           state.edges = graph.edges;
           if (graph.viewMode) state.viewMode = graph.viewMode;
+          enforceDiagramModeInvariants();
           state.nodeTextSize = normalizeNodeTextSize(graph.nodeTextSize);
           state.ganttHeight = normalizeGanttHeight(graph.ganttHeight);
           state.ccpmPanelTab = normalizeCcpmPanelTab(graph.ccpmPanelTab);
@@ -7086,6 +7323,7 @@
         state.crtLayoutMode = normalizeCrtLayoutMode(snapshot.crtLayoutMode);
         state.nodes = snapshot.nodes.map(cloneNodeData);
         state.edges = snapshot.edges.map(edge => ({ ...edge }));
+        enforceDiagramModeInvariants();
         state.ganttHeight = normalizeGanttHeight(snapshot.ganttHeight);
         state.project = normalizeProjectSettings(snapshot.project);
         state.goalNavi = cloneGoalNavi(snapshot.goalNavi);
@@ -7147,6 +7385,17 @@
       }
 
       function setViewMode(mode) {
+        if (isCrtDiagram()) {
+          const changed = state.viewMode !== "detail";
+          enforceDiagramModeInvariants();
+          updateViewModeControls();
+          if (changed) {
+            autoLayout();
+            render();
+            saveState();
+          }
+          return;
+        }
         const nextMode = mode === "detail" ? "detail" : "simple";
         if (state.viewMode === nextMode) return;
         if (!confirmPendingDetailEdit()) {
@@ -7165,7 +7414,10 @@
       function setCrtLayoutMode(mode) {
         if (!isCrtDiagram()) return;
         const nextMode = normalizeCrtLayoutMode(mode);
-        if (state.crtLayoutMode === nextMode) return;
+        if (state.crtLayoutMode === nextMode) {
+          updateCrtLayoutModeControls();
+          return;
+        }
         if (!confirmPendingDetailEdit()) {
           updateCrtLayoutModeControls();
           return;
@@ -7230,7 +7482,7 @@
           pfdReverseButton.hidden = !isPfdDiagram();
           updatePfdReverseButton();
         }
-        if (viewModeToolbar) viewModeToolbar.hidden = isGoalNaviDiagram();
+        if (viewModeToolbar) viewModeToolbar.hidden = isGoalNaviDiagram() || isCrtDiagram();
         updateCrtLayoutModeControls();
         document.querySelector(".text-size-toolbar").hidden = isGoalNaviDiagram();
         document.querySelectorAll('[data-command="layout"], [data-command="fit"], [data-command="delete"]').forEach(button => {
@@ -7295,7 +7547,7 @@
 
       function updateCrtLayoutModeControls() {
         if (!crtLayoutToolbar) return;
-        crtLayoutToolbar.hidden = !isCrtDiagram();
+        crtLayoutToolbar.hidden = true;
         crtLayoutToolbar.querySelectorAll("[data-crt-layout-mode]").forEach(button => {
           const active = button.dataset.crtLayoutMode === state.crtLayoutMode;
           button.classList.toggle("active", active);
@@ -7415,6 +7667,7 @@
         if (isCrtNode(node)) return null;
         if (isEcNode(node)) return null;
         if (isSttNode(node)) return null;
+        if (isMemoNode(node)) return null;
         const hotspot = event.target.closest("[data-node-field-hotspot]");
         if (hotspot) return hotspot.dataset.nodeFieldHotspot;
         const rect = nodeEl.getBoundingClientRect();
@@ -7457,6 +7710,7 @@
         if (isCcpmNode(node)) return "タスク";
         if (isCrtNode(node)) return "CRTエンティティ";
         if (isSttNode(node)) return "S&T項目";
+        if (isMemoNode(node)) return "メモ";
         return node.type === "process" ? "プロセス" : "成果物";
       }
 
@@ -7466,6 +7720,7 @@
         if (type === "ccpm") return "CCPMタスク";
         if (type === "crt") return "CRT";
         if (type === "stt") return "S&T項目";
+        if (type === "memo") return "メモ";
         return type === "process" ? "プロセス" : "成果物";
       }
 
@@ -7475,6 +7730,7 @@
         if (type === "ccpm") return "タスク";
         if (type === "crt") return "症状・結果";
         if (type === "stt") return "1";
+        if (type === "memo") return "メモ";
         return type === "process" ? "プロセス" : "成果物";
       }
 
@@ -7493,6 +7749,7 @@
         if (isCcpmDiagram()) return "ccpm";
         if (isCrtDiagram()) return "crt";
         if (isSttDiagram()) return "stt";
+        if (type === "memo") return "memo";
         return type === "process" ? "artifact" : "process";
       }
 
@@ -7614,7 +7871,10 @@
 
       function criticalPathInfo() {
         const nodeMap = new Map(state.nodes.map(node => [node.id, node]));
-        const validEdges = state.edges.filter(edge => nodeMap.has(edge.from) && nodeMap.has(edge.to));
+        const validEdges = state.edges.filter(edge => {
+          if (!nodeMap.has(edge.from) || !nodeMap.has(edge.to)) return false;
+          return !isPfdDiagram() || isPfdFlowEdge(edge, nodeMap);
+        });
         const outgoing = new Map(state.nodes.map(node => [node.id, []]));
         const indegree = new Map(state.nodes.map(node => [node.id, 0]));
         validEdges.forEach(edge => {
@@ -9353,6 +9613,7 @@
         if (isEcNode(node)) return renderEcDetailFields(node, editing);
         if (isCcpmNode(node)) return renderCcpmDetailFields(node, editing);
         if (isCrtNode(node)) return renderCrtDetailFields(node, editing);
+        if (isMemoNode(node)) return renderMemoDetailFields(node, editing);
         if (isSttNode(node)) return renderSttDetailFields(node, editing);
         const estimate = (node.estimate || "").trim();
         const owner = (node.owner || "").trim();
@@ -9375,6 +9636,24 @@
             <div><dt>担当者</dt><dd data-meta-field="owner">${owner ? escapeHtml(owner) : '<span class="detail-muted">未設定</span>'}</dd></div>
             <div><dt>状況</dt><dd data-meta-field="status">${statusHtml}</dd></div>
           </dl>
+        `;
+      }
+
+      function renderMemoDetailFields(node, editing = false) {
+        const value = (node.text || "").trim();
+        if (editing) {
+          return `
+            <label class="memo-detail-field">
+              <strong>本文</strong>
+              <textarea class="memo-detail-textarea" data-memo-field="text" rows="8" spellcheck="false">${escapeHtml(value)}</textarea>
+            </label>
+          `;
+        }
+        return `
+          <div class="memo-detail-field" data-meta-field="text">
+            <strong>本文</strong>
+            <div class="memo-detail-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+          </div>
         `;
       }
 
@@ -9426,6 +9705,10 @@
 
       function readEcDetailValue() {
         return (detailMetaView.querySelector("[data-ec-field='text']")?.value || "").replace(/\r\n/g, "\n").trim();
+      }
+
+      function readMemoDetailValue() {
+        return (detailMetaView.querySelector("[data-memo-field='text']")?.value || "").replace(/\r\n/g, "\n").trim();
       }
 
       function readCcpmDetailValues(node) {
@@ -9677,6 +9960,9 @@
         }
         if (isEcNode(node)) {
           return (node.text || "") !== readEcDetailValue();
+        }
+        if (isMemoNode(node)) {
+          return (node.text || "") !== readMemoDetailValue();
         }
         const nextText = (detailTitle.textContent || "").trim();
         if (isSttNode(node)) {
@@ -10245,11 +10531,12 @@
         }
         if (isCcpmDiagram()) return isCcpmNode(source) && isCcpmNode(target) && !isCcpmBufferNode(source);
         if (isCrtDiagram()) return isCrtNode(source) && isCrtNode(target);
+        if (isPfdDiagram()) return isPfdConnection(source, target);
         return isSttDiagram() ? source.type === "stt" && target.type === "stt" : source.type !== target.type;
       }
 
       function primaryOutgoingEdge(nodeId) {
-        const edges = state.edges.filter(edge => edge.from === nodeId && findNode(edge.to));
+        const edges = state.edges.filter(edge => edge.from === nodeId && findNode(edge.to) && (!isPfdDiagram() || isPfdFlowEdge(edge)));
         const downstreamSide = layoutDownstreamSide();
         return edges.find(edge => edge.fromSide === downstreamSide) || edges[0] || null;
       }
@@ -10485,10 +10772,34 @@
       }
 
       function pfdPortPlan(node, side) {
+        if (isMemoNode(node)) {
+          if (side === layoutDownstreamSide() || side === layoutUpstreamSide()) {
+            return {
+              enabled: true,
+              validType: null,
+              validTypes: [],
+              mode: "link",
+              connectable: true,
+              linkOnly: true,
+              title: side === layoutDownstreamSide()
+                ? "既存の成果物・プロセスへ注釈リンク"
+                : "既存の成果物・プロセスから注釈リンク"
+            };
+          }
+          return {
+            enabled: false,
+            validType: null,
+            mode: "parallel",
+            connectable: false,
+            target: null,
+            title: "メモの注釈リンクは流れの向きに接続します"
+          };
+        }
         if (side === layoutDownstreamSide()) {
           return {
             enabled: true,
             validType: oppositeType(node.type),
+            validTypes: [oppositeType(node.type), "memo"],
             mode: "downstream",
             connectable: true,
             title: "下流側に接続先を追加"
@@ -10498,6 +10809,7 @@
           return {
             enabled: true,
             validType: oppositeType(node.type),
+            validTypes: [oppositeType(node.type), "memo"],
             mode: "upstream",
             connectable: true,
             title: "上流側に接続元を追加"
@@ -10544,6 +10856,9 @@
       function createEdge(from, to, fromSide = "right", toSide = "left") {
         if (from === to) return null;
         if (!isValidConnection(from, to)) return null;
+        const source = findNode(from);
+        const target = findNode(to);
+        const annotation = isPfdDiagram() && isPfdAnnotationConnection(source, target);
         fromSide = layoutDownstreamSide();
         toSide = layoutUpstreamSide();
         const exists = state.edges.some(edge =>
@@ -10557,6 +10872,7 @@
           to,
           fromSide,
           toSide,
+          kind: annotation ? "annotation" : undefined,
           and: isCrtDiagram() ? "None" : undefined
         };
         state.edges.push(edge);
@@ -10600,8 +10916,11 @@
         );
       }
 
-      function nextFreeGridNear(origin, side, index = 0) {
-        const occupied = new Set(state.nodes.map(node => `${node.gridX},${node.gridY}`));
+      function nextFreeGridNear(origin, side, index = 0, excludedNodeIds = new Set()) {
+        const excluded = excludedNodeIds instanceof Set ? excludedNodeIds : new Set([excludedNodeIds].filter(Boolean));
+        const occupied = new Set(state.nodes
+          .filter(node => !excluded.has(node.id))
+          .map(node => `${node.gridX},${node.gridY}`));
         const dir = DIRS[side];
         const horizontal = side === "top" || side === "bottom";
         const offsets = [0, -1, 1, -2, 2, -3, 3, -4, 4];
@@ -10622,6 +10941,135 @@
         };
       }
 
+      function nodeRectAtGrid(node, spot, padding = 0) {
+        return nodeRect({
+          ...node,
+          gridX: spot.gridX,
+          gridY: spot.gridY,
+          x: spot.gridX * gridSpacingX(),
+          y: spot.gridY * gridSpacingY()
+        }, padding);
+      }
+
+      function pfdFlowEdgeSegmentsForMemoPlacement() {
+        if (!isPfdDiagram()) return [];
+        const segments = [];
+        state.edges.forEach(edge => {
+          const source = findNode(edge.from);
+          const target = findNode(edge.to);
+          if (!isPfdFlowConnection(source, target)) return;
+          const points = orthogonalRoutePoints(
+            source,
+            target,
+            edge.fromSide || layoutDownstreamSide(),
+            edge.toSide || layoutUpstreamSide(),
+            null,
+            edgeRouteOptions(source, target)
+          );
+          routeSegments(points).forEach(segment => segments.push(segment));
+        });
+        return segments;
+      }
+
+      function segmentRectIntersectionScore(segment, rect) {
+        if (!segmentIntersectsRect(segment.start, segment.end, rect)) return 0;
+        if (segment.horizontal) {
+          const left = Math.max(Math.min(segment.start.x, segment.end.x), rect.left);
+          const right = Math.min(Math.max(segment.start.x, segment.end.x), rect.right);
+          return 1 + Math.max(0, right - left) / 40;
+        }
+        if (segment.vertical) {
+          const top = Math.max(Math.min(segment.start.y, segment.end.y), rect.top);
+          const bottom = Math.min(Math.max(segment.start.y, segment.end.y), rect.bottom);
+          return 1 + Math.max(0, bottom - top) / 40;
+        }
+        return 1;
+      }
+
+      function memoEdgeOverlapScore(memo, spot, edgeSegments) {
+        if (!memo || !edgeSegments?.length) return 0;
+        const rect = nodeRectAtGrid(memo, spot, MEMO_EDGE_CLEARANCE);
+        return edgeSegments.reduce((sum, segment) => sum + segmentRectIntersectionScore(segment, rect), 0);
+      }
+
+      function nearestFreeGridAroundNode(origin, preferredSide, excludedNodeId = "", options = {}) {
+        const occupied = new Set(state.nodes
+          .filter(node => node.id !== excludedNodeId)
+          .map(node => `${node.gridX},${node.gridY}`));
+        const preferred = DIRS[preferredSide] || DIRS[layoutDownstreamSide()];
+        const avoidNode = options?.avoidNode || null;
+        const avoidSegments = Array.isArray(options?.avoidSegments) ? options.avoidSegments : [];
+        const directionScore = (dx, dy) => {
+          const alignment = dx * preferred.x + dy * preferred.y;
+          if (alignment > 0) return 0;
+          if (alignment === 0) return 1;
+          return 2;
+        };
+        const crossDistance = (dx, dy) => preferred.x ? Math.abs(dy) : Math.abs(dx);
+        let fallback = null;
+
+        for (let radius = 1; radius < 12; radius += 1) {
+          const candidates = [];
+          for (let dx = -radius; dx <= radius; dx += 1) {
+            for (let dy = -radius; dy <= radius; dy += 1) {
+              if (!dx && !dy) continue;
+              if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+              const gridX = origin.gridX + dx;
+              const gridY = origin.gridY + dy;
+              if (occupied.has(`${gridX},${gridY}`)) continue;
+              const edgeOverlap = memoEdgeOverlapScore(avoidNode, { gridX, gridY }, avoidSegments);
+              const baseScore = directionScore(dx, dy) * 100 + (Math.abs(dx) + Math.abs(dy)) * 10 + crossDistance(dx, dy);
+              candidates.push({
+                gridX,
+                gridY,
+                edgeOverlap,
+                score: edgeOverlap * 100000 + baseScore
+              });
+            }
+          }
+          candidates.sort((a, b) => a.score - b.score || a.gridX - b.gridX || a.gridY - b.gridY);
+          if (candidates[0]) {
+            if (!candidates[0].edgeOverlap) return { gridX: candidates[0].gridX, gridY: candidates[0].gridY };
+            if (!fallback || candidates[0].score < fallback.score) fallback = candidates[0];
+          }
+        }
+
+        if (fallback) return { gridX: fallback.gridX, gridY: fallback.gridY };
+        return nextFreeGridNear(origin, preferredSide, 0, new Set([excludedNodeId]));
+      }
+
+      function moveNodeToGrid(node, spot) {
+        if (!node || !spot) return false;
+        const sameGrid = node.gridX === spot.gridX && node.gridY === spot.gridY;
+        node.gridX = spot.gridX;
+        node.gridY = spot.gridY;
+        node.x = node.gridX * gridSpacingX();
+        node.y = node.gridY * gridSpacingY();
+        return !sameGrid;
+      }
+
+      function annotationMemoPlacement(edge) {
+        const source = findNode(edge?.from);
+        const target = findNode(edge?.to);
+        if (isMemoNode(source) && isPfdFlowNode(target)) {
+          return { memo: source, entity: target, preferredSide: edge.toSide || layoutUpstreamSide() };
+        }
+        if (isPfdFlowNode(source) && isMemoNode(target)) {
+          return { memo: target, entity: source, preferredSide: edge.fromSide || layoutDownstreamSide() };
+        }
+        return null;
+      }
+
+      function moveAnnotationMemoNearEntity(edge) {
+        const placement = annotationMemoPlacement(edge);
+        if (!placement) return false;
+        const spot = nearestFreeGridAroundNode(placement.entity, placement.preferredSide, placement.memo.id, {
+          avoidNode: placement.memo,
+          avoidSegments: pfdFlowEdgeSegmentsForMemoPlacement()
+        });
+        return moveNodeToGrid(placement.memo, spot);
+      }
+
       function isTypeAllowedByPlan(type, plan) {
         const normalizedType = normalizeNodeType(type);
         return Array.isArray(plan.validTypes)
@@ -10637,10 +11085,14 @@
           setStatus(plan.title);
           return;
         }
+        if (isPfdDiagram() && isMemoNode(anchor)) {
+          setStatus("メモは既存の成果物・プロセスへ注釈リンクします");
+          return;
+        }
         if (!isTypeAllowedByPlan(type, plan)) {
           setStatus(isCcpmDiagram()
             ? "CCPMタスクまたはマイルストーンを選んでください"
-            : (isCrtDiagram() ? "CRTエンティティを選んでください" : (isSttDiagram() ? "S&T項目を選んでください" : "成果物どうし、プロセスどうしは接続できません")));
+            : (isCrtDiagram() ? "CRTエンティティを選んでください" : (isSttDiagram() ? "S&T項目を選んでください" : "この接続では選んだ種類を追加できません")));
           return;
         }
 
@@ -10673,10 +11125,19 @@
         state.selected = { type: "node", id: node.id };
         state.pendingPort = null;
         closePalette();
-        autoLayout();
+        const annotation = isPfdAnnotationEdge(edge);
+        if (annotation) {
+          moveAnnotationMemoNearEntity(edge);
+        } else {
+          autoLayout();
+        }
         render();
         saveState();
-        startTitleEdit(node.id);
+        if (isMemoNode(node)) {
+          startNewNodeEdit(node);
+        } else {
+          startTitleEdit(node.id);
+        }
         if (plan.mode === "downstream") {
           setStatus(isCrtDiagram()
             ? `${displayText(anchor)} の結果として ${displayText(node)} を追加`
@@ -10719,7 +11180,7 @@
         recordHistory();
         const node = createNode(type, spot.gridX, spot.gridY);
         state.selected = { type: "node", id: node.id };
-        autoLayout();
+        if (!isMemoNode(node)) autoLayout();
         render();
         saveState();
         startNewNodeEdit(node);
@@ -10734,6 +11195,15 @@
           state.pendingPort = null;
           closePalette();
           startDetailEdit("strategy");
+          return;
+        }
+        if (isMemoNode(node)) {
+          state.selected = { type: "node", id: node.id };
+          state.editingNodeId = null;
+          state.editingNodeField = null;
+          state.pendingPort = null;
+          closePalette();
+          startDetailEdit("text");
           return;
         }
         startTitleEdit(node.id);
@@ -10828,11 +11298,16 @@
         state.pendingPort = null;
         if (edge) {
           state.selected = { type: "edge", id: edge.id };
-          if (!keepLayoutForLoop) autoLayout();
+          const annotation = isPfdAnnotationEdge(edge);
+          if (annotation) {
+            moveAnnotationMemoNearEntity(edge);
+          } else if (!keepLayoutForLoop) {
+            autoLayout();
+          }
           saveState();
           setStatus(createsCrtLoop
             ? (keepLayoutForLoop ? "ループ接続を追加しました（並びを維持）" : "ループ接続を追加しました（自動レイアウト）")
-            : "接続を追加");
+            : (annotation ? "注釈リンクを追加" : "接続を追加"));
         } else {
           setStatus("同じ接続がすでにあります");
         }
@@ -10848,19 +11323,24 @@
           return;
         }
         let message = "削除しました";
+        let skipAutoLayout = false;
         if (state.selected.type === "node") {
           const id = state.selected.id;
           if (state.nodes.length <= 1) {
             setStatus("最後のオブジェクトは残します");
             return;
           }
-          if (!findNode(id)) return;
+          const node = findNode(id);
+          if (!node) return;
+          skipAutoLayout = isPfdDiagram() && isMemoNode(node);
           recordHistory();
           state.nodes = state.nodes.filter(node => node.id !== id);
           state.edges = state.edges.filter(edge => edge.from !== id && edge.to !== id);
           message = "オブジェクトを削除しました";
         } else if (state.selected.type === "edge") {
-          if (!findEdge(state.selected.id)) return;
+          const edge = findEdge(state.selected.id);
+          if (!edge) return;
+          skipAutoLayout = isPfdDiagram() && isPfdAnnotationEdge(edge);
           recordHistory();
           state.edges = state.edges.filter(edge => edge.id !== state.selected.id);
           message = "接続を削除しました";
@@ -10868,7 +11348,7 @@
         state.selected = state.nodes[0] ? { type: "node", id: state.nodes[0].id } : null;
         state.pendingPort = null;
         closePalette();
-        autoLayout();
+        if (!skipAutoLayout) autoLayout();
         render();
         saveState();
         setStatus(message);
@@ -10959,7 +11439,15 @@
           return true;
         });
 
-        const layoutNodes = connectedLayoutNodes();
+        const layoutEdges = isPfdDiagram()
+          ? state.edges.filter(edge => isPfdFlowEdge(edge, nodeMap))
+          : state.edges;
+        const layoutNodeIds = new Set();
+        layoutEdges.forEach(edge => {
+          layoutNodeIds.add(edge.from);
+          layoutNodeIds.add(edge.to);
+        });
+        const layoutNodes = state.nodes.filter(node => layoutNodeIds.has(node.id));
         if (!layoutNodes.length) {
           layoutLooseNodes();
           return;
@@ -10968,7 +11456,7 @@
         const outgoing = new Map();
         const incoming = new Map();
         const indegree = new Map(layoutNodes.map(node => [node.id, 0]));
-        state.edges.forEach(edge => {
+        layoutEdges.forEach(edge => {
           if (!outgoing.has(edge.from)) outgoing.set(edge.from, []);
           if (!incoming.has(edge.to)) incoming.set(edge.to, []);
           outgoing.get(edge.from).push(edge);
@@ -12217,6 +12705,8 @@
               el.append(renderCcpmNodeContent(node, ccpmSchedule));
             } else if (isEcNode(node)) {
               el.append(renderEcNodeContent(node));
+            } else if (isMemoNode(node)) {
+              el.append(renderMemoNodeContent(node));
             } else {
               const label = document.createElement("div");
               label.className = "node-label";
@@ -12229,7 +12719,7 @@
           }
           renderNodeDocumentIndicator(el, node);
 
-          if (supportsPorts() && selected) SIDES.forEach(side => {
+          if (nodeSupportsPorts(node) && selected) SIDES.forEach(side => {
             const plan = portPlan(node, side);
             const enabled = isPortEnabled(node, side);
             const port = document.createElement("button");
@@ -12285,6 +12775,17 @@
         const value = (node.text || "").trim();
         wrapper.innerHTML = `
           <div class="crt-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
+        `;
+        return wrapper;
+      }
+
+      function renderMemoNodeContent(node) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "memo-card";
+        const value = (node.text || "").trim();
+        wrapper.innerHTML = `
+          <div class="memo-card-kicker">メモ</div>
+          <div class="memo-card-value${value ? "" : " empty"}">${value ? escapeHtml(value) : "未設定"}</div>
         `;
         return wrapper;
       }
@@ -12368,6 +12869,7 @@
         if (isCrtNode(node)) return;
         if (isEcNode(node)) return;
         if (isSttNode(node)) return;
+        if (isMemoNode(node)) return;
         const bufferNode = isCcpmBufferNode(node);
         const statuses = bufferNode ? [] : normalizeStatuses(node.statuses);
         const editingField = state.editingNodeField?.nodeId === node.id ? state.editingNodeField.field : null;
@@ -13654,22 +14156,24 @@
           const dependencyCritical = dependencyCriticalEdges.has(edge.id);
           const loop = loopEdges.has(edge.id);
           const conflict = edge.kind === "conflict";
+          const annotation = isPfdAnnotationConnection(from, to);
           const andGroup = crtAnd.edgeToGroup.get(edge.id);
           const targetNode = andGroup || to;
           const targetSide = andGroup ? "bottom" : edge.toSide;
+          const routeOptions = edgeRouteOptions(from, to);
           const route = !conflict && isCrtDiagram()
             ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes, { edgeId: edge.id, loop, crtAnd })
             : null;
           const drawFromSide = route?.fromSide || edge.fromSide;
           const drawToSide = route?.toSide || targetSide;
-          const d = conflict ? conflictPath(from, to, edge.fromSide, edge.toSide) : (route?.d || edgePath(from, targetNode, edge.fromSide, targetSide));
+          const d = conflict ? conflictPath(from, to, edge.fromSide, edge.toSide) : (route?.d || edgePath(from, targetNode, edge.fromSide, targetSide, routeOptions));
           if (route) crtRenderedRoutes.push({ points: route.points, edgeId: edge.id });
 
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("class", `edge edge-dynamic${critical ? " critical" : ""}${!critical && dependencyCritical ? " dependency-critical" : ""}${loop ? " loop-warning" : ""}${conflict ? " conflict" : ""}${selected ? " selected" : ""}`);
+          path.setAttribute("class", `edge edge-dynamic${annotation ? " annotation" : ""}${critical ? " critical" : ""}${!critical && dependencyCritical ? " dependency-critical" : ""}${loop ? " loop-warning" : ""}${conflict ? " conflict" : ""}${selected ? " selected" : ""}`);
           path.setAttribute("d", d);
           path.dataset.edgeId = edge.id;
-          if (!conflict) {
+          if (!conflict && !annotation) {
             path.setAttribute("marker-end", loop ? "url(#arrow-warning)" : (critical ? "url(#arrow-critical)" : (dependencyCritical ? "url(#arrow-dependency)" : (selected ? "url(#arrow-selected)" : "url(#arrow)"))));
           }
           edgesSvg.append(path);
@@ -13707,7 +14211,7 @@
 
           if (!selected) return;
 
-          const midpoint = route?.midpoint || edgeMidpoint(from, targetNode, drawFromSide, drawToSide);
+          const midpoint = route?.midpoint || edgeMidpoint(from, targetNode, drawFromSide, drawToSide, routeOptions);
           const handle = document.createElement("button");
           handle.className = `edge-handle${selected ? " selected" : ""}`;
           handle.type = "button";
@@ -14031,7 +14535,10 @@
         state.detailEditingNodeId = null;
         closePalette();
         render();
-        setStatus(isCrtDiagram() ? "接続を選択しました。AND条件を設定できます" : "接続を選択しました。削除ボタンまたはDeleteキーで消せます");
+        const edge = findEdge(edgeId);
+        setStatus(isCrtDiagram()
+          ? "接続を選択しました。AND条件を設定できます"
+          : (isPfdAnnotationEdge(edge) ? "注釈リンクを選択しました。削除ボタンまたはDeleteキーで消せます" : "接続を選択しました。削除ボタンまたはDeleteキーで消せます"));
       }
 
       function renderGhostEdge() {
@@ -14082,6 +14589,9 @@
         if (node.type === "crtAnd") {
           return { width: 58, height: 34 };
         }
+        if (isMemoNode(node)) {
+          return estimateMemoNodeSize(node);
+        }
         if (isCcpmNode(node)) {
           return estimateCcpmNodeSize(node);
         }
@@ -14093,6 +14603,20 @@
           height: node.type === "process"
             ? (detailMode ? 100 : 86)
             : (detailMode ? 90 : 72)
+        };
+      }
+
+      function estimateMemoNodeSize(node) {
+        const detailMode = state.viewMode === "detail";
+        const width = detailMode ? 276 : 264;
+        const minHeight = detailMode ? 170 : 156;
+        const textSize = normalizeNodeTextSize(state.nodeTextSize);
+        const charsPerLine = Math.max(10, Math.floor((width - 42) / (textSize * .82)));
+        const lines = estimateWrappedLines(node.text || "メモ", charsPerLine);
+        const contentHeight = lines * Math.max(18, textSize * 1.38);
+        return {
+          width,
+          height: Math.ceil(Math.max(minHeight, 48 + contentHeight))
         };
       }
 
@@ -14176,8 +14700,8 @@
         }, 0);
       }
 
-      function edgePath(from, to, fromSide, toSide) {
-        return roundedPolylinePath(orthogonalRoutePoints(from, to, fromSide, toSide), 24);
+      function edgePath(from, to, fromSide, toSide, routeOptions = null) {
+        return roundedPolylinePath(orthogonalRoutePoints(from, to, fromSide, toSide, null, routeOptions), 24);
       }
 
       function conflictPath(from, to, fromSide, toSide) {
@@ -14198,8 +14722,8 @@
         return points.map((point, index) => `${index ? "L" : "M"} ${point.x} ${point.y}`).join(" ");
       }
 
-      function edgeMidpoint(from, to, fromSide, toSide) {
-        return polylineMidpoint(dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide)));
+      function edgeMidpoint(from, to, fromSide, toSide, routeOptions = null) {
+        return polylineMidpoint(dedupeRoutePoints(orthogonalRoutePoints(from, to, fromSide, toSide, null, routeOptions)));
       }
 
       function crtAutoRoute(from, to, preferredFromSide = "top", preferredToSide = "bottom", renderedRoutes = [], options = {}) {
@@ -14737,8 +15261,11 @@
         const nodePadding = Number.isFinite(options?.nodePadding) ? options.nodePadding : 22;
         const endpointPadding = Number.isFinite(options?.endpointPadding) ? options.endpointPadding : 12;
         const endpoints = new Set([from?.id, to?.id].filter(Boolean));
+        const excludedNodeIds = options?.excludeNodeIds instanceof Set
+          ? options.excludeNodeIds
+          : new Set(options?.excludeNodeIds || []);
         const obstacles = visibleNodes()
-          .filter(node => !endpoints.has(node.id))
+          .filter(node => !endpoints.has(node.id) && !excludedNodeIds.has(node.id))
           .map(node => ({ ...nodeRect(node, nodePadding), role: "obstacle" }));
         const crtAndGroupsForRoute = isCrtDiagram()
           ? (options?.crtAnd?.groups || crtAndGroups().groups)
@@ -14999,6 +15526,9 @@
             <button class="mini-button" data-action="process" title="プロセスを作成" aria-label="プロセスを作成">
               <span class="shape-icon process" aria-hidden="true"></span>
             </button>
+            <button class="mini-button" data-action="memo" title="メモを作成" aria-label="メモを作成">
+              <span class="shape-icon memo" aria-hidden="true"></span>
+            </button>
             <button class="mini-button" data-action="connect" title="接続を開始" aria-label="接続を開始">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M10 13a5 5 0 0 0 7.1 0l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"></path>
@@ -15008,18 +15538,27 @@
           `);
         const artifactButton = palette.querySelector('[data-action="artifact"]');
         const processButton = palette.querySelector('[data-action="process"]');
+        const memoButton = palette.querySelector('[data-action="memo"]');
         const sttButton = palette.querySelector('[data-action="stt"]');
         const crtButton = palette.querySelector('[data-action="crt"]');
         const ccpmButton = palette.querySelector('[data-action="ccpm"]');
         const ccpmBufferButton = palette.querySelector('[data-action="ccpm-buffer"], [data-action="ccpm-milestone"]');
         const connectButton = palette.querySelector('[data-action="connect"]');
+        if (plan.linkOnly) {
+          [artifactButton, processButton, memoButton, sttButton, crtButton, ccpmButton, ccpmBufferButton]
+            .forEach(button => button?.remove());
+        }
         if (artifactButton) {
-          artifactButton.disabled = plan.validType !== "artifact";
+          artifactButton.disabled = !isTypeAllowedByPlan("artifact", plan);
           artifactButton.title = artifactButton.disabled ? "この接続では成果物を選べません" : "成果物を作成";
         }
         if (processButton) {
-          processButton.disabled = plan.validType !== "process";
+          processButton.disabled = !isTypeAllowedByPlan("process", plan);
           processButton.title = processButton.disabled ? "この接続ではプロセスを選べません" : "プロセスを作成";
+        }
+        if (memoButton) {
+          memoButton.disabled = !isTypeAllowedByPlan("memo", plan);
+          memoButton.title = memoButton.disabled ? "この接続ではメモを選べません" : "メモを作成";
         }
         if (sttButton) {
           sttButton.disabled = plan.validType !== "stt";
@@ -15110,6 +15649,7 @@
         if (!node || state.viewMode !== "detail") return;
         if (isCrtNode(node)) return;
         if (isEcNode(node)) return;
+        if (isMemoNode(node)) return;
         state.selected = { type: "node", id: node.id };
         state.editingNodeId = null;
         state.editingNodeField = { nodeId: node.id, field };
@@ -15313,7 +15853,7 @@
       function renderDetailPanel() {
         const node = selectedNode();
         if (!node || !isNodeVisibleInCurrentMode(node) || !state.detailVisible) {
-          detailPanel.classList.remove("open", "editing", "stt-detail", "crt-detail", "ccpm-detail", "ec-detail");
+          detailPanel.classList.remove("open", "editing", "stt-detail", "crt-detail", "memo-detail", "ccpm-detail", "ec-detail");
           return;
         }
 
@@ -15322,12 +15862,13 @@
         detailPanel.classList.toggle("editing", editing);
         detailPanel.classList.toggle("stt-detail", isSttNode(node));
         detailPanel.classList.toggle("crt-detail", isCrtNode(node));
+        detailPanel.classList.toggle("memo-detail", isMemoNode(node));
         detailPanel.classList.toggle("ccpm-detail", isCcpmNode(node));
         detailPanel.classList.toggle("ec-detail", isEcNode(node));
         detailTypeBadge.className = `type-badge ${node.type}`;
         detailTypeBadge.textContent = nodeTypeLabel(node.type);
         detailTitle.textContent = isEcNode(node) ? ecNodeTitle(node) : displayText(node);
-        if (editing && !isEcNode(node) && !isCrtNode(node)) {
+        if (editing && !isEcNode(node) && !isCrtNode(node) && !isMemoNode(node)) {
           detailTitle.setAttribute("contenteditable", "true");
           detailTitle.setAttribute("spellcheck", "false");
         } else {
@@ -15335,7 +15876,7 @@
           detailTitle.removeAttribute("spellcheck");
         }
         detailMetaView.innerHTML = renderDetailMeta(node, editing);
-        detailMarkdownView.innerHTML = (isSttNode(node) || isCrtNode(node) || isEcNode(node)) ? "" : renderMarkdown(node.detail || "");
+        detailMarkdownView.innerHTML = (isSttNode(node) || isCrtNode(node) || isMemoNode(node) || isEcNode(node)) ? "" : renderMarkdown(node.detail || "");
 
         if (editing) {
           detailMarkdownEditor.value = node.detail || "";
@@ -15579,6 +16120,7 @@
         if (isSttNode(node)) return STT_FIELDS[0]?.key || "detail";
         if (isCrtNode(node)) return "text";
         if (isEcNode(node)) return "text";
+        if (isMemoNode(node)) return "text";
         return "title";
       }
 
@@ -15601,6 +16143,10 @@
             if (target?.select) target.select();
           } else if (isEcNode(node)) {
             const target = detailMetaView.querySelector("[data-ec-field='text']");
+            target?.focus();
+            target?.select();
+          } else if (isMemoNode(node)) {
+            const target = detailMetaView.querySelector("[data-memo-field='text']");
             target?.focus();
             target?.select();
           } else if (focusTarget === "title") {
@@ -15682,6 +16228,36 @@
           render();
           saveState();
           setStatus("ECを保存しました");
+          return;
+        }
+        if (isMemoNode(node)) {
+          const nextText = readMemoDetailValue();
+          if ((node.text || "") === nextText) {
+            state.detailEditing = false;
+            state.detailEditingNodeId = null;
+            renderDetailPanel();
+            setStatus("詳細は変更されていません");
+            return;
+          }
+          recordHistory();
+          node.text = nextText;
+          node.detail = "";
+          node.estimate = "";
+          node.owner = "";
+          node.statuses = [];
+          node.start = "";
+          node.end = "";
+          node.deadline = "";
+          node.remains = "";
+          node.finished = false;
+          state.selected = { type: "node", id: node.id };
+          state.detailVisible = true;
+          state.detailEditing = false;
+          state.detailEditingNodeId = null;
+          if (!isPfdDiagram()) autoLayout();
+          render();
+          saveState();
+          setStatus("メモを保存しました");
           return;
         }
         const nextText = (detailTitle.textContent || "").trim();
@@ -16952,6 +17528,9 @@
           artifactBorder: exportRootColor("--artifact-border", "#bf8c32"),
           process: exportRootColor("--process", "#f0fffb"),
           processBorder: exportRootColor("--process-border", "#188773"),
+          memo: exportRootColor("--memo", "#fffdf4"),
+          memoBorder: exportRootColor("--memo-border", "#8c6a2d"),
+          memoFold: exportRootColor("--memo-fold", "#efe3c7"),
           stt: exportRootColor("--stt", "#f8fbff"),
           sttBorder: exportRootColor("--stt-border", "#496b9e"),
           ccpm: exportRootColor("--ccpm", "#f7fbfa"),
@@ -17026,6 +17605,11 @@
             stroke: #d32832;
             stroke-dasharray: 5 6;
             stroke-width: 3.2;
+          }
+          .export-edge-annotation {
+            stroke: ${colors.memoBorder};
+            stroke-dasharray: 7 6;
+            stroke-width: 2.4;
           }
           .export-edge-warning {
             stroke: #d28b00;
@@ -17135,6 +17719,11 @@
           result.fill = colors.process;
           result.stroke = colors.processBorder;
           result.rx = 999;
+        } else if (isMemoNode(node)) {
+          result.fill = colors.memo;
+          result.stroke = colors.memoBorder;
+          result.fold = colors.memoFold;
+          result.rx = 6;
         } else if (isSttNode(node)) {
           result.fill = colors.stt;
           result.stroke = colors.sttBorder;
@@ -17188,6 +17777,24 @@
           "stroke-dasharray": appearance.dash || null
         });
         group.append(shape);
+        if (isMemoNode(node)) {
+          const right = node.x + size.width / 2;
+          const top = node.y - size.height / 2;
+          const fold = Math.min(28, Math.max(18, size.width * .1));
+          group.append(exportSvgEl("path", {
+            class: "export-node-memo-fold",
+            d: [
+              `M ${exportNumber(right - fold)} ${exportNumber(top)}`,
+              `H ${exportNumber(right)}`,
+              `V ${exportNumber(top + fold)}`,
+              `L ${exportNumber(right - fold)} ${exportNumber(top)} Z`
+            ].join(" "),
+            fill: appearance.fold || "#efe3c7",
+            stroke: appearance.stroke,
+            "stroke-width": "1.4",
+            "stroke-linejoin": "round"
+          }));
+        }
       }
 
       function appendExportStatusIcon(parent, id, x, y, colors) {
@@ -17258,7 +17865,7 @@
       }
 
       function appendExportDetailBadges(parent, node, size, colors) {
-        if (isCrtNode(node) || isEcNode(node) || isSttNode(node) || state.viewMode !== "detail") return;
+        if (isCrtNode(node) || isEcNode(node) || isSttNode(node) || isMemoNode(node) || state.viewMode !== "detail") return;
         const bufferNode = isCcpmBufferNode(node);
         const statuses = bufferNode ? [] : normalizeStatuses(node.statuses);
         const leftInset = node.type === "process" || isCcpmNode(node) ? 28 : 13;
@@ -17315,6 +17922,39 @@
           maxWidth: size.width - 38,
           maxLines: Math.max(2, Math.floor((size.height - 34) / Math.max(17, textSize * 1.3))),
           weight: (node.text || "").trim() ? 740 : 600
+        });
+      }
+
+      function appendExportMemoNodeText(parent, node, size, colors) {
+        const textSize = normalizeNodeTextSize(state.nodeTextSize);
+        const left = node.x - size.width / 2 + 20;
+        const top = node.y - size.height / 2 + 24;
+        const badgeText = "メモ";
+        const badgeWidth = Math.max(34, badgeText.length * textSize * .5 + 16);
+        const badgeHeight = Math.max(18, textSize * 1.12);
+        parent.append(exportSvgEl("rect", {
+          x: exportNumber(left),
+          y: exportNumber(top - badgeHeight / 2),
+          width: exportNumber(badgeWidth),
+          height: exportNumber(badgeHeight),
+          rx: exportNumber(badgeHeight / 2),
+          fill: "rgba(255,255,255,.74)",
+          stroke: "rgba(140,106,45,.35)"
+        }));
+        appendExportText(parent, badgeText, left + badgeWidth / 2, top + textSize * .14, {
+          fontSize: textSize * .68,
+          lineHeight: textSize * .8,
+          maxWidth: badgeWidth - 8,
+          maxLines: 1,
+          weight: 840,
+          charRatio: .62
+        }).lastElementChild?.setAttribute?.("fill", colors.memoBorder);
+        appendExportText(parent, (node.text || "").trim() || "未設定", node.x, node.y + 18, {
+          fontSize: textSize,
+          lineHeight: Math.max(18, textSize * 1.38),
+          maxWidth: size.width - 42,
+          maxLines: Math.max(3, Math.floor((size.height - 54) / Math.max(18, textSize * 1.38))),
+          weight: (node.text || "").trim() ? 640 : 600
         });
       }
 
@@ -17459,6 +18099,8 @@
           appendExportCcpmNodeText(parent, node, size, schedule, colors);
         } else if (isEcNode(node)) {
           appendExportEcNodeText(parent, node, size);
+        } else if (isMemoNode(node)) {
+          appendExportMemoNodeText(parent, node, size, colors);
         } else {
           appendExportBasicNodeText(parent, node, size);
         }
@@ -17483,12 +18125,13 @@
         if (!options.critical && options.dependencyCritical) classNames.push("export-edge-dependency");
         if (options.loop) classNames.push("export-edge-warning");
         if (options.resource) classNames.push("export-edge-resource");
+        if (options.annotation) classNames.push("export-edge-annotation");
         if (options.conflict) classNames.push("export-edge-conflict");
         const path = exportSvgEl("path", {
           class: classNames.join(" "),
           d
         });
-        if (!options.conflict) {
+        if (!options.conflict && !options.annotation) {
           const marker = options.loop
             ? "export-arrow-warning"
             : (options.critical ? "export-arrow-critical" : (options.dependencyCritical ? "export-arrow-dependency" : (options.resource ? "export-arrow-resource" : "export-arrow")));
@@ -17565,17 +18208,19 @@
           const dependencyCritical = dependencyCriticalEdges.has(edge.id);
           const loop = loopEdges.has(edge.id);
           const conflict = edge.kind === "conflict";
+          const annotation = isPfdAnnotationConnection(from, to);
           const andGroup = crtAnd.edgeToGroup.get(edge.id);
           const targetNode = andGroup || to;
           const targetSide = andGroup ? "bottom" : edge.toSide;
+          const routeOptions = edgeRouteOptions(from, to);
           const route = !conflict && isCrtDiagram()
             ? crtAutoRoute(from, targetNode, edge.fromSide, targetSide, crtRenderedRoutes, { edgeId: edge.id, loop, crtAnd })
             : null;
           const d = conflict
             ? conflictPath(from, to, edge.fromSide, edge.toSide)
-            : (route?.d || edgePath(from, targetNode, edge.fromSide, targetSide));
+            : (route?.d || edgePath(from, targetNode, edge.fromSide, targetSide, routeOptions));
           if (route) crtRenderedRoutes.push({ points: route.points, edgeId: edge.id });
-          appendExportEdgePath(group, d, { critical, dependencyCritical, loop, conflict });
+          appendExportEdgePath(group, d, { critical, dependencyCritical, loop, conflict, annotation });
 
           if (andGroup) {
             const outputKey = `${andGroup.key}->${to.id}`;
@@ -17894,7 +18539,7 @@
           const action = paletteButton.dataset.action;
           const { nodeId, side } = state.palette.dataset;
           if (action === "connect") startConnection(nodeId, side);
-          if (action === "artifact" || action === "process" || action === "stt" || action === "crt" || action === "ccpm" || action === "ccpm-buffer" || action === "ccpm-milestone") addFromPort(nodeId, side, action);
+          if (action === "artifact" || action === "process" || action === "memo" || action === "stt" || action === "crt" || action === "ccpm" || action === "ccpm-buffer" || action === "ccpm-milestone") addFromPort(nodeId, side, action);
           return;
         }
 
@@ -17973,6 +18618,7 @@
           } else if (isNodeCenterClick(nodeEl, event)) {
             centerClickTimer = setTimeout(() => {
               centerClickTimer = null;
+              if (state.detailVisible || state.detailEditing) return;
               startTitleEdit(id);
               setStatus("タイトルを編集中です");
             }, 260);

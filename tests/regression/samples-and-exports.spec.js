@@ -54,6 +54,10 @@ for (const [sampleId, diagramType] of sampleSmoke) {
     } else {
       expect(payload.nodes.length).toBeGreaterThan(0);
     }
+    if (diagramType === "crt") {
+      expect(payload.viewMode).toBe("detail");
+      expect(payload.crtLayoutMode).toBe("tree");
+    }
   });
 }
 
@@ -64,6 +68,63 @@ test("embeddedGraphJson contains app metadata and graph payload", async () => {
   expect(metadata.type).toBeTruthy();
   expect(metadata.graph.diagramType).toBe("pfd");
   expect(metadata.graph.nodes).toHaveLength(7);
+});
+
+test("PFD memo nodes round trip through payload and SVG metadata", async () => {
+  await callApi(page, "loadGraph", {
+    diagramType: "pfd",
+    viewMode: "detail",
+    nodes: [
+      { id: "a", type: "artifact", text: "A", gridX: 0, gridY: 0 },
+      { id: "p", type: "process", text: "P", estimate: "2d", gridX: 1, gridY: 0 },
+      {
+        id: "memo-1",
+        type: "memo",
+        text: "Assumptions\nOutside the flow",
+        estimate: "99d",
+        owner: "Owner",
+        statuses: ["done"],
+        detail: "hidden detail",
+        gridX: 2,
+        gridY: 0
+      }
+    ],
+    edges: [
+      { id: "edge-a-p", from: "a", to: "p" },
+      { id: "edge-m-p", from: "memo-1", to: "p" }
+    ]
+  });
+
+  const payload = await callApi(page, "graphPayload");
+  const memo = payload.nodes.find(node => node.id === "memo-1");
+  expect(memo).toEqual(expect.objectContaining({
+    type: "memo",
+    text: "Assumptions\nOutside the flow",
+    detail: "",
+    estimate: "",
+    owner: "",
+    statuses: []
+  }));
+  expect(payload.edges.map(edge => edge.id)).toEqual(["edge-a-p", "edge-m-p"]);
+  expect(payload.edges.find(edge => edge.id === "edge-m-p")).toEqual(expect.objectContaining({
+    from: "memo-1",
+    to: "p",
+    kind: "annotation"
+  }));
+
+  const metadata = JSON.parse(await callApi(page, "embeddedGraphJson"));
+  expect(metadata.graph.nodes.find(node => node.id === "memo-1").type).toBe("memo");
+  expect(metadata.graph.edges.find(edge => edge.id === "edge-m-p").kind).toBe("annotation");
+
+  const svg = await callApi(page, "buildDiagramExport", { includeMetadata: true });
+  expect(svg).toContain("export-node-memo-fold");
+  expect(svg).toContain("export-edge-annotation");
+  expect(svg).toMatch(/class="export-edge export-edge-annotation"[^>]*>/);
+  expect(svg).not.toMatch(/class="export-edge export-edge-annotation"[^>]*marker-end=/);
+  expect(svg).toContain("Assumptions");
+  const parsed = JSON.parse(await callApi(page, "extractEmbeddedGraphJsonFromSvg", svg));
+  expect(parsed.graph.nodes.find(node => node.id === "memo-1").type).toBe("memo");
+  expect(parsed.graph.edges.find(edge => edge.id === "edge-m-p").kind).toBe("annotation");
 });
 
 test("SVG export embeds editable graph metadata", async () => {

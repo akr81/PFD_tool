@@ -401,6 +401,29 @@ test("add root memo button creates an editable standalone PFD memo", async () =>
   expect(payload.edges).toHaveLength(0);
 });
 
+test("shortcut m creates an editable standalone PFD memo", async () => {
+  await callApi(page, "reset", "pfd");
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.keyboard.press("m");
+
+  const memoNode = page.locator(".node.memo");
+  await expect(memoNode).toHaveCount(1);
+  await expect(page.locator("#detailPanel")).toHaveClass(/open/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/editing/);
+  await expect(page.locator("#detailPanel")).toHaveClass(/memo-detail/);
+  await expect(page.locator('[data-memo-field="text"]')).toBeVisible();
+
+  const payload = await callApi(page, "getState");
+  const memo = payload.nodes.find(node => node.type === "memo");
+  expect(memo).toEqual(expect.objectContaining({
+    type: "memo",
+    detail: "",
+    estimate: "",
+    owner: ""
+  }));
+  expect(payload.edges).toHaveLength(0);
+});
+
 test("PFD memo can be connected as a dotted annotation link", async () => {
   await callApi(page, "loadGraph", {
     diagramType: "pfd",

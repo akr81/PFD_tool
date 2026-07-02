@@ -5450,6 +5450,10 @@
             <div class="shortcut-desc">接続なしでノードを追加（3列に整列）</div>
           </div>
           <div class="shortcut-row">
+            <div class="shortcut-keys"><kbd class="shortcut-key">m</kbd></div>
+            <div class="shortcut-desc">PFDメモを追加</div>
+          </div>
+          <div class="shortcut-row">
             <div class="shortcut-keys"><kbd class="shortcut-key">F2</kbd><kbd class="shortcut-key">Space</kbd></div>
             <div class="shortcut-desc">選択ノードのタイトル編集を開始</div>
           </div>
@@ -11225,6 +11229,14 @@
           return;
         }
         addRoot(type);
+      }
+
+      function addMemoFromShortcut() {
+        if (!isPfdDiagram()) {
+          setStatus("メモ追加ショートカットはPFDで使えます");
+          return;
+        }
+        addRoot("memo");
       }
 
       function startConnection(anchorId, side) {
@@ -18930,6 +18942,12 @@
         if (plainShortcut && key === "a") {
           event.preventDefault();
           addLooseNodeFromShortcut();
+          return;
+        }
+
+        if (plainShortcut && key === "m") {
+          event.preventDefault();
+          addMemoFromShortcut();
           return;
         }
 
